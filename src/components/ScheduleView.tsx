@@ -174,7 +174,7 @@ const ScheduleView: React.FC = () => {
           <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((day, index) => {
               if (day === null) {
-                return <div key={`empty-${index}`} className="aspect-square" />;
+                return <div key={`empty-${index}`} className="min-h-[80px]" />;
               }
 
               const shifts = isMyShift(day);
@@ -182,46 +182,48 @@ const ScheduleView: React.FC = () => {
               const entry = getScheduleForDay(day);
               const isWeekend = index % 7 === 0 || index % 7 === 6;
 
+              // Get first name only for display
+              const getFirstName = (name: string) => name.split(' ')[0];
+
               return (
                 <div
                   key={day}
                   className={`
-                    aspect-square rounded-lg p-1 flex flex-col items-center justify-center
-                    transition-all cursor-default relative group
+                    min-h-[80px] rounded-lg p-1.5 flex flex-col
+                    transition-all cursor-default relative
                     ${hasWork 
-                      ? 'bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30' 
-                      : 'bg-muted/30 border border-transparent'
+                      ? 'bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/50' 
+                      : 'bg-muted/30 border border-border/30'
                     }
                     ${isWeekend && !hasWork ? 'bg-muted/50' : ''}
                   `}
                 >
                   <span className={`
-                    text-sm font-medium
-                    ${hasWork ? 'text-foreground' : 'text-muted-foreground'}
+                    text-xs font-bold mb-1
+                    ${hasWork ? 'text-primary' : 'text-muted-foreground'}
                   `}>
                     {day}
                   </span>
                   
-                  {hasWork && (
-                    <div className="flex gap-0.5 mt-0.5">
-                      {shifts.shift1 && (
-                        <div className="w-2 h-2 rounded-full bg-secondary" title="Turno 1" />
-                      )}
-                      {shifts.shift2 && (
-                        <div className="w-2 h-2 rounded-full bg-warning" title="Turno 2" />
-                      )}
-                    </div>
-                  )}
-
-                  {/* Tooltip on hover */}
                   {entry && (
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                      <div className="glass-card p-2 text-xs whitespace-nowrap">
-                        <div className="font-medium mb-1">{entry.dayOfWeek}</div>
-                        <div className="flex gap-2">
-                          <span className="text-secondary">T1: {entry.shift1}</span>
-                          <span className="text-warning">T2: {entry.shift2}</span>
-                        </div>
+                    <div className="flex flex-col gap-0.5 flex-1">
+                      <div className={`
+                        text-[10px] px-1 py-0.5 rounded truncate
+                        ${entry.shift1 === currentUser?.name 
+                          ? 'bg-secondary text-secondary-foreground font-bold' 
+                          : 'bg-secondary/20 text-secondary'
+                        }
+                      `}>
+                        {getFirstName(entry.shift1)}
+                      </div>
+                      <div className={`
+                        text-[10px] px-1 py-0.5 rounded truncate
+                        ${entry.shift2 === currentUser?.name 
+                          ? 'bg-warning text-warning-foreground font-bold' 
+                          : 'bg-warning/20 text-warning'
+                        }
+                      `}>
+                        {getFirstName(entry.shift2)}
                       </div>
                     </div>
                   )}
