@@ -12,9 +12,10 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { currentUser, logout } = useAuth();
-  const { getPendingCount } = useSwap();
+  const { getPendingCount, getPendingAdminApproval } = useSwap();
   
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
+  const adminPendingCount = currentUser?.isAdmin ? getPendingAdminApproval().length : 0;
 
   const tabs = [
     { id: 'schedule', label: 'Minha Escala', icon: Calendar },
@@ -23,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   if (currentUser?.isAdmin) {
-    tabs.push({ id: 'admin', label: 'Administração', icon: Settings });
+    tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
   }
 
   return (

@@ -16,7 +16,7 @@ const RequestsView: React.FC = () => {
 
   const handleRespond = (requestId: string, accept: boolean) => {
     respondToSwap(requestId, accept);
-    toast.success(accept ? 'Troca aceita!' : 'Troca recusada');
+    toast.success(accept ? 'Troca aceita! Aguardando aprovação do administrador.' : 'Troca recusada');
   };
 
   const getStatusBadge = (status: string) => {
@@ -24,7 +24,9 @@ const RequestsView: React.FC = () => {
       case 'pending':
         return <span className="badge-pending">Pendente</span>;
       case 'accepted':
-        return <span className="badge-accepted">Aceita</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-warning/20 text-warning">Aguardando admin</span>;
+      case 'approved':
+        return <span className="badge-accepted">Aprovada</span>;
       case 'rejected':
         return <span className="badge-rejected">Recusada</span>;
       default:

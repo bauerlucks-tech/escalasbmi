@@ -19,7 +19,10 @@ export interface SwapRequest {
   targetId: string;
   targetName: string;
   originalDate: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'approved';
+  adminApproved?: boolean;
+  adminApprovedAt?: string;
+  adminApprovedBy?: string;
   createdAt: string;
 }
 
@@ -64,6 +67,7 @@ export const initialUsers: User[] = [
   { id: "4", name: "HENRIQUE", password: "1234", isAdmin: false },
   { id: "5", name: "KELLY", password: "1234", isAdmin: false },
   { id: "6", name: "GUILHERME", password: "1234", isAdmin: false },
+  { id: "7", name: "RICARDO", password: "1234", isAdmin: true },
 ];
 
 export const getUniqueEmployees = (): string[] => {
