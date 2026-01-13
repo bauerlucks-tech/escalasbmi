@@ -5,9 +5,12 @@ interface SwapContextType {
   swapRequests: SwapRequest[];
   createSwapRequest: (request: Omit<SwapRequest, 'id' | 'createdAt'>) => void;
   respondToSwap: (requestId: string, accept: boolean) => void;
+  adminApproveSwap: (requestId: string, adminName: string) => void;
   getMyRequests: (userId: string) => SwapRequest[];
   getRequestsForMe: (userName: string) => SwapRequest[];
   getPendingCount: (userName: string) => number;
+  getPendingAdminApproval: () => SwapRequest[];
+  getApprovedSwaps: () => SwapRequest[];
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -39,6 +42,20 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ));
   };
 
+  const adminApproveSwap = (requestId: string, adminName: string) => {
+    setSwapRequests(prev => prev.map(req =>
+      req.id === requestId
+        ? { 
+            ...req, 
+            status: 'approved' as const,
+            adminApproved: true,
+            adminApprovedAt: new Date().toISOString(),
+            adminApprovedBy: adminName
+          }
+        : req
+    ));
+  };
+
   const getMyRequests = (userId: string) => {
     return swapRequests.filter(req => req.requesterId === userId);
   };
@@ -51,14 +68,25 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return swapRequests.filter(req => req.targetName === userName && req.status === 'pending').length;
   };
 
+  const getPendingAdminApproval = () => {
+    return swapRequests.filter(req => req.status === 'accepted');
+  };
+
+  const getApprovedSwaps = () => {
+    return swapRequests.filter(req => req.status === 'approved');
+  };
+
   return (
     <SwapContext.Provider value={{
       swapRequests,
       createSwapRequest,
       respondToSwap,
+      adminApproveSwap,
       getMyRequests,
       getRequestsForMe,
       getPendingCount,
+      getPendingAdminApproval,
+      getApprovedSwaps,
     }}>
       {children}
     </SwapContext.Provider>
