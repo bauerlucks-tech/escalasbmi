@@ -11,11 +11,11 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, isAdmin } = useAuth();
   const { getPendingCount, getPendingAdminApproval } = useSwap();
   
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
-  const adminPendingCount = currentUser?.isAdmin ? getPendingAdminApproval().length : 0;
+  const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
 
   const tabs = [
     { id: 'schedule', label: 'Minha Escala', icon: Calendar },
@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { id: 'requests', label: 'Solicitações', icon: Bell, badge: pendingCount },
   ];
 
-  if (currentUser?.isAdmin) {
+  if (isAdmin(currentUser)) {
     tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
   }
 
@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50">
-              {currentUser?.isAdmin && (
+              {isAdmin(currentUser) && (
                 <Shield className="w-4 h-4 text-primary" />
               )}
               <span className="text-sm font-medium">{currentUser?.name}</span>

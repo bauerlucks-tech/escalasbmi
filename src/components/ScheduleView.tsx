@@ -1,17 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getEmployeeSchedule, scheduleData, ScheduleEntry } from '@/data/scheduleData';
-import { Calendar, Clock, Sun, Moon, TrendingUp, Coffee, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, parse, isToday, isBefore, isAfter, startOfDay } from 'date-fns';
+import { getEmployeeSchedule, scheduleData as initialScheduleData, ScheduleEntry } from '@/data/scheduleData';
+import { Calendar, Clock, Sun, Moon, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
+import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Button } from '@/components/ui/button';
 
 const ScheduleView: React.FC = () => {
   const { currentUser } = useAuth();
   
+  // Load schedule from localStorage
+  const scheduleData: ScheduleEntry[] = (() => {
+    const saved = localStorage.getItem('escala_scheduleData');
+    return saved ? JSON.parse(saved) : initialScheduleData;
+  })();
+
+  // Check if we're in the last week of the month
+  const today = startOfDay(new Date());
+  const currentDay = getDate(today);
+  const daysInCurrentMonth = getDaysInMonth(today);
+  const isLastWeek = currentDay > daysInCurrentMonth - 7;
+
+  // State for viewing next month schedule
+  const [showNextMonth, setShowNextMonth] = useState(false);
+
+  // Next month schedule (would come from localStorage in production)
+  const nextMonthSchedule: ScheduleEntry[] = (() => {
+    const saved = localStorage.getItem('escala_scheduleData_next');
+    return saved ? JSON.parse(saved) : [];
+  })();
+
   if (!currentUser) return null;
   
   const mySchedule = getEmployeeSchedule(currentUser.name);
-  const today = startOfDay(new Date());
 
   // Parse dates for comparison
   const parseDate = (dateStr: string) => parse(dateStr, 'dd/MM/yyyy', new Date());
@@ -57,8 +78,36 @@ const ScheduleView: React.FC = () => {
 
   const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+  // Get first name only for display
+  const getFirstName = (name: string) => name.split(' ')[0];
+
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Next Month Alert */}
+      {isLastWeek && nextMonthSchedule.length > 0 && (
+        <div className="glass-card border-primary/50 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <AlertCircle className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium text-sm">Escala de Fevereiro disponível!</p>
+              <p className="text-xs text-muted-foreground">
+                Clique para visualizar a escala do próximo mês
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            variant={showNextMonth ? "default" : "outline"}
+            onClick={() => setShowNextMonth(!showNextMonth)}
+            className={showNextMonth ? "" : "border-primary/50 text-primary"}
+          >
+            {showNextMonth ? "Ver Janeiro" : "Ver Fevereiro"}
+          </Button>
+        </div>
+      )}
+
       {/* Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="glass-card-elevated p-4">
@@ -136,7 +185,7 @@ const ScheduleView: React.FC = () => {
         <div className="p-4 border-b border-border/50 flex items-center justify-between">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Calendar className="w-5 h-5 text-primary" />
-            Janeiro 2026
+            {showNextMonth ? "Fevereiro 2026" : "Janeiro 2026"}
           </h2>
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
@@ -181,9 +230,6 @@ const ScheduleView: React.FC = () => {
               const hasWork = shifts.shift1 || shifts.shift2;
               const entry = getScheduleForDay(day);
               const isWeekend = index % 7 === 0 || index % 7 === 6;
-
-              // Get first name only for display
-              const getFirstName = (name: string) => name.split(' ')[0];
 
               return (
                 <div

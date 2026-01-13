@@ -5,11 +5,23 @@ export interface ScheduleEntry {
   shift2: string;
 }
 
+export type UserRole = 'operador' | 'administrador';
+export type UserStatus = 'ativo' | 'arquivado';
+
 export interface User {
   id: string;
   name: string;
   password: string;
-  isAdmin: boolean;
+  role: UserRole;
+  status: UserStatus;
+}
+
+export interface MonthSchedule {
+  month: number; // 1-12
+  year: number;
+  entries: ScheduleEntry[];
+  importedAt?: string;
+  importedBy?: string;
 }
 
 export interface SwapRequest {
@@ -26,6 +38,7 @@ export interface SwapRequest {
   createdAt: string;
 }
 
+// January 2026 schedule
 export const scheduleData: ScheduleEntry[] = [
   { date: "01/01/2026", dayOfWeek: "QUINTA-FEIRA", shift1: "CARLOS", shift2: "CARLOS" },
   { date: "02/01/2026", dayOfWeek: "SEXTA-FEIRA", shift1: "ROSANA", shift2: "ROSANA" },
@@ -61,13 +74,13 @@ export const scheduleData: ScheduleEntry[] = [
 ];
 
 export const initialUsers: User[] = [
-  { id: "1", name: "LUCAS", password: "1234", isAdmin: true },
-  { id: "2", name: "CARLOS", password: "1234", isAdmin: false },
-  { id: "3", name: "ROSANA", password: "1234", isAdmin: false },
-  { id: "4", name: "HENRIQUE", password: "1234", isAdmin: false },
-  { id: "5", name: "KELLY", password: "1234", isAdmin: false },
-  { id: "6", name: "GUILHERME", password: "1234", isAdmin: false },
-  { id: "7", name: "RICARDO", password: "1234", isAdmin: true },
+  { id: "1", name: "LUCAS", password: "1234", role: "operador", status: "ativo" },
+  { id: "2", name: "CARLOS", password: "1234", role: "operador", status: "ativo" },
+  { id: "3", name: "ROSANA", password: "1234", role: "operador", status: "ativo" },
+  { id: "4", name: "HENRIQUE", password: "1234", role: "operador", status: "ativo" },
+  { id: "5", name: "KELLY", password: "1234", role: "operador", status: "ativo" },
+  { id: "6", name: "GUILHERME", password: "1234", role: "operador", status: "ativo" },
+  { id: "7", name: "RICARDO", password: "1234", role: "administrador", status: "ativo" },
 ];
 
 export const getUniqueEmployees = (): string[] => {
@@ -83,4 +96,37 @@ export const getEmployeeSchedule = (name: string): ScheduleEntry[] => {
   return scheduleData.filter(
     entry => entry.shift1 === name || entry.shift2 === name
   );
+};
+
+// Helper to calculate schedule statistics
+export const calculateScheduleStats = (entries: ScheduleEntry[]): {
+  name: string;
+  totalDays: number;
+  weekendDays: number;
+}[] => {
+  const stats: Record<string, { totalDays: number; weekendDays: number }> = {};
+  
+  entries.forEach(entry => {
+    const isWeekend = entry.dayOfWeek === 'SÁBADO' || entry.dayOfWeek === 'DOMINGO';
+    
+    // Count shift1
+    if (!stats[entry.shift1]) {
+      stats[entry.shift1] = { totalDays: 0, weekendDays: 0 };
+    }
+    stats[entry.shift1].totalDays++;
+    if (isWeekend) stats[entry.shift1].weekendDays++;
+    
+    // Count shift2 if different
+    if (entry.shift2 !== entry.shift1) {
+      if (!stats[entry.shift2]) {
+        stats[entry.shift2] = { totalDays: 0, weekendDays: 0 };
+      }
+      stats[entry.shift2].totalDays++;
+      if (isWeekend) stats[entry.shift2].weekendDays++;
+    }
+  });
+  
+  return Object.entries(stats)
+    .map(([name, data]) => ({ name, ...data }))
+    .sort((a, b) => b.totalDays - a.totalDays);
 };
