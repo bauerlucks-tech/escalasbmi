@@ -29,7 +29,7 @@ const AdminPanel: React.FC = () => {
     return saved ? JSON.parse(saved) : initialScheduleData;
   });
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ shift1: '', shift2: '' });
+  const [editForm, setEditForm] = useState({ meioPeriodo: '', fechamento: '' });
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Import state
@@ -80,13 +80,13 @@ const AdminPanel: React.FC = () => {
 
   const handleEditEntry = (entry: ScheduleEntry) => {
     setEditingEntry(entry.date);
-    setEditForm({ shift1: entry.shift1, shift2: entry.shift2 });
+    setEditForm({ meioPeriodo: entry.meioPeriodo, fechamento: entry.fechamento });
   };
 
   const handleSaveEntry = (date: string) => {
     const updatedSchedule = scheduleData.map(entry =>
       entry.date === date
-        ? { ...entry, shift1: editForm.shift1.toUpperCase(), shift2: editForm.shift2.toUpperCase() }
+        ? { ...entry, meioPeriodo: editForm.meioPeriodo.toUpperCase(), fechamento: editForm.fechamento.toUpperCase() }
         : entry
     );
     setScheduleData(updatedSchedule);
@@ -443,11 +443,11 @@ const AdminPanel: React.FC = () => {
               <div className="flex items-center gap-4 text-xs">
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-secondary" />
-                  <span className="text-muted-foreground">Turno 1</span>
+                  <span className="text-muted-foreground">Meio Período</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-warning" />
-                  <span className="text-muted-foreground">Turno 2</span>
+                  <span className="text-muted-foreground">Fechamento</span>
                 </div>
               </div>
             </div>
@@ -506,16 +506,16 @@ const AdminPanel: React.FC = () => {
                         isEditing ? (
                           <div className="flex flex-col gap-1 flex-1">
                             <Input
-                              value={editForm.shift1}
-                              onChange={(e) => setEditForm(f => ({ ...f, shift1: e.target.value }))}
+                              value={editForm.meioPeriodo}
+                              onChange={(e) => setEditForm(f => ({ ...f, meioPeriodo: e.target.value }))}
                               className="h-6 text-[10px] p-1 bg-secondary/20"
-                              placeholder="Turno 1"
+                              placeholder="Meio Período"
                             />
                             <Input
-                              value={editForm.shift2}
-                              onChange={(e) => setEditForm(f => ({ ...f, shift2: e.target.value }))}
+                              value={editForm.fechamento}
+                              onChange={(e) => setEditForm(f => ({ ...f, fechamento: e.target.value }))}
                               className="h-6 text-[10px] p-1 bg-warning/20"
-                              placeholder="Turno 2"
+                              placeholder="Fechamento"
                             />
                             <div className="flex gap-1 mt-auto">
                               <Button
@@ -539,10 +539,10 @@ const AdminPanel: React.FC = () => {
                         ) : (
                           <div className="flex flex-col gap-0.5 flex-1">
                             <div className="text-[10px] px-1 py-0.5 rounded truncate bg-secondary/20 text-secondary">
-                              {getFirstName(entry.shift1)}
+                              {getFirstName(entry.meioPeriodo)}
                             </div>
                             <div className="text-[10px] px-1 py-0.5 rounded truncate bg-warning/20 text-warning">
-                              {getFirstName(entry.shift2)}
+                              {getFirstName(entry.fechamento)}
                             </div>
                           </div>
                         )

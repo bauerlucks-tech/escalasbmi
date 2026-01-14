@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getEmployeeSchedule, scheduleData as initialScheduleData, ScheduleEntry } from '@/data/scheduleData';
-import { Calendar, Clock, Sun, Moon, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, Sun, Sunset, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -67,12 +67,12 @@ const ScheduleView: React.FC = () => {
     return scheduleData.find(s => s.date === dateStr);
   };
 
-  const isMyShift = (day: number): { shift1: boolean; shift2: boolean } => {
+  const isMyShift = (day: number): { meioPeriodo: boolean; fechamento: boolean } => {
     const entry = getScheduleForDay(day);
-    if (!entry) return { shift1: false, shift2: false };
+    if (!entry) return { meioPeriodo: false, fechamento: false };
     return {
-      shift1: entry.shift1 === currentUser.name,
-      shift2: entry.shift2 === currentUser.name,
+      meioPeriodo: entry.meioPeriodo === currentUser.name,
+      fechamento: entry.fechamento === currentUser.name,
     };
   };
 
@@ -190,11 +190,11 @@ const ScheduleView: React.FC = () => {
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-secondary" />
-              <span className="text-muted-foreground">Turno 1</span>
+              <span className="text-muted-foreground">Meio Período</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-warning" />
-              <span className="text-muted-foreground">Turno 2</span>
+              <span className="text-muted-foreground">Fechamento</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-muted" />
@@ -227,7 +227,7 @@ const ScheduleView: React.FC = () => {
               }
 
               const shifts = isMyShift(day);
-              const hasWork = shifts.shift1 || shifts.shift2;
+              const hasWork = shifts.meioPeriodo || shifts.fechamento;
               const entry = getScheduleForDay(day);
               const isWeekend = index % 7 === 0 || index % 7 === 6;
 
@@ -255,21 +255,21 @@ const ScheduleView: React.FC = () => {
                     <div className="flex flex-col gap-0.5 flex-1">
                       <div className={`
                         text-[10px] px-1 py-0.5 rounded truncate
-                        ${entry.shift1 === currentUser?.name 
+                        ${entry.meioPeriodo === currentUser?.name 
                           ? 'bg-secondary text-secondary-foreground font-bold' 
                           : 'bg-secondary/20 text-secondary'
                         }
                       `}>
-                        {getFirstName(entry.shift1)}
+                        {getFirstName(entry.meioPeriodo)}
                       </div>
                       <div className={`
                         text-[10px] px-1 py-0.5 rounded truncate
-                        ${entry.shift2 === currentUser?.name 
+                        ${entry.fechamento === currentUser?.name 
                           ? 'bg-warning text-warning-foreground font-bold' 
                           : 'bg-warning/20 text-warning'
                         }
                       `}>
-                        {getFirstName(entry.shift2)}
+                        {getFirstName(entry.fechamento)}
                       </div>
                     </div>
                   )}
@@ -294,15 +294,15 @@ const ScheduleView: React.FC = () => {
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-secondary">
-            {mySchedule.filter(s => s.shift1 === currentUser.name).length}
+            {mySchedule.filter(s => s.meioPeriodo === currentUser.name).length}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Turno 1</div>
+          <div className="text-xs text-muted-foreground mt-1">Meio Período</div>
         </div>
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-warning">
-            {mySchedule.filter(s => s.shift2 === currentUser.name).length}
+            {mySchedule.filter(s => s.fechamento === currentUser.name).length}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Turno 2</div>
+          <div className="text-xs text-muted-foreground mt-1">Fechamento</div>
         </div>
       </div>
     </div>

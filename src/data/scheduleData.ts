@@ -1,8 +1,8 @@
 export interface ScheduleEntry {
   date: string;
   dayOfWeek: string;
-  shift1: string;
-  shift2: string;
+  meioPeriodo: string;  // Meio período (manhã/tarde)
+  fechamento: string;   // Fechamento (noite)
 }
 
 export type UserRole = 'operador' | 'administrador';
@@ -30,7 +30,8 @@ export interface SwapRequest {
   requesterName: string;
   targetId: string;
   targetName: string;
-  originalDate: string;
+  originalDate: string;      // Dia que o solicitante quer trocar
+  targetDate: string;        // Dia que o solicitante quer pegar
   status: 'pending' | 'accepted' | 'rejected' | 'approved';
   adminApproved?: boolean;
   adminApprovedAt?: string;
@@ -40,37 +41,37 @@ export interface SwapRequest {
 
 // January 2026 schedule
 export const scheduleData: ScheduleEntry[] = [
-  { date: "01/01/2026", dayOfWeek: "QUINTA-FEIRA", shift1: "CARLOS", shift2: "CARLOS" },
-  { date: "02/01/2026", dayOfWeek: "SEXTA-FEIRA", shift1: "ROSANA", shift2: "ROSANA" },
-  { date: "03/01/2026", dayOfWeek: "SÁBADO", shift1: "LUCAS", shift2: "LUCAS" },
-  { date: "04/01/2026", dayOfWeek: "DOMINGO", shift1: "HENRIQUE", shift2: "HENRIQUE" },
-  { date: "05/01/2026", dayOfWeek: "SEGUNDA-FEIRA", shift1: "ROSANA", shift2: "KELLY" },
-  { date: "06/01/2026", dayOfWeek: "TERÇA-FEIRA", shift1: "CARLOS", shift2: "KELLY" },
-  { date: "07/01/2026", dayOfWeek: "QUARTA-FEIRA", shift1: "HENRIQUE", shift2: "ROSANA" },
-  { date: "08/01/2026", dayOfWeek: "QUINTA-FEIRA", shift1: "HENRIQUE", shift2: "LUCAS" },
-  { date: "09/01/2026", dayOfWeek: "SEXTA-FEIRA", shift1: "CARLOS", shift2: "ROSANA" },
-  { date: "10/01/2026", dayOfWeek: "SÁBADO", shift1: "KELLY", shift2: "KELLY" },
-  { date: "11/01/2026", dayOfWeek: "DOMINGO", shift1: "LUCAS", shift2: "LUCAS" },
-  { date: "12/01/2026", dayOfWeek: "SEGUNDA-FEIRA", shift1: "HENRIQUE", shift2: "LUCAS" },
-  { date: "13/01/2026", dayOfWeek: "TERÇA-FEIRA", shift1: "CARLOS", shift2: "KELLY" },
-  { date: "14/01/2026", dayOfWeek: "QUARTA-FEIRA", shift1: "ROSANA", shift2: "LUCAS" },
-  { date: "15/01/2026", dayOfWeek: "QUINTA-FEIRA", shift1: "HENRIQUE", shift2: "KELLY" },
-  { date: "16/01/2026", dayOfWeek: "SEXTA-FEIRA", shift1: "ROSANA", shift2: "CARLOS" },
-  { date: "17/01/2026", dayOfWeek: "SÁBADO", shift1: "HENRIQUE", shift2: "HENRIQUE" },
-  { date: "18/01/2026", dayOfWeek: "DOMINGO", shift1: "LUCAS", shift2: "LUCAS" },
-  { date: "19/01/2026", dayOfWeek: "SEGUNDA-FEIRA", shift1: "HENRIQUE", shift2: "CARLOS" },
-  { date: "20/01/2026", dayOfWeek: "TERÇA-FEIRA", shift1: "GUILHERME", shift2: "KELLY" },
-  { date: "21/01/2026", dayOfWeek: "QUARTA-FEIRA", shift1: "GUILHERME", shift2: "ROSANA" },
-  { date: "22/01/2026", dayOfWeek: "QUINTA-FEIRA", shift1: "HENRIQUE", shift2: "KELLY" },
-  { date: "23/01/2026", dayOfWeek: "SEXTA-FEIRA", shift1: "LUCAS", shift2: "CARLOS" },
-  { date: "24/01/2026", dayOfWeek: "SÁBADO", shift1: "ROSANA", shift2: "ROSANA" },
-  { date: "25/01/2026", dayOfWeek: "DOMINGO", shift1: "GUILHERME", shift2: "GUILHERME" },
-  { date: "26/01/2026", dayOfWeek: "SEGUNDA-FEIRA", shift1: "KELLY", shift2: "KELLY" },
-  { date: "27/01/2026", dayOfWeek: "TERÇA-FEIRA", shift1: "HENRIQUE", shift2: "CARLOS" },
-  { date: "28/01/2026", dayOfWeek: "QUARTA-FEIRA", shift1: "ROSANA", shift2: "LUCAS" },
-  { date: "29/01/2026", dayOfWeek: "QUINTA-FEIRA", shift1: "GUILHERME", shift2: "KELLY" },
-  { date: "30/01/2026", dayOfWeek: "SEXTA-FEIRA", shift1: "LUCAS", shift2: "CARLOS" },
-  { date: "31/01/2026", dayOfWeek: "SÁBADO", shift1: "GUILHERME", shift2: "GUILHERME" },
+  { date: "01/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "CARLOS", fechamento: "CARLOS" },
+  { date: "02/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "ROSANA", fechamento: "ROSANA" },
+  { date: "03/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "LUCAS", fechamento: "LUCAS" },
+  { date: "04/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "HENRIQUE", fechamento: "HENRIQUE" },
+  { date: "05/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "ROSANA", fechamento: "KELLY" },
+  { date: "06/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "CARLOS", fechamento: "KELLY" },
+  { date: "07/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "ROSANA" },
+  { date: "08/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "LUCAS" },
+  { date: "09/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "CARLOS", fechamento: "ROSANA" },
+  { date: "10/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "KELLY", fechamento: "KELLY" },
+  { date: "11/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "LUCAS", fechamento: "LUCAS" },
+  { date: "12/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "LUCAS" },
+  { date: "13/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "CARLOS", fechamento: "KELLY" },
+  { date: "14/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "ROSANA", fechamento: "LUCAS" },
+  { date: "15/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "KELLY" },
+  { date: "16/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "ROSANA", fechamento: "CARLOS" },
+  { date: "17/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "HENRIQUE", fechamento: "HENRIQUE" },
+  { date: "18/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "LUCAS", fechamento: "LUCAS" },
+  { date: "19/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "CARLOS" },
+  { date: "20/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "GUILHERME", fechamento: "KELLY" },
+  { date: "21/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "GUILHERME", fechamento: "ROSANA" },
+  { date: "22/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "KELLY" },
+  { date: "23/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "LUCAS", fechamento: "CARLOS" },
+  { date: "24/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "ROSANA", fechamento: "ROSANA" },
+  { date: "25/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "GUILHERME", fechamento: "GUILHERME" },
+  { date: "26/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "KELLY", fechamento: "KELLY" },
+  { date: "27/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "CARLOS" },
+  { date: "28/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "ROSANA", fechamento: "LUCAS" },
+  { date: "29/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "GUILHERME", fechamento: "KELLY" },
+  { date: "30/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "LUCAS", fechamento: "CARLOS" },
+  { date: "31/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "GUILHERME", fechamento: "GUILHERME" },
 ];
 
 export const initialUsers: User[] = [
@@ -86,15 +87,15 @@ export const initialUsers: User[] = [
 export const getUniqueEmployees = (): string[] => {
   const employees = new Set<string>();
   scheduleData.forEach(entry => {
-    employees.add(entry.shift1);
-    employees.add(entry.shift2);
+    employees.add(entry.meioPeriodo);
+    employees.add(entry.fechamento);
   });
   return Array.from(employees).sort();
 };
 
 export const getEmployeeSchedule = (name: string): ScheduleEntry[] => {
   return scheduleData.filter(
-    entry => entry.shift1 === name || entry.shift2 === name
+    entry => entry.meioPeriodo === name || entry.fechamento === name
   );
 };
 
@@ -109,20 +110,20 @@ export const calculateScheduleStats = (entries: ScheduleEntry[]): {
   entries.forEach(entry => {
     const isWeekend = entry.dayOfWeek === 'SÁBADO' || entry.dayOfWeek === 'DOMINGO';
     
-    // Count shift1
-    if (!stats[entry.shift1]) {
-      stats[entry.shift1] = { totalDays: 0, weekendDays: 0 };
+    // Count meioPeriodo
+    if (!stats[entry.meioPeriodo]) {
+      stats[entry.meioPeriodo] = { totalDays: 0, weekendDays: 0 };
     }
-    stats[entry.shift1].totalDays++;
-    if (isWeekend) stats[entry.shift1].weekendDays++;
+    stats[entry.meioPeriodo].totalDays++;
+    if (isWeekend) stats[entry.meioPeriodo].weekendDays++;
     
-    // Count shift2 if different
-    if (entry.shift2 !== entry.shift1) {
-      if (!stats[entry.shift2]) {
-        stats[entry.shift2] = { totalDays: 0, weekendDays: 0 };
+    // Count fechamento if different
+    if (entry.fechamento !== entry.meioPeriodo) {
+      if (!stats[entry.fechamento]) {
+        stats[entry.fechamento] = { totalDays: 0, weekendDays: 0 };
       }
-      stats[entry.shift2].totalDays++;
-      if (isWeekend) stats[entry.shift2].weekendDays++;
+      stats[entry.fechamento].totalDays++;
+      if (isWeekend) stats[entry.fechamento].weekendDays++;
     }
   });
   
