@@ -2,8 +2,9 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
 import { Button } from '@/components/ui/button';
-import { PlatformIcon, HelicopterIcon } from '@/components/icons/OffshoreIcons';
-import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings } from 'lucide-react';
+import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
+import { PartnerLogos } from '@/components/logos/CompanyLogos';
+import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string;
@@ -32,21 +33,36 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
       <div className="container mx-auto px-4">
         {/* Top bar */}
         <div className="flex items-center justify-between py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10">
-              <PlatformIcon className="w-5 h-5 text-primary" />
+          <div className="flex items-center gap-4">
+            {/* Logo */}
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 glow-primary relative">
+              <HelicopterDetailedIcon className="w-7 h-7 text-primary" />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-success border-2 border-card" />
             </div>
+            
             <div>
-              <h1 className="text-lg font-bold text-gradient">Escala Offshore</h1>
-              <p className="text-xs text-muted-foreground">Janeiro 2026</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold text-gradient">Operações Aéreas Offshore</h1>
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 rounded text-xs text-primary font-medium">
+                  <Plane className="w-3 h-3" />
+                  ATIVO
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">Sistema de Escalas • Janeiro 2026</p>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50">
+            {/* Partner logos - hidden on mobile */}
+            <div className="hidden lg:block">
+              <PartnerLogos compact />
+            </div>
+            
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50">
               {isAdmin(currentUser) && (
                 <Shield className="w-4 h-4 text-primary" />
               )}
+              <HelipadIcon className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-medium">{currentUser?.name}</span>
             </div>
             <Button 
@@ -74,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                   flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium
                   transition-all whitespace-nowrap relative
                   ${isActive 
-                    ? 'bg-primary text-primary-foreground' 
+                    ? 'bg-primary text-primary-foreground glow-primary' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                   }
                 `}
