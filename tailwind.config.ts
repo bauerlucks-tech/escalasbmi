@@ -55,14 +55,22 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Aviation theme colors
+        aviation: {
+          blue: "hsl(var(--aviation-blue))",
+          dark: "hsl(var(--aviation-dark))",
+          sky: "hsl(var(--sky-light))",
+        },
         ocean: {
           deep: "hsl(var(--ocean-deep))",
           surface: "hsl(var(--ocean-surface))",
         },
         petroleum: "hsl(var(--petroleum))",
         steel: "hsl(var(--steel))",
-        safety: "hsl(var(--safety-orange))",
+        safety: "hsl(var(--safety-yellow))",
         helicopter: "hsl(var(--helicopter-red))",
+        helipad: "hsl(var(--helipad-orange))",
+        petrobras: "hsl(var(--petrobras-green))",
         seafoam: "hsl(var(--sea-foam))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -97,17 +105,37 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        rotor: {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        fly: {
+          "0%, 100%": { 
+            transform: "translateX(-100%) translateY(0)",
+            opacity: "0",
+          },
+          "5%": { opacity: "0.15" },
+          "50%": { 
+            transform: "translateX(50vw) translateY(-20px)",
+            opacity: "0.15",
+          },
+          "95%": { opacity: "0.15" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         shimmer: "shimmer 2s linear infinite",
+        rotor: "rotor 0.5s linear infinite",
+        fly: "fly 20s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-ocean": "var(--gradient-ocean)",
         "gradient-sunset": "var(--gradient-sunset)",
         "gradient-steel": "var(--gradient-steel)",
         "gradient-card": "var(--gradient-card)",
+        "gradient-sky": "var(--gradient-sky)",
+        "gradient-aviation": "var(--gradient-aviation)",
       },
     },
   },

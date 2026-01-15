@@ -6,25 +6,25 @@
 
 @layer base {
   :root {
-    --background: 222 47% 8%;
+    --background: 215 50% 8%;
     --foreground: 210 20% 95%;
 
-    --card: 222 40% 12%;
+    --card: 215 45% 12%;
     --card-foreground: 210 20% 95%;
 
-    --popover: 222 40% 10%;
+    --popover: 215 45% 10%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 28 95% 55%;
-    --primary-foreground: 222 47% 8%;
+    --primary: 210 100% 50%;
+    --primary-foreground: 210 20% 98%;
 
-    --secondary: 200 80% 35%;
-    --secondary-foreground: 210 20% 95%;
+    --secondary: 45 100% 50%;
+    --secondary-foreground: 215 50% 8%;
 
-    --muted: 222 30% 18%;
+    --muted: 215 35% 18%;
     --muted-foreground: 215 15% 55%;
 
-    --accent: 200 80% 35%;
+    --accent: 142 60% 40%;
     --accent-foreground: 210 20% 95%;
 
     --destructive: 0 72% 50%;
@@ -34,42 +34,49 @@
     --success-foreground: 210 20% 95%;
 
     --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 8%;
+    --warning-foreground: 215 50% 8%;
 
-    --border: 222 30% 20%;
-    --input: 222 30% 18%;
-    --ring: 28 95% 55%;
+    --border: 215 35% 22%;
+    --input: 215 35% 18%;
+    --ring: 210 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Custom semantic tokens */
-    --ocean-deep: 222 47% 8%;
-    --ocean-surface: 200 60% 25%;
-    --petroleum: 222 40% 12%;
-    --steel: 215 15% 35%;
-    --safety-orange: 28 95% 55%;
+    /* Aviation themed semantic tokens */
+    --aviation-blue: 210 100% 50%;
+    --aviation-dark: 215 50% 8%;
+    --sky-light: 200 80% 70%;
+    --safety-yellow: 45 100% 50%;
+    --petrobras-green: 142 60% 35%;
+    --helipad-orange: 25 95% 55%;
     --helicopter-red: 0 72% 50%;
+    --ocean-deep: 215 50% 8%;
+    --ocean-surface: 200 60% 25%;
+    --petroleum: 215 45% 12%;
+    --steel: 215 15% 35%;
     --sea-foam: 175 50% 40%;
 
     /* Gradients */
-    --gradient-ocean: linear-gradient(135deg, hsl(222 47% 8%) 0%, hsl(200 60% 15%) 100%);
-    --gradient-sunset: linear-gradient(135deg, hsl(28 95% 55%) 0%, hsl(0 72% 50%) 100%);
-    --gradient-steel: linear-gradient(180deg, hsl(222 40% 15%) 0%, hsl(222 47% 8%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(222 40% 14%) 0%, hsl(222 40% 10%) 100%);
+    --gradient-sky: linear-gradient(180deg, hsl(215 50% 8%) 0%, hsl(210 60% 15%) 50%, hsl(200 50% 20%) 100%);
+    --gradient-ocean: linear-gradient(135deg, hsl(215 50% 8%) 0%, hsl(200 60% 15%) 100%);
+    --gradient-sunset: linear-gradient(135deg, hsl(210 100% 50%) 0%, hsl(200 80% 40%) 100%);
+    --gradient-steel: linear-gradient(180deg, hsl(215 45% 15%) 0%, hsl(215 50% 8%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(215 45% 14%) 0%, hsl(215 45% 10%) 100%);
+    --gradient-aviation: linear-gradient(135deg, hsl(210 100% 50% / 0.1) 0%, hsl(200 80% 40% / 0.05) 100%);
 
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(28 95% 55% / 0.15);
-    --shadow-card: 0 8px 32px hsl(222 47% 5% / 0.5);
-    --shadow-elevated: 0 20px 60px hsl(222 47% 5% / 0.7);
+    --shadow-glow: 0 0 40px hsl(210 100% 50% / 0.2);
+    --shadow-card: 0 8px 32px hsl(215 50% 5% / 0.5);
+    --shadow-elevated: 0 20px 60px hsl(215 50% 5% / 0.7);
 
-    --sidebar-background: 222 40% 10%;
+    --sidebar-background: 215 45% 10%;
     --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 28 95% 55%;
-    --sidebar-primary-foreground: 222 47% 8%;
-    --sidebar-accent: 222 30% 18%;
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 210 20% 98%;
+    --sidebar-accent: 215 35% 18%;
     --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 222 30% 20%;
-    --sidebar-ring: 28 95% 55%;
+    --sidebar-border: 215 35% 22%;
+    --sidebar-ring: 210 100% 50%;
   }
 }
 
@@ -81,7 +88,7 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    background: var(--gradient-ocean);
+    background: var(--gradient-sky);
     min-height: 100vh;
   }
 
@@ -108,6 +115,16 @@
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-sunset);
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(45 100% 50%) 0%, hsl(35 100% 45%) 100%);
+  }
+
+  .aviation-badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
+    @apply bg-primary/10 text-primary border border-primary/20;
   }
 
   .badge-status {
@@ -148,6 +165,14 @@
   .animate-fade-in {
     animation: fadeIn 0.4s ease-out forwards;
   }
+
+  .animate-rotor {
+    animation: rotor 0.5s linear infinite;
+  }
+
+  .animate-fly {
+    animation: fly 20s ease-in-out infinite;
+  }
 }
 
 @keyframes float {
@@ -169,6 +194,28 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes rotor {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fly {
+  0%, 100% { 
+    transform: translateX(-100%) translateY(0);
+    opacity: 0;
+  }
+  5% { opacity: 0.15; }
+  50% { 
+    transform: translateX(50vw) translateY(-20px);
+    opacity: 0.15;
+  }
+  95% { opacity: 0.15; }
+  100% { 
+    transform: translateX(calc(100vw + 100%)) translateY(0);
+    opacity: 0;
+  }
 }
 
 /* Custom scrollbar */
