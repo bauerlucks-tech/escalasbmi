@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Shield, Key, User, Check, AlertTriangle, Calendar, Upload, 
   FileSpreadsheet, ArrowLeftRight, CheckCircle, XCircle, Clock,
-  Edit3, Save, X, Plus, Users, Archive, UserPlus, BarChart3
+  Edit3, Save, X, Plus, Users, Archive, UserPlus, BarChart3,
+  Download, FileWarning, Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -18,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { validateAndParseCSV, downloadCSVTemplate, CSVValidationResult } from '@/utils/csvParser';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminPanel: React.FC = () => {
   const { currentUser, users, activeUsers, isAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
@@ -36,6 +39,8 @@ const AdminPanel: React.FC = () => {
   const [importMonth, setImportMonth] = useState<number>(() => new Date().getMonth() + 2); // Next month
   const [importYear, setImportYear] = useState<number>(2026);
   const [importedStats, setImportedStats] = useState<{name: string; totalDays: number; weekendDays: number}[] | null>(null);
+  const [csvValidation, setCsvValidation] = useState<CSVValidationResult | null>(null);
+  const [isProcessingCSV, setIsProcessingCSV] = useState(false);
   
   // New user form
   const [showNewUserForm, setShowNewUserForm] = useState(false);
@@ -99,27 +104,75 @@ const AdminPanel: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const validTypes = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/vnd.ms-excel',
-      'text/csv'
-    ];
-    
-    if (!validTypes.includes(file.type) && !file.name.endsWith('.csv') && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-      toast.error('Formato inválido. Use arquivos .xlsx, .xls ou .csv');
+    // Only accept CSV files
+    if (!file.name.endsWith('.csv')) {
+      toast.error('Formato inválido. Use apenas arquivos .csv');
       return;
     }
 
-    // Calculate and show stats for current schedule
-    const stats = calculateScheduleStats(scheduleData);
-    setImportedStats(stats);
-    
-    toast.success(`Arquivo "${file.name}" selecionado para ${getMonthName(importMonth)}/${importYear}`);
-    toast.info('Verifique as estatísticas antes de confirmar a importação');
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    setIsProcessingCSV(true);
+    setCsvValidation(null);
+    setImportedStats(null);
+
+    try {
+      const content = await file.text();
+      
+      // Get registered employees from active users
+      const registeredEmployees = activeUsers.map(u => u.name);
+      
+      // Validate and parse CSV
+      const result = validateAndParseCSV(content, registeredEmployees, importMonth, importYear);
+      
+      setCsvValidation(result);
+      
+      if (result.isValid) {
+        // Calculate stats for the imported schedule
+        const stats = calculateScheduleStats(result.data);
+        setImportedStats(stats);
+        toast.success(`Arquivo "${file.name}" validado com sucesso!`);
+      } else {
+        toast.error('O arquivo contém erros. Verifique os detalhes abaixo.');
+      }
+      
+      if (result.warnings.length > 0) {
+        toast.warning(`${result.warnings.length} avisos encontrados`);
+      }
+    } catch (error) {
+      toast.error('Erro ao processar o arquivo CSV');
+      console.error('CSV processing error:', error);
+    } finally {
+      setIsProcessingCSV(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
+  };
+
+  const handleConfirmImport = () => {
+    if (!csvValidation || !csvValidation.isValid || csvValidation.data.length === 0) {
+      toast.error('Nenhuma escala válida para importar');
+      return;
+    }
+
+    // Replace current schedule with imported data
+    setScheduleData(csvValidation.data);
+    localStorage.setItem('escala_scheduleData', JSON.stringify(csvValidation.data));
+    
+    toast.success(`Escala de ${getMonthName(importMonth)}/${importYear} importada com sucesso! ${csvValidation.data.length} dias atualizados.`);
+    
+    // Reset import state
+    setCsvValidation(null);
+    setImportedStats(null);
+  };
+
+  const handleCancelImport = () => {
+    setCsvValidation(null);
+    setImportedStats(null);
+  };
+
+  const handleDownloadTemplate = () => {
+    downloadCSVTemplate(importMonth, importYear);
+    toast.success('Template CSV baixado!');
   };
 
   const handleCreateUser = () => {
@@ -343,16 +396,28 @@ const AdminPanel: React.FC = () => {
                 <div>
                   <h3 className="font-semibold flex items-center gap-2">
                     <FileSpreadsheet className="w-4 h-4 text-primary" />
-                    Importar Escala
+                    Importar Escala via CSV
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Importe uma nova escala a partir de arquivo Excel ou CSV
+                    Substitua completamente a escala atual. Apenas colaboradores cadastrados são aceitos.
                   </p>
                 </div>
               </div>
 
+              {/* CSV Format Info */}
+              <div className="bg-muted/30 rounded-lg p-3 text-xs">
+                <p className="font-medium mb-1">Formato esperado do CSV:</p>
+                <code className="bg-background/50 px-2 py-1 rounded block">
+                  data, dia_semana, posto, colaborador
+                </code>
+                <p className="text-muted-foreground mt-2">
+                  <strong>posto:</strong> meio_periodo ou fechamento | 
+                  <strong> colaborador:</strong> nome cadastrado no sistema
+                </p>
+              </div>
+
               {/* Month Selection */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Mês da Escala</label>
                   <Select value={String(importMonth)} onValueChange={(v) => setImportMonth(Number(v))}>
@@ -379,30 +444,128 @@ const AdminPanel: React.FC = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="col-span-2 sm:col-span-1 flex items-end">
+                <div className="flex items-end">
+                  <Button
+                    variant="outline"
+                    onClick={handleDownloadTemplate}
+                    className="w-full"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Baixar Template
+                  </Button>
+                </div>
+                <div className="flex items-end">
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept=".xlsx,.xls,.csv"
+                    accept=".csv"
                     onChange={handleFileUpload}
                     className="hidden"
                   />
                   <Button
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full bg-primary hover:bg-primary/90"
+                    disabled={isProcessingCSV}
                   >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Importar Excel
+                    {isProcessingCSV ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4 mr-2" />
+                    )}
+                    Importar CSV
                   </Button>
                 </div>
               </div>
 
+              {/* CSV Validation Results */}
+              {csvValidation && (
+                <div className={`glass-card p-4 ${csvValidation.isValid ? 'bg-success/10 border-success/30' : 'bg-destructive/10 border-destructive/30'} border`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    {csvValidation.isValid ? (
+                      <CheckCircle className="w-5 h-5 text-success" />
+                    ) : (
+                      <FileWarning className="w-5 h-5 text-destructive" />
+                    )}
+                    <h4 className="font-medium">
+                      {csvValidation.isValid ? 'Validação concluída com sucesso' : 'Erros encontrados na validação'}
+                    </h4>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-4 gap-2 mb-3">
+                    <div className="bg-background/50 rounded p-2 text-center">
+                      <div className="text-lg font-bold">{csvValidation.stats.totalRows}</div>
+                      <div className="text-xs text-muted-foreground">Linhas</div>
+                    </div>
+                    <div className="bg-background/50 rounded p-2 text-center">
+                      <div className="text-lg font-bold text-success">{csvValidation.stats.validRows}</div>
+                      <div className="text-xs text-muted-foreground">Válidas</div>
+                    </div>
+                    <div className="bg-background/50 rounded p-2 text-center">
+                      <div className="text-lg font-bold text-destructive">{csvValidation.stats.invalidRows}</div>
+                      <div className="text-xs text-muted-foreground">Inválidas</div>
+                    </div>
+                    <div className="bg-background/50 rounded p-2 text-center">
+                      <div className="text-lg font-bold text-primary">{csvValidation.data.length}</div>
+                      <div className="text-xs text-muted-foreground">Dias</div>
+                    </div>
+                  </div>
+
+                  {/* Errors */}
+                  {csvValidation.errors.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-medium text-destructive mb-1">Erros ({csvValidation.errors.length}):</p>
+                      <ScrollArea className="h-[100px] rounded bg-background/50 p-2">
+                        {csvValidation.errors.map((error, i) => (
+                          <div key={i} className="text-xs text-destructive flex items-start gap-1 mb-1">
+                            <XCircle className="w-3 h-3 mt-0.5 shrink-0" />
+                            {error}
+                          </div>
+                        ))}
+                      </ScrollArea>
+                    </div>
+                  )}
+
+                  {/* Unknown Employees */}
+                  {csvValidation.stats.unknownEmployees.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-medium text-warning mb-1">Colaboradores não cadastrados:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {csvValidation.stats.unknownEmployees.map(name => (
+                          <span key={name} className="px-2 py-0.5 bg-warning/20 text-warning rounded text-xs">
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Cadastre estes colaboradores na aba "Usuários" antes de importar.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Warnings */}
+                  {csvValidation.warnings.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-medium text-warning mb-1">Avisos ({csvValidation.warnings.length}):</p>
+                      <ScrollArea className="h-[60px] rounded bg-background/50 p-2">
+                        {csvValidation.warnings.map((warning, i) => (
+                          <div key={i} className="text-xs text-warning flex items-start gap-1 mb-1">
+                            <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
+                            {warning}
+                          </div>
+                        ))}
+                      </ScrollArea>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Import Stats Preview */}
-              {importedStats && (
+              {importedStats && csvValidation?.isValid && (
                 <div className="glass-card p-4 bg-muted/20">
                   <h4 className="font-medium text-sm mb-3 flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-primary" />
-                    Estatísticas da Escala - {getMonthName(importMonth)}/{importYear}
+                    Estatísticas da Nova Escala - {getMonthName(importMonth)}/{importYear}
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {importedStats.map(stat => (
@@ -420,14 +583,18 @@ const AdminPanel: React.FC = () => {
                     ))}
                   </div>
                   <div className="flex gap-2 mt-4">
-                    <Button size="sm" className="bg-success hover:bg-success/90">
+                    <Button size="sm" className="bg-success hover:bg-success/90" onClick={handleConfirmImport}>
                       <Check className="w-4 h-4 mr-1" />
                       Confirmar Importação
                     </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setImportedStats(null)}>
+                    <Button size="sm" variant="ghost" onClick={handleCancelImport}>
                       Cancelar
                     </Button>
                   </div>
+                  <p className="text-xs text-destructive mt-2 flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    Atenção: Isso substituirá completamente a escala atual!
+                  </p>
                 </div>
               )}
             </div>
