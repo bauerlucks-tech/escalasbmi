@@ -24,13 +24,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminPanel: React.FC = () => {
   const { currentUser, users, activeUsers, isAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
-  const { getPendingAdminApproval, getApprovedSwaps, adminApproveSwap, swapRequests } = useSwap();
+  const { getPendingAdminApproval, getApprovedSwaps, adminApproveSwap, swapRequests, scheduleData, updateSchedule } = useSwap();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
-  const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
-    const saved = localStorage.getItem('escala_scheduleData');
-    return saved ? JSON.parse(saved) : initialScheduleData;
-  });
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ meioPeriodo: '', fechamento: '' });
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -94,8 +90,7 @@ const AdminPanel: React.FC = () => {
         ? { ...entry, meioPeriodo: editForm.meioPeriodo.toUpperCase(), fechamento: editForm.fechamento.toUpperCase() }
         : entry
     );
-    setScheduleData(updatedSchedule);
-    localStorage.setItem('escala_scheduleData', JSON.stringify(updatedSchedule));
+    updateSchedule(updatedSchedule);
     setEditingEntry(null);
     toast.success('Escala atualizada!');
   };
@@ -155,8 +150,7 @@ const AdminPanel: React.FC = () => {
     }
 
     // Replace current schedule with imported data
-    setScheduleData(csvValidation.data);
-    localStorage.setItem('escala_scheduleData', JSON.stringify(csvValidation.data));
+    updateSchedule(csvValidation.data);
     
     toast.success(`Escala de ${getMonthName(importMonth)}/${importYear} importada com sucesso! ${csvValidation.data.length} dias atualizados.`);
     

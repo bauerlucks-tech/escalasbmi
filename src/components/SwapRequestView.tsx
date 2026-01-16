@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
-import { scheduleData, ScheduleEntry } from '@/data/scheduleData';
+import { ScheduleEntry } from '@/data/scheduleData';
 import { Button } from '@/components/ui/button';
-import { ArrowLeftRight, Calendar, User, AlertCircle, Check, Clock, ArrowRight, Sun, Sunset, ChevronDown } from 'lucide-react';
+import { ArrowLeftRight, Calendar, User, AlertCircle, Check, Clock, ArrowRight, Sun, Sunset, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Select,
@@ -13,37 +13,72 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+type ShiftType = 'meioPeriodo' | 'fechamento';
+
 const SwapRequestView: React.FC = () => {
   const { currentUser, users } = useAuth();
-  const { createSwapRequest, getMyRequests } = useSwap();
+  const { createSwapRequest, getMyRequests, scheduleData } = useSwap();
+  
+  // Step 1: Select my day to give away
   const [selectedMyDay, setSelectedMyDay] = useState<string | null>(null);
+  const [selectedMyShift, setSelectedMyShift] = useState<ShiftType | null>(null);
+  
+  // Step 2: Select target operator
+  const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
+  
+  // Step 3: Select day and shift to take
   const [selectedTargetDay, setSelectedTargetDay] = useState<string | null>(null);
+  const [selectedTargetShift, setSelectedTargetShift] = useState<ShiftType | null>(null);
 
   if (!currentUser) return null;
 
   const myRequests = getMyRequests(currentUser.id);
 
   // Get days where user is scheduled
-  const myScheduledDays = scheduleData.filter(entry => 
-    entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
-  );
+  const myScheduledDays = useMemo(() => {
+    return scheduleData.filter(entry => 
+      entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
+    );
+  }, [scheduleData, currentUser.name]);
 
-  // Get days where user is NOT scheduled
-  const availableDays = scheduleData.filter(entry => 
-    entry.meioPeriodo !== currentUser.name && entry.fechamento !== currentUser.name
-  );
+  // Get available operators (other active users)
+  const availableOperators = useMemo(() => {
+    return users.filter(u => 
+      u.id !== currentUser.id && 
+      u.status === 'ativo' && 
+      u.role === 'operador'
+    );
+  }, [users, currentUser.id]);
+
+  // Get days where selected operator is scheduled
+  const operatorScheduledDays = useMemo(() => {
+    if (!selectedOperator) return [];
+    return scheduleData.filter(entry => 
+      entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator
+    );
+  }, [scheduleData, selectedOperator]);
 
   const getScheduleByDate = (dateStr: string): ScheduleEntry | undefined => {
     return scheduleData.find(s => s.date === dateStr);
   };
 
-  const getMyShiftType = (entry: ScheduleEntry): string => {
-    if (entry.meioPeriodo === currentUser.name && entry.fechamento === currentUser.name) {
-      return 'Meio Período + Fechamento';
-    }
-    if (entry.meioPeriodo === currentUser.name) return 'Meio Período';
-    if (entry.fechamento === currentUser.name) return 'Fechamento';
-    return '';
+  const getMyShiftsForDay = (entry: ScheduleEntry): ShiftType[] => {
+    const shifts: ShiftType[] = [];
+    if (entry.meioPeriodo === currentUser.name) shifts.push('meioPeriodo');
+    if (entry.fechamento === currentUser.name) shifts.push('fechamento');
+    return shifts;
+  };
+
+  const getOperatorShiftsForDay = (entry: ScheduleEntry): ShiftType[] => {
+    if (!selectedOperator) return [];
+    const shifts: ShiftType[] = [];
+    if (entry.meioPeriodo === selectedOperator) shifts.push('meioPeriodo');
+    if (entry.fechamento === selectedOperator) shifts.push('fechamento');
+    return shifts;
+  };
+
+  const getShiftLabel = (shift: ShiftType): string => {
+    return shift === 'meioPeriodo' ? 'Meio Período' : 'Fechamento';
   };
 
   const getDayNumber = (dateStr: string): string => {
@@ -54,23 +89,15 @@ const SwapRequestView: React.FC = () => {
   const selectedTargetEntry = selectedTargetDay ? getScheduleByDate(selectedTargetDay) : null;
 
   const handleSubmit = () => {
-    if (!selectedMyDay || !selectedTargetDay) {
-      toast.error('Selecione os dois dias para a troca');
+    if (!selectedMyDay || !selectedMyShift || !selectedOperator || !selectedTargetDay || !selectedTargetShift) {
+      toast.error('Preencha todos os campos para solicitar a troca');
       return;
     }
 
-    const targetEntry = getScheduleByDate(selectedTargetDay);
-    if (!targetEntry) {
-      toast.error('Dia de destino não encontrado');
-      return;
-    }
-
-    // Find the colleague working on the target day (prefer meioPeriodo)
-    const colleagueName = targetEntry.meioPeriodo;
-    const targetUser = users.find(u => u.name === colleagueName);
+    const targetUser = users.find(u => u.name === selectedOperator);
     
     if (!targetUser) {
-      toast.error('Usuário não encontrado');
+      toast.error('Operador não encontrado');
       return;
     }
 
@@ -78,15 +105,24 @@ const SwapRequestView: React.FC = () => {
       requesterId: currentUser.id,
       requesterName: currentUser.name,
       targetId: targetUser.id,
-      targetName: colleagueName,
+      targetName: selectedOperator,
       originalDate: selectedMyDay,
+      originalShift: selectedMyShift,
       targetDate: selectedTargetDay,
+      targetShift: selectedTargetShift,
       status: 'pending',
     });
 
     toast.success('Solicitação de troca enviada!');
+    resetForm();
+  };
+
+  const resetForm = () => {
     setSelectedMyDay(null);
+    setSelectedMyShift(null);
+    setSelectedOperator(null);
     setSelectedTargetDay(null);
+    setSelectedTargetShift(null);
   };
 
   const getStatusBadge = (status: string) => {
@@ -111,125 +147,64 @@ const SwapRequestView: React.FC = () => {
         <div className="p-4 border-b border-border/50">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <ArrowLeftRight className="w-5 h-5 text-primary" />
-            Solicitar Troca de Dia
+            Solicitar Troca de Turno
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Selecione o dia que você quer ceder e o dia que você quer assumir
+            Selecione o dia/turno que você quer ceder, o operador e o dia/turno que você quer assumir
           </p>
         </div>
 
         <div className="p-4 space-y-6">
-          {/* Step 1: Select my day */}
+          {/* Step 1: Select my day and shift */}
           <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</div>
-              Qual dia você quer trocar?
+              Qual dia e turno você quer ceder?
             </label>
             
-            <Select value={selectedMyDay || ''} onValueChange={(v) => {
-              setSelectedMyDay(v);
-              setSelectedTargetDay(null);
-            }}>
-              <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
-                <SelectValue placeholder="Selecione um dia que você trabalha">
-                  {selectedMyEntry && (
-                    <div className="flex items-center gap-3 text-left">
-                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                        <span className="text-primary font-bold">{getDayNumber(selectedMyDay!)}</span>
-                      </div>
-                      <div>
-                        <div className="font-medium">{selectedMyEntry.dayOfWeek}</div>
-                        <div className="text-xs text-muted-foreground">
-                          Você: {getMyShiftType(selectedMyEntry)}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent className="max-h-[300px]">
-                {myScheduledDays.map(entry => (
-                  <SelectItem key={entry.date} value={entry.date} className="py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                        <span className="text-primary font-bold">{getDayNumber(entry.date)}</span>
-                      </div>
-                      <div>
-                        <div className="font-medium">{entry.dayOfWeek}</div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-2">
-                          <span className="flex items-center gap-1">
-                            <Sun className="w-3 h-3 text-secondary" />
-                            {entry.meioPeriodo}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Sunset className="w-3 h-3 text-warning" />
-                            {entry.fechamento}
-                          </span>
-                        </div>
-                        <div className="text-xs text-primary font-medium mt-0.5">
-                          Você: {getMyShiftType(entry)}
-                        </div>
-                      </div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Arrow Divider */}
-          {selectedMyDay && (
-            <div className="flex justify-center">
-              <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center animate-fade-in">
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Select target day */}
-          {selectedMyDay && (
-            <div className="space-y-3 animate-fade-in">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
-                Qual dia você quer assumir?
-              </label>
-              
-              <Select value={selectedTargetDay || ''} onValueChange={setSelectedTargetDay}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Day Selection */}
+              <Select 
+                value={selectedMyDay || ''} 
+                onValueChange={(v) => {
+                  setSelectedMyDay(v);
+                  setSelectedMyShift(null);
+                  setSelectedOperator(null);
+                  setSelectedTargetDay(null);
+                  setSelectedTargetShift(null);
+                }}
+              >
                 <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
-                  <SelectValue placeholder="Selecione um dia para trocar">
-                    {selectedTargetEntry && (
-                      <div className="flex items-center gap-3 text-left">
-                        <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
-                          <span className="text-secondary font-bold">{getDayNumber(selectedTargetDay!)}</span>
-                        </div>
-                        <div>
-                          <div className="font-medium">{selectedTargetEntry.dayOfWeek}</div>
-                          <div className="text-xs text-muted-foreground">
-                            Dupla: {selectedTargetEntry.meioPeriodo} / {selectedTargetEntry.fechamento}
-                          </div>
-                        </div>
+                  <SelectValue placeholder="Selecione o dia">
+                    {selectedMyEntry && (
+                      <div className="flex items-center gap-2 text-left">
+                        <Calendar className="w-4 h-4 text-primary" />
+                        <span className="font-medium">Dia {getDayNumber(selectedMyDay!)}</span>
+                        <span className="text-muted-foreground">- {selectedMyEntry.dayOfWeek}</span>
                       </div>
                     )}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
-                  {availableDays.map(entry => (
+                  {myScheduledDays.map(entry => (
                     <SelectItem key={entry.date} value={entry.date} className="py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
-                          <span className="text-secondary font-bold">{getDayNumber(entry.date)}</span>
+                        <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <span className="text-primary font-bold">{getDayNumber(entry.date)}</span>
                         </div>
                         <div>
                           <div className="font-medium">{entry.dayOfWeek}</div>
                           <div className="text-xs text-muted-foreground flex items-center gap-2">
-                            <span className="flex items-center gap-1">
-                              <Sun className="w-3 h-3 text-secondary" />
-                              {entry.meioPeriodo}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Sunset className="w-3 h-3 text-warning" />
-                              {entry.fechamento}
-                            </span>
+                            {entry.meioPeriodo === currentUser.name && (
+                              <span className="flex items-center gap-1 text-secondary">
+                                <Sun className="w-3 h-3" /> Meio Período
+                              </span>
+                            )}
+                            {entry.fechamento === currentUser.name && (
+                              <span className="flex items-center gap-1 text-warning">
+                                <Sunset className="w-3 h-3" /> Fechamento
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -237,11 +212,217 @@ const SwapRequestView: React.FC = () => {
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* Shift Selection */}
+              {selectedMyDay && selectedMyEntry && (
+                <Select 
+                  value={selectedMyShift || ''} 
+                  onValueChange={(v) => setSelectedMyShift(v as ShiftType)}
+                >
+                  <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                    <SelectValue placeholder="Selecione o turno">
+                      {selectedMyShift && (
+                        <div className="flex items-center gap-2 text-left">
+                          {selectedMyShift === 'meioPeriodo' 
+                            ? <Sun className="w-4 h-4 text-secondary" />
+                            : <Sunset className="w-4 h-4 text-warning" />
+                          }
+                          <span className="font-medium">{getShiftLabel(selectedMyShift)}</span>
+                        </div>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getMyShiftsForDay(selectedMyEntry).map(shift => (
+                      <SelectItem key={shift} value={shift} className="py-3">
+                        <div className="flex items-center gap-2">
+                          {shift === 'meioPeriodo' 
+                            ? <Sun className="w-4 h-4 text-secondary" />
+                            : <Sunset className="w-4 h-4 text-warning" />
+                          }
+                          <span>{getShiftLabel(shift)}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          </div>
+
+          {/* Arrow Divider */}
+          {selectedMyDay && selectedMyShift && (
+            <div className="flex justify-center">
+              <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center animate-fade-in">
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Select operator */}
+          {selectedMyDay && selectedMyShift && (
+            <div className="space-y-3 animate-fade-in">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
+                Com quem você quer trocar?
+              </label>
+              
+              <Select 
+                value={selectedOperator || ''} 
+                onValueChange={(v) => {
+                  setSelectedOperator(v);
+                  setSelectedTargetDay(null);
+                  setSelectedTargetShift(null);
+                }}
+              >
+                <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                  <SelectValue placeholder="Selecione o operador">
+                    {selectedOperator && (
+                      <div className="flex items-center gap-2 text-left">
+                        <User className="w-4 h-4 text-secondary" />
+                        <span className="font-medium">{selectedOperator}</span>
+                      </div>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {availableOperators.map(operator => {
+                    const operatorDays = scheduleData.filter(e => 
+                      e.meioPeriodo === operator.name || e.fechamento === operator.name
+                    ).length;
+                    
+                    return (
+                      <SelectItem key={operator.id} value={operator.name} className="py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+                            <Users className="w-5 h-5 text-secondary" />
+                          </div>
+                          <div>
+                            <div className="font-medium">{operator.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {operatorDays} dias escalados
+                            </div>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Arrow Divider */}
+          {selectedOperator && (
+            <div className="flex justify-center">
+              <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center animate-fade-in">
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Select target day and shift */}
+          {selectedOperator && (
+            <div className="space-y-3 animate-fade-in">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">3</div>
+                Qual dia e turno de {selectedOperator} você quer assumir?
+              </label>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Target Day Selection */}
+                <Select 
+                  value={selectedTargetDay || ''} 
+                  onValueChange={(v) => {
+                    setSelectedTargetDay(v);
+                    setSelectedTargetShift(null);
+                  }}
+                >
+                  <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                    <SelectValue placeholder="Selecione o dia">
+                      {selectedTargetEntry && (
+                        <div className="flex items-center gap-2 text-left">
+                          <Calendar className="w-4 h-4 text-success" />
+                          <span className="font-medium">Dia {getDayNumber(selectedTargetDay!)}</span>
+                          <span className="text-muted-foreground">- {selectedTargetEntry.dayOfWeek}</span>
+                        </div>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {operatorScheduledDays.length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground text-sm">
+                        {selectedOperator} não tem dias escalados
+                      </div>
+                    ) : (
+                      operatorScheduledDays.map(entry => (
+                        <SelectItem key={entry.date} value={entry.date} className="py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+                              <span className="text-success font-bold">{getDayNumber(entry.date)}</span>
+                            </div>
+                            <div>
+                              <div className="font-medium">{entry.dayOfWeek}</div>
+                              <div className="text-xs text-muted-foreground flex items-center gap-2">
+                                {entry.meioPeriodo === selectedOperator && (
+                                  <span className="flex items-center gap-1 text-secondary">
+                                    <Sun className="w-3 h-3" /> Meio Período
+                                  </span>
+                                )}
+                                {entry.fechamento === selectedOperator && (
+                                  <span className="flex items-center gap-1 text-warning">
+                                    <Sunset className="w-3 h-3" /> Fechamento
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+
+                {/* Target Shift Selection */}
+                {selectedTargetDay && selectedTargetEntry && (
+                  <Select 
+                    value={selectedTargetShift || ''} 
+                    onValueChange={(v) => setSelectedTargetShift(v as ShiftType)}
+                  >
+                    <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                      <SelectValue placeholder="Selecione o turno">
+                        {selectedTargetShift && (
+                          <div className="flex items-center gap-2 text-left">
+                            {selectedTargetShift === 'meioPeriodo' 
+                              ? <Sun className="w-4 h-4 text-secondary" />
+                              : <Sunset className="w-4 h-4 text-warning" />
+                            }
+                            <span className="font-medium">{getShiftLabel(selectedTargetShift)}</span>
+                          </div>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getOperatorShiftsForDay(selectedTargetEntry).map(shift => (
+                        <SelectItem key={shift} value={shift} className="py-3">
+                          <div className="flex items-center gap-2">
+                            {shift === 'meioPeriodo' 
+                              ? <Sun className="w-4 h-4 text-secondary" />
+                              : <Sunset className="w-4 h-4 text-warning" />
+                            }
+                            <span>{getShiftLabel(shift)}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
           )}
 
           {/* Confirmation Summary */}
-          {selectedMyDay && selectedTargetDay && selectedMyEntry && selectedTargetEntry && (
+          {selectedMyDay && selectedMyShift && selectedOperator && selectedTargetDay && selectedTargetShift && selectedMyEntry && selectedTargetEntry && (
             <div className="glass-card p-4 bg-muted/20 animate-fade-in">
               <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
                 <Check className="w-4 h-4 text-success" />
@@ -254,25 +435,31 @@ const SwapRequestView: React.FC = () => {
                   <div className="font-bold text-primary text-lg">Dia {getDayNumber(selectedMyDay)}</div>
                   <div className="text-sm text-muted-foreground">{selectedMyEntry.dayOfWeek}</div>
                   <div className="text-xs mt-2 flex items-center gap-1">
-                    <User className="w-3 h-3" />
-                    Seu turno: {getMyShiftType(selectedMyEntry)}
+                    {selectedMyShift === 'meioPeriodo' 
+                      ? <Sun className="w-3 h-3 text-secondary" />
+                      : <Sunset className="w-3 h-3 text-warning" />
+                    }
+                    Turno: {getShiftLabel(selectedMyShift)}
                   </div>
                 </div>
                 
-                <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30">
+                <div className="p-3 rounded-lg bg-success/10 border border-success/30">
                   <div className="text-xs text-muted-foreground mb-1">Você vai assumir</div>
-                  <div className="font-bold text-secondary text-lg">Dia {getDayNumber(selectedTargetDay)}</div>
+                  <div className="font-bold text-success text-lg">Dia {getDayNumber(selectedTargetDay)}</div>
                   <div className="text-sm text-muted-foreground">{selectedTargetEntry.dayOfWeek}</div>
                   <div className="text-xs mt-2 flex items-center gap-1">
-                    <User className="w-3 h-3" />
-                    Trocar com: {selectedTargetEntry.meioPeriodo}
+                    {selectedTargetShift === 'meioPeriodo' 
+                      ? <Sun className="w-3 h-3 text-secondary" />
+                      : <Sunset className="w-3 h-3 text-warning" />
+                    }
+                    Turno de: {selectedOperator}
                   </div>
                 </div>
               </div>
 
               <p className="text-xs text-muted-foreground mt-4">
-                <strong>{selectedTargetEntry.meioPeriodo}</strong> será notificado e precisará aceitar. 
-                Após o aceite, o administrador aprovará a troca.
+                <strong>{selectedOperator}</strong> será notificado e precisará aceitar. 
+                Após o aceite, o administrador aprovará e o calendário será atualizado automaticamente.
               </p>
 
               <div className="flex gap-2 mt-4">
@@ -285,10 +472,7 @@ const SwapRequestView: React.FC = () => {
                 </Button>
                 <Button 
                   variant="outline" 
-                  onClick={() => {
-                    setSelectedMyDay(null);
-                    setSelectedTargetDay(null);
-                  }}
+                  onClick={resetForm}
                 >
                   Limpar
                 </Button>
@@ -306,7 +490,7 @@ const SwapRequestView: React.FC = () => {
             Minhas Solicitações
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Fluxo: Solicitação → Aceite do colega → Aprovação do administrador
+            Fluxo: Solicitação → Aceite do colega → Aprovação do administrador → Calendário atualizado
           </p>
         </div>
 
@@ -325,7 +509,7 @@ const SwapRequestView: React.FC = () => {
                       {request.originalDate.split('/')[0]}/01
                     </span>
                     <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                    <span className="px-2 py-0.5 bg-secondary/20 text-secondary rounded text-xs">
+                    <span className="px-2 py-0.5 bg-success/20 text-success rounded text-xs">
                       {request.targetDate?.split('/')[0] || '??'}/01
                     </span>
                   </div>
@@ -334,7 +518,7 @@ const SwapRequestView: React.FC = () => {
                   </div>
                   {request.adminApprovedBy && (
                     <div className="text-xs text-success mt-0.5">
-                      Aprovado por: {request.adminApprovedBy}
+                      ✓ Aprovado por: {request.adminApprovedBy} - Calendário atualizado
                     </div>
                   )}
                 </div>
