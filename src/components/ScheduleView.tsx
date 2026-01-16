@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { getEmployeeSchedule, scheduleData as initialScheduleData, ScheduleEntry } from '@/data/scheduleData';
+import { useSwap } from '@/contexts/SwapContext';
+import { getEmployeeSchedule, ScheduleEntry } from '@/data/scheduleData';
 import { Calendar, Clock, Sun, Sunset, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -8,12 +9,7 @@ import { Button } from '@/components/ui/button';
 
 const ScheduleView: React.FC = () => {
   const { currentUser } = useAuth();
-  
-  // Load schedule from localStorage
-  const scheduleData: ScheduleEntry[] = (() => {
-    const saved = localStorage.getItem('escala_scheduleData');
-    return saved ? JSON.parse(saved) : initialScheduleData;
-  })();
+  const { scheduleData } = useSwap();
 
   // Check if we're in the last week of the month
   const today = startOfDay(new Date());
@@ -24,15 +20,14 @@ const ScheduleView: React.FC = () => {
   // State for viewing next month schedule
   const [showNextMonth, setShowNextMonth] = useState(false);
 
-  // Next month schedule (would come from localStorage in production)
-  const nextMonthSchedule: ScheduleEntry[] = (() => {
-    const saved = localStorage.getItem('escala_scheduleData_next');
-    return saved ? JSON.parse(saved) : [];
-  })();
+  // Next month schedule from context
+  const nextMonthSchedule: ScheduleEntry[] = [];
 
   if (!currentUser) return null;
   
-  const mySchedule = getEmployeeSchedule(currentUser.name);
+  const mySchedule = scheduleData.filter(
+    entry => entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
+  );
 
   // Parse dates for comparison
   const parseDate = (dateStr: string) => parse(dateStr, 'dd/MM/yyyy', new Date());

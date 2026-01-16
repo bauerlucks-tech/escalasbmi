@@ -31,7 +31,9 @@ export interface SwapRequest {
   targetId: string;
   targetName: string;
   originalDate: string;      // Dia que o solicitante quer trocar
+  originalShift: 'meioPeriodo' | 'fechamento'; // Turno que o solicitante quer ceder
   targetDate: string;        // Dia que o solicitante quer pegar
+  targetShift: 'meioPeriodo' | 'fechamento';   // Turno que o solicitante quer assumir
   status: 'pending' | 'accepted' | 'rejected' | 'approved';
   adminApproved?: boolean;
   adminApprovedAt?: string;
