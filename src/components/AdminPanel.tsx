@@ -23,7 +23,7 @@ import { validateAndParseCSV, downloadCSVTemplate, CSVValidationResult } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminPanel: React.FC = () => {
-  const { currentUser, users, activeUsers, isAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
+  const { currentUser, users, activeUsers, operators, isAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
   const { getPendingAdminApproval, getApprovedSwaps, adminApproveSwap, swapRequests, scheduleData, updateSchedule } = useSwap();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
@@ -666,18 +666,36 @@ const AdminPanel: React.FC = () => {
                       {entry && (
                         isEditing ? (
                           <div className="flex flex-col gap-1 flex-1">
-                            <Input
+                            <Select
                               value={editForm.meioPeriodo}
-                              onChange={(e) => setEditForm(f => ({ ...f, meioPeriodo: e.target.value }))}
-                              className="h-6 text-[10px] p-1 bg-secondary/20"
-                              placeholder="Meio Período"
-                            />
-                            <Input
+                              onValueChange={(v) => setEditForm(f => ({ ...f, meioPeriodo: v }))}
+                            >
+                              <SelectTrigger className="h-6 text-[10px] bg-secondary/20 px-1">
+                                <SelectValue placeholder="MP" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {operators.map(op => (
+                                  <SelectItem key={op.id} value={op.name} className="text-xs">
+                                    {op.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Select
                               value={editForm.fechamento}
-                              onChange={(e) => setEditForm(f => ({ ...f, fechamento: e.target.value }))}
-                              className="h-6 text-[10px] p-1 bg-warning/20"
-                              placeholder="Fechamento"
-                            />
+                              onValueChange={(v) => setEditForm(f => ({ ...f, fechamento: v }))}
+                            >
+                              <SelectTrigger className="h-6 text-[10px] bg-warning/20 px-1">
+                                <SelectValue placeholder="FE" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {operators.map(op => (
+                                  <SelectItem key={op.id} value={op.name} className="text-xs">
+                                    {op.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <div className="flex gap-1 mt-auto">
                               <Button
                                 size="sm"

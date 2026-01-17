@@ -2,9 +2,11 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
 import { PartnerLogos } from '@/components/logos/CompanyLogos';
 import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane } from 'lucide-react';
+import UserSettings from '@/components/UserSettings';
 
 interface HeaderProps {
   activeTab: string;
@@ -27,6 +29,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   if (isAdmin(currentUser)) {
     tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
   }
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2);
+  };
 
   return (
     <header className="glass-card sticky top-0 z-50 border-b border-border/50">
@@ -52,9 +58,9 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {/* Partner logos - hidden on mobile */}
-            <div className="hidden lg:block">
+            <div className="hidden lg:block mr-2">
               <PartnerLogos compact />
             </div>
             
@@ -62,9 +68,21 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               {isAdmin(currentUser) && (
                 <Shield className="w-4 h-4 text-primary" />
               )}
-              <HelipadIcon className="w-4 h-4 text-muted-foreground" />
+              {currentUser?.profileImage ? (
+                <Avatar className="w-6 h-6">
+                  <AvatarImage src={currentUser.profileImage} alt={currentUser.name} />
+                  <AvatarFallback className="text-[10px] bg-primary/20 text-primary">
+                    {getInitials(currentUser.name)}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <HelipadIcon className="w-4 h-4 text-muted-foreground" />
+              )}
               <span className="text-sm font-medium">{currentUser?.name}</span>
             </div>
+            
+            <UserSettings />
+            
             <Button 
               variant="ghost" 
               size="icon"

@@ -504,13 +504,25 @@ const SwapRequestView: React.FC = () => {
             {myRequests.map(request => (
               <div key={request.id} className="flex items-center justify-between p-4">
                 <div>
-                  <div className="font-medium text-sm flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-primary/20 text-primary rounded text-xs">
-                      {request.originalDate.split('/')[0]}/01
+                  <div className="font-medium text-sm flex items-center gap-2 flex-wrap">
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 text-primary rounded text-xs">
+                      Dia {request.originalDate.split('/')[0]}
+                      {request.originalShift === 'meioPeriodo' ? (
+                        <Sun className="w-3 h-3 text-secondary" />
+                      ) : (
+                        <Sunset className="w-3 h-3 text-warning" />
+                      )}
+                      <span className="font-bold">{request.originalShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
                     </span>
                     <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                    <span className="px-2 py-0.5 bg-success/20 text-success rounded text-xs">
-                      {request.targetDate?.split('/')[0] || '??'}/01
+                    <span className="flex items-center gap-1 px-2 py-0.5 bg-success/20 text-success rounded text-xs">
+                      Dia {request.targetDate?.split('/')[0] || '??'}
+                      {request.targetShift === 'meioPeriodo' ? (
+                        <Sun className="w-3 h-3 text-secondary" />
+                      ) : (
+                        <Sunset className="w-3 h-3 text-warning" />
+                      )}
+                      <span className="font-bold">{request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
