@@ -15,6 +15,8 @@ interface AuthContextType {
   archiveUser: (userId: string) => void;
   isAuthenticated: boolean;
   isAdmin: (user: User | null) => boolean;
+  updateUserPassword: (userId: string, currentPassword: string, newPassword: string) => boolean;
+  updateUserProfile: (userId: string, profileImage: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -128,6 +130,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateUserStatus(userId, 'arquivado');
   };
 
+  const updateUserPassword = (userId: string, currentPassword: string, newPassword: string): boolean => {
+    const user = users.find(u => u.id === userId);
+    if (!user || user.password !== currentPassword) {
+      return false;
+    }
+
+    setUsers(prev => prev.map(u => 
+      u.id === userId ? { ...u, password: newPassword } : u
+    ));
+    
+    // Update current user if it's the same user
+    if (currentUser?.id === userId) {
+      setCurrentUser(prev => prev ? { ...prev, password: newPassword } : null);
+    }
+    
+    return true;
+  };
+
+  const updateUserProfile = (userId: string, profileImage: string) => {
+    setUsers(prev => prev.map(u => 
+      u.id === userId ? { ...u, profileImage } : u
+    ));
+    
+    // Update current user if it's the same user
+    if (currentUser?.id === userId) {
+      setCurrentUser(prev => prev ? { ...prev, profileImage } : null);
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       currentUser,
@@ -143,6 +174,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       archiveUser,
       isAuthenticated: !!currentUser,
       isAdmin,
+      updateUserPassword,
+      updateUserProfile,
     }}>
       {children}
     </AuthContext.Provider>

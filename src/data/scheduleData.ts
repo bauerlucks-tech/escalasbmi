@@ -14,6 +14,7 @@ export interface User {
   password: string;
   role: UserRole;
   status: UserStatus;
+  profileImage?: string;
 }
 
 export interface MonthSchedule {

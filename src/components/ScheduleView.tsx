@@ -276,7 +276,7 @@ const ScheduleView: React.FC = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         <div className="glass-card p-4 text-center">
           <div className="text-3xl font-bold text-primary">{mySchedule.length}</div>
           <div className="text-xs text-muted-foreground mt-1">Dias de Trabalho</div>
@@ -298,6 +298,12 @@ const ScheduleView: React.FC = () => {
             {mySchedule.filter(s => s.fechamento === currentUser.name).length}
           </div>
           <div className="text-xs text-muted-foreground mt-1">Fechamento</div>
+        </div>
+        <div className="glass-card p-4 text-center">
+          <div className="text-3xl font-bold text-helipad-orange">
+            {mySchedule.filter(s => s.dayOfWeek === 'SABADO' || s.dayOfWeek === 'DOMINGO').length}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">Fins de Semana</div>
         </div>
       </div>
     </div>
