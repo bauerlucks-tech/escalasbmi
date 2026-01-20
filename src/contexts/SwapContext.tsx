@@ -1,15 +1,10 @@
-// src/contexts/SwapContext.tsx
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 type Swap = {
   id: string;
-  created_at: string;
-  escala_id: string;
-  solicitante: string;
-  substituto: string;
-  status: string;
+  data_swap: string; // renomeado para coincidir com sua coluna real
+  usuario: string | null;
 };
 
 type SwapContextType = {
@@ -17,25 +12,24 @@ type SwapContextType = {
   loading: boolean;
 };
 
-const SwapContext = createContext<SwapContextType>({
-  swaps: [],
-  loading: true,
-});
+const SwapContext = createContext<SwapContextType>({ swaps: [], loading: true });
 
-export function SwapProvider({ children }: { children: React.ReactNode }) {
+export const SwapProvider = ({ children }: { children: React.ReactNode }) => {
   const [swaps, setSwaps] = useState<Swap[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const carregarSwaps = async () => {
+      console.log("🔹 Tentando buscar swaps do Supabase...");
       const { data, error } = await supabase
         .from("swaps")
-        .select("*")
-        .order("created_at", { ascending: true });
+        .select("*") // pega todos os campos
+        .order("data_swap", { ascending: true }); // ajustado para coluna real
 
       if (error) {
-        console.error("Erro ao carregar swaps:", error);
+        console.error("❌ Erro ao carregar swaps:", error);
       } else {
+        console.log("✅ Swaps recebidos:", data);
         setSwaps(data || []);
       }
 
@@ -45,11 +39,7 @@ export function SwapProvider({ children }: { children: React.ReactNode }) {
     carregarSwaps();
   }, []);
 
-  return (
-    <SwapContext.Provider value={{ swaps, loading }}>
-      {children}
-    </SwapContext.Provider>
-  );
-}
+  return <SwapContext.Provider value={{ swaps, loading }}>{children}</SwapContext.Provider>;
+};
 
 export const useSwaps = () => useContext(SwapContext);

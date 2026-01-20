@@ -1,15 +1,12 @@
-// Arquivo: src/pages/Index.tsx
-
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-// Definição do tipo Escala
 type Escala = {
-  id: string;           // id da escala
-  data: string;         // data da escala
-  dia_semana: string;   // dia da semana
-  posto: string;        // posto: meio ou fechamento
-  colaborador: string | null;  // nome do colaborador
+  id: string;
+  data: string;
+  dia_semana: string;
+  posto: string;
+  colaborador: string | null;
 };
 
 export default function Index() {
@@ -20,10 +17,9 @@ export default function Index() {
     const carregarEscalas = async () => {
       console.log("🔹 Tentando buscar escalas do Supabase...");
 
-      // Query corrigida: pega todos os campos de escalas
       const { data, error } = await supabase
         .from("escalas")
-        .select("*")      // pega todos os campos, sem join
+        .select("*") // pega todos os campos da tabela
         .order("data", { ascending: true });
 
       if (error) {
