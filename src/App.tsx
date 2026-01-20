@@ -1,24 +1,31 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import Navbar from "@/components/Navbar";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
-import Login from "@/pages/Login";
-import Index from "@/pages/Index";
-import Swaps from "@/pages/Swaps";
-import Admin from "@/pages/Admin";
-import NotFound from "@/pages/NotFound";
+import Index from "./pages/Index";
+import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
+
+function PrivateRoute({ children }: { children: JSX.Element }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" />;
+}
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar />
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-          <Route path="/swaps" element={<ProtectedRoute><Swaps /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Index />
+              </PrivateRoute>
+            }
+          />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
