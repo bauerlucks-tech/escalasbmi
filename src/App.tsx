@@ -1,35 +1,27 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { SwapProvider } from "@/contexts/SwapContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import Navbar from "@/components/Navbar";
 
-const queryClient = new QueryClient();
+import Login from "@/pages/Login";
+import Index from "@/pages/Index";
+import Swaps from "@/pages/Swaps";
+import Admin from "@/pages/Admin";
+import NotFound from "@/pages/NotFound";
 
-const App = () => (
-  <ThemeProvider>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SwapProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner position="top-center" />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </SwapProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
-);
-
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/swaps" element={<ProtectedRoute><Swaps /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
