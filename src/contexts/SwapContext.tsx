@@ -1,177 +1,55 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { SwapRequest, ScheduleEntry } from '@/data/scheduleData';
-import { scheduleData as initialScheduleData } from '@/data/scheduleData';
+// src/contexts/SwapContext.tsx
 
-interface SwapContextType {
-  swapRequests: SwapRequest[];
-  scheduleData: ScheduleEntry[];
-  createSwapRequest: (request: Omit<SwapRequest, 'id' | 'createdAt'>) => void;
-  respondToSwap: (requestId: string, accept: boolean) => void;
-  adminApproveSwap: (requestId: string, adminName: string) => void;
-  getMyRequests: (userId: string) => SwapRequest[];
-  getRequestsForMe: (userName: string) => SwapRequest[];
-  getPendingCount: (userName: string) => number;
-  getPendingAdminApproval: () => SwapRequest[];
-  getApprovedSwaps: () => SwapRequest[];
-  updateSchedule: (newSchedule: ScheduleEntry[]) => void;
-}
+import { createContext, useContext, useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
-const SwapContext = createContext<SwapContextType | undefined>(undefined);
+type Swap = {
+  id: string;
+  created_at: string;
+  escala_id: string;
+  solicitante: string;
+  substituto: string;
+  status: string;
+};
 
-export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [swapRequests, setSwapRequests] = useState<SwapRequest[]>(() => {
-    const saved = localStorage.getItem('escala_swapRequests');
-    return saved ? JSON.parse(saved) : [];
-  });
+type SwapContextType = {
+  swaps: Swap[];
+  loading: boolean;
+};
 
-  const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
-    const saved = localStorage.getItem('escala_scheduleData');
-    return saved ? JSON.parse(saved) : initialScheduleData;
-  });
+const SwapContext = createContext<SwapContextType>({
+  swaps: [],
+  loading: true,
+});
+
+export function SwapProvider({ children }: { children: React.ReactNode }) {
+  const [swaps, setSwaps] = useState<Swap[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('escala_swapRequests', JSON.stringify(swapRequests));
-  }, [swapRequests]);
+    const carregarSwaps = async () => {
+      const { data, error } = await supabase
+        .from("swaps")
+        .select("*")
+        .order("created_at", { ascending: true });
 
-  useEffect(() => {
-    localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
-  }, [scheduleData]);
-
-  const updateSchedule = (newSchedule: ScheduleEntry[]) => {
-    setScheduleData(newSchedule);
-  };
-
-  const applySwapToSchedule = (request: SwapRequest) => {
-    // Find the entries for both dates
-    const originalEntry = scheduleData.find(e => e.date === request.originalDate);
-    const targetEntry = scheduleData.find(e => e.date === request.targetDate);
-    
-    if (!originalEntry || !targetEntry) return;
-
-    // Determine which shift the requester has on their original date
-    const requesterShift = originalEntry.meioPeriodo === request.requesterName 
-      ? 'meioPeriodo' 
-      : originalEntry.fechamento === request.requesterName 
-        ? 'fechamento' 
-        : null;
-    
-    // Determine which shift the target has on their target date
-    const targetShift = request.targetShift || 
-      (targetEntry.meioPeriodo === request.targetName 
-        ? 'meioPeriodo' 
-        : 'fechamento');
-
-    if (!requesterShift) return;
-
-    // Update the schedule - swap the agents
-    const updatedSchedule = scheduleData.map(entry => {
-      if (entry.date === request.originalDate) {
-        // On the original date, replace requester with target
-        return {
-          ...entry,
-          [requesterShift]: request.targetName
-        };
+      if (error) {
+        console.error("Erro ao carregar swaps:", error);
+      } else {
+        setSwaps(data || []);
       }
-      if (entry.date === request.targetDate) {
-        // On the target date, replace target with requester
-        return {
-          ...entry,
-          [targetShift]: request.requesterName
-        };
-      }
-      return entry;
-    });
 
-    setScheduleData(updatedSchedule);
-  };
-
-  const createSwapRequest = (request: Omit<SwapRequest, 'id' | 'createdAt'>) => {
-    const newRequest: SwapRequest = {
-      ...request,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
+      setLoading(false);
     };
-    setSwapRequests(prev => [...prev, newRequest]);
-  };
 
-  const respondToSwap = (requestId: string, accept: boolean) => {
-    setSwapRequests(prev => prev.map(req =>
-      req.id === requestId
-        ? { ...req, status: accept ? 'accepted' : 'rejected' }
-        : req
-    ));
-  };
-
-  const adminApproveSwap = (requestId: string, adminName: string) => {
-    const request = swapRequests.find(r => r.id === requestId);
-    
-    setSwapRequests(prev => prev.map(req =>
-      req.id === requestId
-        ? { 
-            ...req, 
-            status: 'approved' as const,
-            adminApproved: true,
-            adminApprovedAt: new Date().toISOString(),
-            adminApprovedBy: adminName
-          }
-        : req
-    ));
-
-    // Apply the swap to the schedule when approved
-    if (request) {
-      applySwapToSchedule({
-        ...request,
-        status: 'approved',
-        adminApproved: true,
-        adminApprovedAt: new Date().toISOString(),
-        adminApprovedBy: adminName
-      });
-    }
-  };
-
-  const getMyRequests = (userId: string) => {
-    return swapRequests.filter(req => req.requesterId === userId);
-  };
-
-  const getRequestsForMe = (userName: string) => {
-    return swapRequests.filter(req => req.targetName === userName && req.status === 'pending');
-  };
-
-  const getPendingCount = (userName: string) => {
-    return swapRequests.filter(req => req.targetName === userName && req.status === 'pending').length;
-  };
-
-  const getPendingAdminApproval = () => {
-    return swapRequests.filter(req => req.status === 'accepted');
-  };
-
-  const getApprovedSwaps = () => {
-    return swapRequests.filter(req => req.status === 'approved');
-  };
+    carregarSwaps();
+  }, []);
 
   return (
-    <SwapContext.Provider value={{
-      swapRequests,
-      scheduleData,
-      createSwapRequest,
-      respondToSwap,
-      adminApproveSwap,
-      getMyRequests,
-      getRequestsForMe,
-      getPendingCount,
-      getPendingAdminApproval,
-      getApprovedSwaps,
-      updateSchedule,
-    }}>
+    <SwapContext.Provider value={{ swaps, loading }}>
       {children}
     </SwapContext.Provider>
   );
-};
+}
 
-export const useSwap = () => {
-  const context = useContext(SwapContext);
-  if (!context) {
-    throw new Error('useSwap must be used within a SwapProvider');
-  }
-  return context;
-};
+export const useSwaps = () => useContext(SwapContext);
