@@ -1,29 +1,41 @@
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useEffect, useState } from "react";
+import { useSwapContext } from "../context/SwapContext";
 
-export default function Swaps() {
-  const { user } = useAuth();
-  const [data, setData] = useState("");
-  const [swapCom, setSwapCom] = useState("");
+const Swaps: React.FC = () => {
+  const { carregarSwaps, swaps } = useSwapContext();
+  const [loading, setLoading] = useState(true);
 
-  const solicitar = async () => {
-    await supabase.from("swaps").insert({
-      data,
-      colaborador: user?.name,
-      swap_com: swapCom,
-      status: "pendente",
-    });
+  useEffect(() => {
+    carregarSwaps().finally(() => setLoading(false));
+  }, []);
 
-    alert("Solicitação enviada");
-  };
+  if (loading) return <div>Carregando trocas...</div>;
 
   return (
-    <div>
-      <h1>Solicitar Troca</h1>
-      <input type="date" onChange={(e) => setData(e.target.value)} />
-      <input placeholder="Trocar com" onChange={(e) => setSwapCom(e.target.value)} />
-      <button onClick={solicitar}>Enviar</button>
+    <div className="p-6">
+      <h1 className="text-xl font-bold mb-4">Solicitações de Troca</h1>
+      <table className="w-full border-collapse">
+        <thead>
+          <tr>
+            <th className="border p-2">Data</th>
+            <th className="border p-2">Colaborador</th>
+            <th className="border p-2">Posto</th>
+            <th className="border p-2">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {swaps.map((swap) => (
+            <tr key={swap.id}>
+              <td className="border p-2">{swap.data}</td>
+              <td className="border p-2">{swap.colaborador?.name}</td>
+              <td className="border p-2">{swap.posto}</td>
+              <td className="border p-2">{swap.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-}
+};
+
+export default Swaps;

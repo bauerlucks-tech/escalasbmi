@@ -1,45 +1,60 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import React, { createContext, useContext, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 
-type Swap = {
+interface Escala {
   id: string;
-  data_swap: string; // renomeado para coincidir com sua coluna real
-  usuario: string | null;
-};
+  data: string;
+  dia_semana: string;
+  posto: string;
+  colaborador?: { name: string };
+}
 
-type SwapContextType = {
+interface Swap {
+  id: string;
+  data: string;
+  posto: string;
+  status: string;
+  colaborador?: { name: string };
+}
+
+interface SwapContextType {
+  escalas: Escala[];
   swaps: Swap[];
-  loading: boolean;
-};
+  carregarEscalas: () => Promise<void>;
+  carregarSwaps: () => Promise<void>;
+}
 
-const SwapContext = createContext<SwapContextType>({ swaps: [], loading: true });
+const SwapContext = createContext<SwapContextType>({} as SwapContextType);
 
-export const SwapProvider = ({ children }: { children: React.ReactNode }) => {
+export const SwapProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [escalas, setEscalas] = useState<Escala[]>([]);
   const [swaps, setSwaps] = useState<Swap[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const carregarSwaps = async () => {
-      console.log("🔹 Tentando buscar swaps do Supabase...");
-      const { data, error } = await supabase
-        .from("swaps")
-        .select("*") // pega todos os campos
-        .order("data_swap", { ascending: true }); // ajustado para coluna real
+  const carregarEscalas = async () => {
+    const { data, error } = await supabase
+      .from("escalas")
+      .select("id, data, dia_semana, posto, colaborador:profiles(name)")
+      .order("data", { ascending: true });
 
-      if (error) {
-        console.error("❌ Erro ao carregar swaps:", error);
-      } else {
-        console.log("✅ Swaps recebidos:", data);
-        setSwaps(data || []);
-      }
+    if (error) console.error("Erro ao carregar escalas:", error);
+    else setEscalas(data || []);
+  };
 
-      setLoading(false);
-    };
+  const carregarSwaps = async () => {
+    const { data, error } = await supabase
+      .from("swaps")
+      .select("id, data, posto, status, colaborador:profiles(name)")
+      .order("data", { ascending: true });
 
-    carregarSwaps();
-  }, []);
+    if (error) console.error("Erro ao carregar swaps:", error);
+    else setSwaps(data || []);
+  };
 
-  return <SwapContext.Provider value={{ swaps, loading }}>{children}</SwapContext.Provider>;
+  return (
+    <SwapContext.Provider value={{ escalas, swaps, carregarEscalas, carregarSwaps }}>
+      {children}
+    </SwapContext.Provider>
+  );
 };
 
-export const useSwaps = () => useContext(SwapContext);
+export const useSwapContext = () => useContext(SwapContext);
