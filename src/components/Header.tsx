@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSwap } from '@/contexts/SwapContext';
+import { useAuth } from '@/context/AuthContext';
+import { useSwap } from '@/context/SwapContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';

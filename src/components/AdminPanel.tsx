@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSwap } from '@/contexts/SwapContext';
+import { useAuth } from '@/context/AuthContext';
+import { useSwap } from '@/context/SwapContext';
 import { scheduleData as initialScheduleData, ScheduleEntry, MonthSchedule, calculateScheduleStats, UserRole } from '@/data/scheduleData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

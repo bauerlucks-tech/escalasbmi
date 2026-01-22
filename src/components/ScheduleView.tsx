@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSwap } from '@/contexts/SwapContext';
+import { useAuth } from '@/context/AuthContext';
+import { useSwap } from '@/context/SwapContext';
 import { getEmployeeSchedule, ScheduleEntry } from '@/data/scheduleData';
 import { Calendar, Clock, Sun, Sunset, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth } from 'date-fns';
