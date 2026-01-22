@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useSwap } from '@/context/SwapContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSwap } from '@/contexts/SwapContext';
 import { ScheduleEntry } from '@/data/scheduleData';
 import { Button } from '@/components/ui/button';
 import { ArrowLeftRight, Calendar, User, AlertCircle, Check, Clock, ArrowRight, Sun, Sunset, Users } from 'lucide-react';

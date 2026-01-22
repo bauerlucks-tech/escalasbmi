@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSwapContext } from "../context/SwapContext";
+import { useSwapContext } from "../contexts/SwapContext";
 
 export default function Escalas() {
   const { escalas, carregarEscalas } = useSwapContext();

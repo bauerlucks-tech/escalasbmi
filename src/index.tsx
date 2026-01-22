@@ -1,10 +1,8 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App";
-import "./index.css";
-
-const container = document.getElementById("root");
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
+export default function Index() {
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>Escalas</h1>
+      <p>Sistema carregado com sucesso.</p>
+    </div>
+  );
 }

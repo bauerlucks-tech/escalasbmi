@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useSwap } from '@/context/SwapContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSwap } from '@/contexts/SwapContext';
 import { Button } from '@/components/ui/button';
 import { Check, X, Bell, Calendar, User, Inbox } from 'lucide-react';
 import { toast } from 'sonner';
