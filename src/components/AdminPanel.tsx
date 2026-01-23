@@ -46,6 +46,9 @@ const AdminPanel: React.FC = () => {
   const [editForm, setEditForm] = useState({ meioPeriodo: '', fechamento: '' });
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  const [selectedMonth, setSelectedMonth] = useState<number>(1); // January 2026
+  const [selectedYear, setSelectedYear] = useState<number>(2026);
+  
   // Import state
   const [importMonth, setImportMonth] = useState<number>(() => new Date().getMonth() + 2); // Next month
   const [importYear, setImportYear] = useState<number>(2026);
@@ -100,14 +103,15 @@ const AdminPanel: React.FC = () => {
   };
 
   const handleSaveEntry = (date: string) => {
-    const updatedSchedule = scheduleData.map(entry =>
+    const updatedSchedule = currentScheduleData.map(entry =>
       entry.date === date
         ? { ...entry, meioPeriodo: editForm.meioPeriodo.toUpperCase(), fechamento: editForm.fechamento.toUpperCase() }
         : entry
     );
     updateSchedule(updatedSchedule);
     setEditingEntry(null);
-    toast.success('Escala atualizada!');
+    setEditForm({ meioPeriodo: '', fechamento: '' });
+    toast.success('Escala atualizada com sucesso!');
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,15 +245,20 @@ const AdminPanel: React.FC = () => {
   };
 
   const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-  const daysInMonth = 31;
-  const firstDayOfMonth = new Date(2026, 0, 1).getDay();
+  
+  // Get current selected schedule data
+  const currentScheduleData = currentSchedules.find(s => s.month === selectedMonth && s.year === selectedYear)?.entries || scheduleData;
+  
+  // Calculate calendar for selected month
+  const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+  const firstDayOfMonth = new Date(selectedYear, selectedMonth - 1, 1).getDay();
   const calendarDays = Array.from({ length: firstDayOfMonth }, () => null).concat(
     Array.from({ length: daysInMonth }, (_, i) => i + 1)
   );
 
   const getScheduleForDay = (day: number): ScheduleEntry | undefined => {
-    const dateStr = `${String(day).padStart(2, '0')}/01/2026`;
-    return scheduleData.find(s => s.date === dateStr);
+    const dateStr = `${String(day).padStart(2, '0')}/${String(selectedMonth).padStart(2, '0')}/${selectedYear}`;
+    return currentScheduleData.find(s => s.date === dateStr);
   };
 
   const displayUsers = showArchivedUsers 
@@ -655,16 +664,37 @@ const AdminPanel: React.FC = () => {
           {/* Calendar Edit View */}
           <div className="glass-card-elevated overflow-hidden">
             <div className="p-4 border-b border-border/50 flex items-center justify-between">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                Janeiro 2026 - Editar Escala
-              </h3>
+              <div className="flex items-center gap-3">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  {getMonthName(selectedMonth)} {selectedYear} - Editar Escala
+                </h3>
+                <Select
+                  value={`${selectedMonth}/${selectedYear}`}
+                  onValueChange={(value) => {
+                    const [month, year] = value.split('/').map(Number);
+                    setSelectedMonth(month);
+                    setSelectedYear(year);
+                  }}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {currentSchedules.map(schedule => (
+                      <SelectItem key={`${schedule.month}/${schedule.year}`} value={`${schedule.month}/${schedule.year}`}>
+                        {getMonthName(schedule.month)}/{schedule.year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center gap-4">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    downloadScheduleCSV(scheduleData);
+                    downloadScheduleCSV(currentScheduleData);
                     toast.success('Escala baixada com sucesso!');
                   }}
                   className="border-primary/50 text-primary hover:bg-primary/10"
