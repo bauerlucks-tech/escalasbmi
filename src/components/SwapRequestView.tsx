@@ -255,7 +255,8 @@ const SwapRequestView: React.FC = () => {
           <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</div>
-              Qual dia e turno você quer ceder? {selectedMonth && <span className="text-muted-foreground">- {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
+              {selectedMonth && <span className="text-muted-foreground">{getMonthName(selectedMonth.month)}/{selectedMonth.year} - </span>}
+              Qual dia e turno você quer ceder?
             </label>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -361,7 +362,8 @@ const SwapRequestView: React.FC = () => {
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
-                Qual data você quer trocar? {selectedMonth && <span className="text-muted-foreground">- {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
+                {selectedMonth && <span className="text-muted-foreground">{getMonthName(selectedMonth.month)}/{selectedMonth.year} - </span>}
+                Qual data você quer trocar?
               </label>
               
               <Select 
@@ -427,7 +429,8 @@ const SwapRequestView: React.FC = () => {
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">3</div>
-                Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}? {selectedMonth && <span className="text-muted-foreground">- {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
+                {selectedMonth && <span className="text-muted-foreground">{getMonthName(selectedMonth.month)}/{selectedMonth.year} - </span>}
+                Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}?
               </label>
               
               <div className="grid grid-cols-1 gap-3">
