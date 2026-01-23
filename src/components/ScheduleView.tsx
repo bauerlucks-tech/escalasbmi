@@ -1,18 +1,50 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
-import { getEmployeeSchedule, ScheduleEntry } from '@/data/scheduleData';
+import { getEmployeeSchedule, ScheduleEntry, getCurrentSchedules } from '@/data/scheduleData';
 import { Calendar, Clock, Sun, Sunset, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth, startOfMonth, addMonths, subMonths, getMonth, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const ScheduleView: React.FC = () => {
   const { currentUser, operators } = useAuth();
-  const { scheduleData } = useSwap();
+  const { scheduleData, currentSchedules, switchToSchedule } = useSwap();
 
   // State for viewing different months
   const [viewingMonth, setViewingMonth] = useState(() => startOfMonth(new Date()));
+
+  // Get available months from current schedules
+  const availableMonths = useMemo(() => {
+    return currentSchedules.map(schedule => ({
+      month: schedule.month,
+      year: schedule.year,
+      label: `${format(new Date(schedule.year, schedule.month - 1), 'MMMM yyyy', { locale: ptBR })}`,
+      entries: schedule.entries
+    }));
+  }, [currentSchedules]);
+
+  // Update viewing month when schedules change
+  React.useEffect(() => {
+    if (availableMonths.length > 0) {
+      const currentMonthYear = { month: getMonth(viewingMonth) + 1, year: getYear(viewingMonth) };
+      const exists = availableMonths.some(m => m.month === currentMonthYear.month && m.year === currentMonthYear.year);
+
+      if (!exists) {
+        // Switch to the most recent schedule
+        const mostRecent = availableMonths.sort((a, b) => {
+          const dateA = new Date(a.year, a.month - 1);
+          const dateB = new Date(b.year, b.month - 1);
+          return dateB.getTime() - dateA.getTime();
+        })[0];
+
+        if (mostRecent) {
+          setViewingMonth(new Date(mostRecent.year, mostRecent.month - 1));
+        }
+      }
+    }
+  }, [availableMonths, viewingMonth]);
 
   // Check if we're in the last week of the month
   const today = startOfDay(new Date());
@@ -24,12 +56,11 @@ const ScheduleView: React.FC = () => {
   const viewingMonthData = useMemo(() => {
     const month = getMonth(viewingMonth) + 1; // getMonth returns 0-11
     const year = getYear(viewingMonth);
-    
-    return scheduleData.filter(entry => {
-      const entryDate = parse(entry.date, 'dd/MM/yyyy', new Date());
-      return getMonth(entryDate) + 1 === month && getYear(entryDate) === year;
-    });
-  }, [scheduleData, viewingMonth]);
+
+    // Find the schedule for this month
+    const monthSchedule = currentSchedules.find(s => s.month === month && s.year === year);
+    return monthSchedule ? monthSchedule.entries : [];
+  }, [currentSchedules, viewingMonth]);
 
   // Calculate next and previous months
   const nextMonth = useMemo(() => addMonths(viewingMonth, 1), [viewingMonth]);
@@ -39,24 +70,18 @@ const ScheduleView: React.FC = () => {
   const hasNextMonthData = useMemo(() => {
     const month = getMonth(nextMonth) + 1;
     const year = getYear(nextMonth);
-    return scheduleData.some(entry => {
-      const entryDate = parse(entry.date, 'dd/MM/yyyy', new Date());
-      return getMonth(entryDate) + 1 === month && getYear(entryDate) === year;
-    });
-  }, [scheduleData, nextMonth]);
+    return currentSchedules.some(s => s.month === month && s.year === year);
+  }, [currentSchedules, nextMonth]);
 
   // Check if previous month has data
   const hasPrevMonthData = useMemo(() => {
     const month = getMonth(prevMonth) + 1;
     const year = getYear(prevMonth);
-    return scheduleData.some(entry => {
-      const entryDate = parse(entry.date, 'dd/MM/yyyy', new Date());
-      return getMonth(entryDate) + 1 === month && getYear(entryDate) === year;
-    });
-  }, [scheduleData, prevMonth]);
+    return currentSchedules.some(s => s.month === month && s.year === year);
+  }, [currentSchedules, prevMonth]);
 
   if (!currentUser) return null;
-  
+
   const mySchedule = viewingMonthData.filter(
     entry => entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
   );
@@ -65,7 +90,7 @@ const ScheduleView: React.FC = () => {
   const parseDate = (dateStr: string) => parse(dateStr, 'dd/MM/yyyy', new Date());
 
   // Find last worked day and next off day
-  const sortedSchedule = [...mySchedule].sort((a, b) => 
+  const sortedSchedule = [...mySchedule].sort((a, b) =>
     parseDate(a.date).getTime() - parseDate(b.date).getTime()
   );
 
@@ -96,14 +121,30 @@ const ScheduleView: React.FC = () => {
     return viewingMonthData.find(s => s.date === dateStr);
   };
 
+  const handleMonthChange = (monthYear: string) => {
+    const [monthStr, yearStr] = monthYear.split('/');
+    const month = parseInt(monthStr);
+    const year = parseInt(yearStr);
+
+    // Switch to the selected schedule
+    switchToSchedule(month, year);
+    setViewingMonth(new Date(year, month - 1));
+  };
+
   const handlePreviousMonth = () => {
     if (hasPrevMonthData) {
+      const month = getMonth(prevMonth) + 1;
+      const year = getYear(prevMonth);
+      switchToSchedule(month, year);
       setViewingMonth(prevMonth);
     }
   };
 
   const handleNextMonth = () => {
     if (hasNextMonthData) {
+      const month = getMonth(nextMonth) + 1;
+      const year = getYear(nextMonth);
+      switchToSchedule(month, year);
       setViewingMonth(nextMonth);
     }
   };
@@ -124,14 +165,14 @@ const ScheduleView: React.FC = () => {
 
   // Calculate statistics for all operators (for RICARDO view)
   const isRicardo = currentUser?.name === 'RICARDO';
-  
+
   const operatorStats = isRicardo ? operators
     .filter(op => op.name !== 'RICARDO' && !op.hideFromSchedule)
     .map(operator => {
       const operatorSchedule = viewingMonthData.filter(
         entry => entry.meioPeriodo === operator.name || entry.fechamento === operator.name
       );
-      
+
       return {
         name: operator.name,
         totalDays: operatorSchedule.length,
@@ -231,10 +272,30 @@ const ScheduleView: React.FC = () => {
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
-            <h2 className="text-lg font-semibold flex items-center gap-2 min-w-[180px] justify-center">
+            <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-primary" />
-              {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
-            </h2>
+              {availableMonths.length > 1 ? (
+                <Select
+                  value={`${getMonth(viewingMonth) + 1}/${getYear(viewingMonth)}`}
+                  onValueChange={handleMonthChange}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableMonths.map(month => (
+                      <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <h2 className="text-lg font-semibold">
+                  {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
+                </h2>
+              )}
+            </div>
             <Button
               variant="ghost"
               size="icon"

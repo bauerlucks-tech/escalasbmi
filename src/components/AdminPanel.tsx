@@ -9,7 +9,7 @@ import {
   Shield, Key, User, Check, AlertTriangle, Calendar, Upload, 
   FileSpreadsheet, ArrowLeftRight, CheckCircle, XCircle, Clock,
   Edit3, Save, X, Plus, Users, Archive, UserPlus, BarChart3,
-  Download, FileWarning, Loader2
+  Download, FileWarning, Loader2, Power, PowerOff
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -37,6 +37,7 @@ const AdminPanel: React.FC = () => {
     archiveCurrentSchedule,
     restoreArchivedSchedule,
     switchToSchedule,
+    toggleScheduleActivation,
     refreshSchedules
   } = useSwap();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
@@ -832,6 +833,11 @@ const AdminPanel: React.FC = () => {
                       <div>
                         <div className="font-medium">
                           {getMonthName(schedule.month)}/{schedule.year}
+                          {schedule.isActive === false && (
+                            <span className="ml-2 px-2 py-1 text-xs bg-warning/20 text-warning rounded-full">
+                              Inativa
+                            </span>
+                          )}
                         </div>
                         <div className="text-xs text-muted-foreground mt-1">
                           {schedule.entries.length} dias • 
@@ -843,11 +849,31 @@ const AdminPanel: React.FC = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => switchToSchedule(schedule.month, schedule.year)}
+                          onClick={() => {
+                            switchToSchedule(schedule.month, schedule.year);
+                            toast.success(`Visualizando escala de ${getMonthName(schedule.month)}/${schedule.year}`);
+                          }}
                           className="border-primary/50 text-primary hover:bg-primary/10"
                         >
                           <Calendar className="w-4 h-4 mr-1" />
                           Visualizar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={schedule.isActive !== false ? "default" : "outline"}
+                          onClick={() => {
+                            if (toggleScheduleActivation(schedule.month, schedule.year)) {
+                              const newStatus = schedule.isActive === false ? "ativada" : "desativada";
+                              toast.success(`Escala de ${getMonthName(schedule.month)}/${schedule.year} ${newStatus}`);
+                            }
+                          }}
+                          className={schedule.isActive !== false ? "bg-success hover:bg-success/90" : "border-warning/50 text-warning hover:bg-warning/10"}
+                        >
+                          {schedule.isActive !== false ? (
+                            <><Power className="w-4 h-4 mr-1" />Ativa</>
+                          ) : (
+                            <><PowerOff className="w-4 h-4 mr-1" />Inativa</>
+                          )}
                         </Button>
                         <Button
                           size="sm"

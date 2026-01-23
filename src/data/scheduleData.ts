@@ -26,6 +26,7 @@ export interface MonthSchedule {
   importedBy?: string;
   isArchived?: boolean;
   archivedAt?: string;
+  isActive?: boolean; // New field to control activation
 }
 
 export interface ArchivedSchedule extends MonthSchedule {
@@ -195,7 +196,8 @@ export const addNewMonthSchedule = (
     year,
     entries,
     importedAt: new Date().toISOString(),
-    importedBy
+    importedBy,
+    isActive: true // New schedules are active by default
   };
   
   storage.current.push(newSchedule);
@@ -206,6 +208,19 @@ export const addNewMonthSchedule = (
     message: `Escala de ${getMonthName(month)}/${year} importada com sucesso`,
     archived: archived.length > 0 ? archived : undefined
   };
+};
+
+export const toggleScheduleActivation = (month: number, year: number): boolean => {
+  const storage = createScheduleStorage();
+  const scheduleIndex = storage.current.findIndex(s => s.month === month && s.year === year);
+  
+  if (scheduleIndex === -1) return false;
+  
+  // Toggle the isActive status
+  storage.current[scheduleIndex].isActive = !storage.current[scheduleIndex].isActive;
+  saveScheduleStorage(storage);
+  
+  return true;
 };
 
 export const archiveSchedule = (month: number, year: number, archivedBy: string): boolean => {

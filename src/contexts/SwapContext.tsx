@@ -9,6 +9,7 @@ import {
   getArchivedSchedules,
   getCurrentSchedules,
   getScheduleByMonth,
+  toggleScheduleActivation,
   MonthSchedule,
   ArchivedSchedule
 } from '@/data/scheduleData';
@@ -31,6 +32,7 @@ interface SwapContextType {
   archiveCurrentSchedule: (month: number, year: number, archivedBy: string) => boolean;
   restoreArchivedSchedule: (month: number, year: number) => boolean;
   switchToSchedule: (month: number, year: number) => boolean;
+  toggleScheduleActivation: (month: number, year: number) => boolean;
   refreshSchedules: () => void;
 }
 
@@ -215,6 +217,14 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return false;
   };
 
+  const toggleScheduleActivationFunc = (month: number, year: number) => {
+    const success = toggleScheduleActivation(month, year);
+    if (success) {
+      refreshSchedules();
+    }
+    return success;
+  };
+
   const refreshSchedules = () => {
     setCurrentSchedules(getCurrentSchedules());
     setArchivedSchedules(getArchivedSchedules());
@@ -240,6 +250,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       archiveCurrentSchedule,
       restoreArchivedSchedule: restoreArchivedScheduleFunc,
       switchToSchedule,
+      toggleScheduleActivation: toggleScheduleActivationFunc,
       refreshSchedules,
     }}>
       {children}
