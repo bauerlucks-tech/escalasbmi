@@ -1,0 +1,259 @@
+/* Theme Color Schemes */
+
+/* Default Blue Theme (Current) */
+.theme-blue {
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+}
+
+/* Green Theme - Calm and Professional */
+.theme-green {
+  --primary: 142.1 76.2% 36.3%;
+  --primary-foreground: 355.7 100% 97.3%;
+  --secondary: 138 76% 97%;
+  --secondary-foreground: 142.1 76.2% 36.3%;
+  --accent: 138 76% 97%;
+  --accent-foreground: 142.1 76.2% 36.3%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --muted: 138 76% 97%;
+  --muted-foreground: 142.1 76.2% 36.3%;
+  --card: 142.1 76.2% 36.3%;
+  --card-foreground: 355.7 100% 97.3%;
+  --popover: 142.1 76.2% 36.3%;
+  --popover-foreground: 355.7 100% 97.3%;
+  --border: 142.1 76.2% 36.3%;
+  --input: 142.1 76.2% 36.3%;
+  --ring: 142.1 76.2% 36.3%;
+  --radius: 0.5rem;
+}
+
+/* Purple Theme - Elegant and Modern */
+.theme-purple {
+  --primary: 262.1 83.3% 57.8%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 270 40% 96%;
+  --secondary-foreground: 262.1 83.3% 57.8%;
+  --accent: 270 40% 96%;
+  --accent-foreground: 262.1 83.3% 57.8%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --muted: 270 40% 96%;
+  --muted-foreground: 262.1 83.3% 57.8%;
+  --card: 262.1 83.3% 57.8%;
+  --card-foreground: 210 40% 98%;
+  --popover: 262.1 83.3% 57.8%;
+  --popover-foreground: 210 40% 98%;
+  --border: 262.1 83.3% 57.8%;
+  --input: 262.1 83.3% 57.8%;
+  --ring: 262.1 83.3% 57.8%;
+  --radius: 0.5rem;
+}
+
+/* Orange Theme - Warm and Energetic */
+.theme-orange {
+  --primary: 24.6 95% 53.1%;
+  --primary-foreground: 60 9.1% 97.8%;
+  --secondary: 24.6 95% 96%;
+  --secondary-foreground: 24.6 95% 53.1%;
+  --accent: 24.6 95% 96%;
+  --accent-foreground: 24.6 95% 53.1%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --muted: 24.6 95% 96%;
+  --muted-foreground: 24.6 95% 53.1%;
+  --card: 24.6 95% 53.1%;
+  --card-foreground: 60 9.1% 97.8%;
+  --popover: 24.6 95% 53.1%;
+  --popover-foreground: 60 9.1% 97.8%;
+  --border: 24.6 95% 53.1%;
+  --input: 24.6 95% 53.1%;
+  --ring: 24.6 95% 53.1%;
+  --radius: 0.5rem;
+}
+
+/* Teal Theme - Fresh and Clean */
+.theme-teal {
+  --primary: 174.3 80.4% 25.1%;
+  --primary-foreground: 355.7 100% 97.3%;
+  --secondary: 174.3 80.4% 96%;
+  --secondary-foreground: 174.3 80.4% 25.1%;
+  --accent: 174.3 80.4% 96%;
+  --accent-foreground: 174.3 80.4% 25.1%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --muted: 174.3 80.4% 96%;
+  --muted-foreground: 174.3 80.4% 25.1%;
+  --card: 174.3 80.4% 25.1%;
+  --card-foreground: 355.7 100% 97.3%;
+  --popover: 174.3 80.4% 25.1%;
+  --popover-foreground: 355.7 100% 97.3%;
+  --border: 174.3 80.4% 25.1%;
+  --input: 174.3 80.4% 25.1%;
+  --ring: 174.3 80.4% 25.1%;
+  --radius: 0.5rem;
+}
+
+/* Rose Theme - Soft and Elegant */
+.theme-rose {
+  --primary: 346.8 77.2% 49.8%;
+  --primary-foreground: 355.7 100% 97.3%;
+  --secondary: 346.8 77.2% 96%;
+  --secondary-foreground: 346.8 77.2% 49.8%;
+  --accent: 346.8 77.2% 96%;
+  --accent-foreground: 346.8 77.2% 49.8%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --muted: 346.8 77.2% 96%;
+  --muted-foreground: 346.8 77.2% 49.8%;
+  --card: 346.8 77.2% 49.8%;
+  --card-foreground: 355.7 100% 97.3%;
+  --popover: 346.8 77.2% 49.8%;
+  --popover-foreground: 355.7 100% 97.3%;
+  --border: 346.8 77.2% 49.8%;
+  --input: 346.8 77.2% 49.8%;
+  --ring: 346.8 77.2% 49.8%;
+  --radius: 0.5rem;
+}
+
+/* Slate Theme - Neutral and Professional */
+.theme-slate {
+  --primary: 215.4 16.3% 46.9%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 215.4 16.3% 96%;
+  --secondary-foreground: 215.4 16.3% 46.9%;
+  --accent: 215.4 16.3% 96%;
+  --accent-foreground: 215.4 16.3% 46.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --muted: 215.4 16.3% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --card: 215.4 16.3% 46.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 215.4 16.3% 46.9%;
+  --popover-foreground: 210 40% 98%;
+  --border: 215.4 16.3% 46.9%;
+  --input: 215.4 16.3% 46.9%;
+  --ring: 215.4 16.3% 46.9%;
+  --radius: 0.5rem;
+}
+
+/* Zinc Theme - Minimal and Clean */
+.theme-zinc {
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --card: 240 5.9% 10%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 5.9% 10%;
+  --popover-foreground: 0 0% 98%;
+  --border: 240 5.9% 10%;
+  --input: 240 5.9% 10%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.5rem;
+}
+
+/* Light theme adjustments */
+.light .theme-blue {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+}
+
+.light .theme-green {
+  --background: 0 0% 100%;
+  --foreground: 142.1 76.2% 36.3%;
+}
+
+.light .theme-purple {
+  --background: 0 0% 100%;
+  --foreground: 262.1 83.3% 57.8%;
+}
+
+.light .theme-orange {
+  --background: 0 0% 100%;
+  --foreground: 24.6 95% 53.1%;
+}
+
+.light .theme-teal {
+  --background: 0 0% 100%;
+  --foreground: 174.3 80.4% 25.1%;
+}
+
+.light .theme-rose {
+  --background: 0 0% 100%;
+  --foreground: 346.8 77.2% 49.8%;
+}
+
+.light .theme-slate {
+  --background: 0 0% 100%;
+  --foreground: 215.4 16.3% 46.9%;
+}
+
+.light .theme-zinc {
+  --background: 0 0% 100%;
+  --foreground: 240 5.9% 10%;
+}
+
+/* Dark theme adjustments */
+.dark .theme-blue {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+}
+
+.dark .theme-green {
+  --background: 142.1 76.2% 36.3%;
+  --foreground: 355.7 100% 97.3%;
+}
+
+.dark .theme-purple {
+  --background: 262.1 83.3% 57.8%;
+  --foreground: 210 40% 98%;
+}
+
+.dark .theme-orange {
+  --background: 24.6 95% 53.1%;
+  --foreground: 60 9.1% 97.8%;
+}
+
+.dark .theme-teal {
+  --background: 174.3 80.4% 25.1%;
+  --foreground: 355.7 100% 97.3%;
+}
+
+.dark .theme-rose {
+  --background: 346.8 77.2% 49.8%;
+  --foreground: 355.7 100% 97.3%;
+}
+
+.dark .theme-slate {
+  --background: 215.4 16.3% 46.9%;
+  --foreground: 210 40% 98%;
+}
+
+.dark .theme-zinc {
+  --background: 240 5.9% 10%;
+  --foreground: 0 0% 98%;
+}
