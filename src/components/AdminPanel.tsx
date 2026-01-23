@@ -427,11 +427,14 @@ const AdminPanel: React.FC = () => {
               <div className="bg-muted/30 rounded-lg p-3 text-xs">
                 <p className="font-medium mb-1">Formato esperado do CSV:</p>
                 <code className="bg-background/50 px-2 py-1 rounded block">
-                  data, dia_semana, posto, colaborador
+                  data, posto, colaborador
                 </code>
                 <p className="text-muted-foreground mt-2">
                   <strong>posto:</strong> meio_periodo ou fechamento | 
                   <strong> colaborador:</strong> nome cadastrado no sistema
+                </p>
+                <p className="text-muted-foreground mt-1">
+                  <strong>Nota:</strong> O dia da semana é calculado automaticamente pela data
                 </p>
               </div>
 

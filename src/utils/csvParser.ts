@@ -30,10 +30,9 @@ const DAYS_OF_WEEK_SHORT = [
 ];
 
 // Expected CSV columns (case-insensitive)
-const EXPECTED_COLUMNS = ['data', 'dia_semana', 'posto', 'colaborador'];
+const EXPECTED_COLUMNS = ['data', 'posto', 'colaborador'];
 const ALTERNATE_COLUMNS: Record<string, string[]> = {
   data: ['data', 'date', 'dia'],
-  dia_semana: ['dia_semana', 'dia_da_semana', 'dayofweek', 'day'],
   posto: ['posto', 'turno', 'shift', 'position', 'periodo'],
   colaborador: ['colaborador', 'nome', 'employee', 'name', 'operador']
 };
@@ -89,35 +88,17 @@ export function normalizeColumnName(name: string): string {
   return normalized;
 }
 
-export function normalizeDayOfWeek(day: string): string {
-  const upper = day.toUpperCase().trim();
+export function calculateDayOfWeek(dateStr: string): string {
+  // Parse DD/MM/YYYY format
+  const [day, month, year] = dateStr.split('/').map(Number);
+  const date = new Date(year, month - 1, day);
   
-  // Check full names
-  if (DAYS_OF_WEEK.includes(upper)) {
-    return upper;
-  }
+  const daysOfWeek = [
+    'DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 
+    'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'
+  ];
   
-  // Check short names and convert to full
-  const shortIndex = DAYS_OF_WEEK_SHORT.findIndex(d => upper.startsWith(d));
-  if (shortIndex !== -1) {
-    return DAYS_OF_WEEK[shortIndex];
-  }
-  
-  // Try to normalize accents
-  const normalized = upper
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-  
-  const fullNormalized = DAYS_OF_WEEK.map(d => 
-    d.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-  );
-  
-  const index = fullNormalized.findIndex(d => d === normalized);
-  if (index !== -1) {
-    return DAYS_OF_WEEK[index];
-  }
-  
-  return upper;
+  return daysOfWeek[date.getDay()];
 }
 
 export function normalizeDate(dateStr: string, month: number, year: number): string {
@@ -195,7 +176,7 @@ export function validateAndParseCSV(
   const missingColumns = EXPECTED_COLUMNS.filter(col => columnMap[col] === undefined);
   if (missingColumns.length > 0) {
     errors.push(`Colunas obrigatórias não encontradas: ${missingColumns.join(', ')}`);
-    errors.push(`Formato esperado: data, dia_semana, posto, colaborador`);
+    errors.push(`Formato esperado: data, posto, colaborador`);
     errors.push(`Colunas encontradas: ${headerRow.join(', ')}`);
     return {
       isValid: false,
@@ -214,13 +195,12 @@ export function validateAndParseCSV(
     const row = rows[i];
     const rowNum = i + 1;
     
-    if (row.length < 4 || row.every(cell => !cell)) {
+    if (row.length < 3 || row.every(cell => !cell)) {
       // Skip empty rows
       continue;
     }
     
     const dateStr = row[columnMap.data] || '';
-    const dayOfWeekStr = row[columnMap.dia_semana] || '';
     const postoStr = (row[columnMap.posto] || '').toUpperCase().trim();
     const colaboradorStr = (row[columnMap.colaborador] || '').toUpperCase().trim();
     
@@ -232,11 +212,8 @@ export function validateAndParseCSV(
       continue;
     }
     
-    // Validate day of week
-    const normalizedDayOfWeek = normalizeDayOfWeek(dayOfWeekStr);
-    if (!DAYS_OF_WEEK.includes(normalizedDayOfWeek)) {
-      warnings.push(`Linha ${rowNum}: Dia da semana não reconhecido "${dayOfWeekStr}"`);
-    }
+    // Calculate day of week automatically
+    const calculatedDayOfWeek = calculateDayOfWeek(normalizedDate);
     
     // Validate posto (must be meio_periodo or fechamento)
     const postoNormalized = postoStr
@@ -273,12 +250,12 @@ export function validateAndParseCSV(
     
     // Add to parsed data
     if (!parsedRows.has(normalizedDate)) {
-      parsedRows.set(normalizedDate, { dayOfWeek: normalizedDayOfWeek });
+      parsedRows.set(normalizedDate, { dayOfWeek: calculatedDayOfWeek });
     }
     
     const existingEntry = parsedRows.get(normalizedDate)!;
     existingEntry[posto] = colaboradorStr;
-    existingEntry.dayOfWeek = normalizedDayOfWeek;
+    existingEntry.dayOfWeek = calculatedDayOfWeek;
     
     validRows++;
   }
@@ -346,16 +323,15 @@ export function validateAndParseCSV(
 
 export function generateCSVTemplate(month: number, year: number): string {
   const daysInMonth = new Date(year, month, 0).getDate();
-  const lines = ['data,dia_semana,posto,colaborador'];
+  const lines = ['data,posto,colaborador'];
   
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month - 1, day);
-    const dayOfWeek = DAYS_OF_WEEK[date.getDay()];
     const dateStr = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
     
     // Add two lines per day (meio período and fechamento)
-    lines.push(`${dateStr},${dayOfWeek},meio_periodo,`);
-    lines.push(`${dateStr},${dayOfWeek},fechamento,`);
+    lines.push(`${dateStr},meio_periodo,`);
+    lines.push(`${dateStr},fechamento,`);
   }
   
   return lines.join('\n');
@@ -379,7 +355,7 @@ export function downloadCSVTemplate(month: number, year: number): void {
 }
 
 export function exportScheduleToCSV(schedule: ScheduleEntry[]): string {
-  const lines = ['data,dia_semana,posto,colaborador'];
+  const lines = ['data,posto,colaborador'];
   
   // Sort by date
   const sortedSchedule = [...schedule].sort((a, b) => {
@@ -392,8 +368,8 @@ export function exportScheduleToCSV(schedule: ScheduleEntry[]): string {
   
   sortedSchedule.forEach(entry => {
     // Add two lines per day (meio período and fechamento)
-    lines.push(`${entry.date},${entry.dayOfWeek},meio_periodo,${entry.meioPeriodo}`);
-    lines.push(`${entry.date},${entry.dayOfWeek},fechamento,${entry.fechamento}`);
+    lines.push(`${entry.date},meio_periodo,${entry.meioPeriodo}`);
+    lines.push(`${entry.date},fechamento,${entry.fechamento}`);
   });
   
   return lines.join('\n');
