@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
 import { getEmployeeSchedule, ScheduleEntry } from '@/data/scheduleData';
 import { Calendar, Clock, Sun, Sunset, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
-import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth } from 'date-fns';
+import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth, startOfMonth, addMonths, subMonths, getMonth, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 
@@ -11,21 +11,53 @@ const ScheduleView: React.FC = () => {
   const { currentUser, operators } = useAuth();
   const { scheduleData } = useSwap();
 
+  // State for viewing different months
+  const [viewingMonth, setViewingMonth] = useState(() => startOfMonth(new Date()));
+
   // Check if we're in the last week of the month
   const today = startOfDay(new Date());
   const currentDay = getDate(today);
   const daysInCurrentMonth = getDaysInMonth(today);
   const isLastWeek = currentDay > daysInCurrentMonth - 7;
 
-  // State for viewing next month schedule
-  const [showNextMonth, setShowNextMonth] = useState(false);
+  // Filter schedule data for the viewing month
+  const viewingMonthData = useMemo(() => {
+    const month = getMonth(viewingMonth) + 1; // getMonth returns 0-11
+    const year = getYear(viewingMonth);
+    
+    return scheduleData.filter(entry => {
+      const entryDate = parse(entry.date, 'dd/MM/yyyy', new Date());
+      return getMonth(entryDate) + 1 === month && getYear(entryDate) === year;
+    });
+  }, [scheduleData, viewingMonth]);
 
-  // Next month schedule from context
-  const nextMonthSchedule: ScheduleEntry[] = [];
+  // Calculate next and previous months
+  const nextMonth = useMemo(() => addMonths(viewingMonth, 1), [viewingMonth]);
+  const prevMonth = useMemo(() => subMonths(viewingMonth, 1), [viewingMonth]);
+
+  // Check if next month has data
+  const hasNextMonthData = useMemo(() => {
+    const month = getMonth(nextMonth) + 1;
+    const year = getYear(nextMonth);
+    return scheduleData.some(entry => {
+      const entryDate = parse(entry.date, 'dd/MM/yyyy', new Date());
+      return getMonth(entryDate) + 1 === month && getYear(entryDate) === year;
+    });
+  }, [scheduleData, nextMonth]);
+
+  // Check if previous month has data
+  const hasPrevMonthData = useMemo(() => {
+    const month = getMonth(prevMonth) + 1;
+    const year = getYear(prevMonth);
+    return scheduleData.some(entry => {
+      const entryDate = parse(entry.date, 'dd/MM/yyyy', new Date());
+      return getMonth(entryDate) + 1 === month && getYear(entryDate) === year;
+    });
+  }, [scheduleData, prevMonth]);
 
   if (!currentUser) return null;
   
-  const mySchedule = scheduleData.filter(
+  const mySchedule = viewingMonthData.filter(
     entry => entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
   );
 
@@ -45,21 +77,35 @@ const ScheduleView: React.FC = () => {
     .find(s => isAfter(parseDate(s.date), today));
 
   // Find days off (days not in schedule)
-  const allDates = scheduleData.map(s => s.date);
+  const allDates = viewingMonthData.map(s => s.date);
   const myDates = new Set(mySchedule.map(s => s.date));
   const daysOff = allDates.filter(d => !myDates.has(d) && isAfter(parseDate(d), today));
   const nextDayOff = daysOff.length > 0 ? daysOff[0] : null;
 
-  // Calendar setup
-  const daysInMonth = 31;
-  const firstDayOfMonth = new Date(2026, 0, 1).getDay(); // Thursday = 4
+  // Calendar setup for viewing month
+  const daysInMonth = getDaysInMonth(viewingMonth);
+  const firstDayOfMonth = viewingMonth.getDay(); // 0 = Sunday, 6 = Saturday
   const calendarDays = Array.from({ length: firstDayOfMonth }, () => null).concat(
     Array.from({ length: daysInMonth }, (_, i) => i + 1)
   );
 
   const getScheduleForDay = (day: number): ScheduleEntry | undefined => {
-    const dateStr = `${String(day).padStart(2, '0')}/01/2026`;
-    return scheduleData.find(s => s.date === dateStr);
+    const month = getMonth(viewingMonth) + 1;
+    const year = getYear(viewingMonth);
+    const dateStr = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+    return viewingMonthData.find(s => s.date === dateStr);
+  };
+
+  const handlePreviousMonth = () => {
+    if (hasPrevMonthData) {
+      setViewingMonth(prevMonth);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (hasNextMonthData) {
+      setViewingMonth(nextMonth);
+    }
   };
 
   const isMyShift = (day: number): { meioPeriodo: boolean; fechamento: boolean } => {
@@ -82,14 +128,14 @@ const ScheduleView: React.FC = () => {
   const operatorStats = isRicardo ? operators
     .filter(op => op.name !== 'RICARDO' && !op.hideFromSchedule)
     .map(operator => {
-      const operatorSchedule = scheduleData.filter(
+      const operatorSchedule = viewingMonthData.filter(
         entry => entry.meioPeriodo === operator.name || entry.fechamento === operator.name
       );
       
       return {
         name: operator.name,
         totalDays: operatorSchedule.length,
-        daysOff: 31 - operatorSchedule.length,
+        daysOff: daysInMonth - operatorSchedule.length,
         meioPeriodo: operatorSchedule.filter(s => s.meioPeriodo === operator.name).length,
         fechamento: operatorSchedule.filter(s => s.fechamento === operator.name).length,
         weekends: operatorSchedule.filter(s => s.dayOfWeek === 'SABADO' || s.dayOfWeek === 'DOMINGO').length,
@@ -99,30 +145,6 @@ const ScheduleView: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Next Month Alert */}
-      {isLastWeek && nextMonthSchedule.length > 0 && (
-        <div className="glass-card border-primary/50 p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <AlertCircle className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="font-medium text-sm">Escala de Fevereiro disponível!</p>
-              <p className="text-xs text-muted-foreground">
-                Clique para visualizar a escala do próximo mês
-              </p>
-            </div>
-          </div>
-          <Button
-            size="sm"
-            variant={showNextMonth ? "default" : "outline"}
-            onClick={() => setShowNextMonth(!showNextMonth)}
-            className={showNextMonth ? "" : "border-primary/50 text-primary"}
-          >
-            {showNextMonth ? "Ver Janeiro" : "Ver Fevereiro"}
-          </Button>
-        </div>
-      )}
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -199,10 +221,30 @@ const ScheduleView: React.FC = () => {
       {/* Calendar View */}
       <div className="glass-card-elevated overflow-hidden">
         <div className="p-4 border-b border-border/50 flex items-center justify-between">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-primary" />
-            {showNextMonth ? "Fevereiro 2026" : "Janeiro 2026"}
-          </h2>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handlePreviousMonth}
+              disabled={!hasPrevMonthData}
+              className={!hasPrevMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <h2 className="text-lg font-semibold flex items-center gap-2 min-w-[180px] justify-center">
+              <Calendar className="w-5 h-5 text-primary" />
+              {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleNextMonth}
+              disabled={!hasNextMonthData}
+              className={!hasNextMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-secondary" />
@@ -301,7 +343,7 @@ const ScheduleView: React.FC = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-primary" />
-            Estatísticas dos Operadores - Janeiro 2026
+            Estatísticas dos Operadores - {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {operatorStats.map(stat => (
@@ -341,12 +383,12 @@ const ScheduleView: React.FC = () => {
             <div className="text-3xl font-bold text-primary">{mySchedule.length}</div>
             <div className="text-xs text-muted-foreground mt-1">Dias de Trabalho</div>
           </div>
-          <div className="glass-card p-4 text-center">
-            <div className="text-3xl font-bold text-muted-foreground">
-              {31 - mySchedule.length}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
+        <div className="glass-card p-4 text-center">
+          <div className="text-3xl font-bold text-muted-foreground">
+            {daysInMonth - mySchedule.length}
           </div>
+          <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
+        </div>
           <div className="glass-card p-4 text-center">
             <div className="text-3xl font-bold text-secondary">
               {mySchedule.filter(s => s.meioPeriodo === currentUser.name).length}
