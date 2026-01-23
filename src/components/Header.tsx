@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                   ATIVO
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground">Sistema de Escalas • Janeiro 2026</p>
+              <p className="text-xs text-muted-foreground">Sistema de Escalas</p>
             </div>
           </div>
 

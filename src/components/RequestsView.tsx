@@ -1,18 +1,107 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
+import { getMonthName } from '@/data/scheduleData';
 import { Button } from '@/components/ui/button';
-import { Check, X, Bell, Calendar, User, Inbox } from 'lucide-react';
+import { Check, X, Bell, Calendar, User, Inbox, ArrowRight, CalendarDays } from 'lucide-react';
 import { toast } from 'sonner';
+import { format, parse, startOfMonth, getMonth, getYear, getDaysInMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const RequestsView: React.FC = () => {
   const { currentUser } = useAuth();
-  const { getRequestsForMe, respondToSwap, swapRequests } = useSwap();
+  const { getRequestsForMe, respondToSwap, swapRequests, currentSchedules } = useSwap();
 
   if (!currentUser) return null;
 
   const pendingRequests = getRequestsForMe(currentUser.name);
   const allMyIncoming = swapRequests.filter(r => r.targetName === currentUser.name);
+
+  const getMiniCalendar = (dateStr: string, shift: string, isOriginal: boolean) => {
+    const [day, month, year] = dateStr.split('/').map(Number);
+    const date = new Date(year, month - 1, day);
+    const monthStart = startOfMonth(date);
+    const monthEnd = new Date(year, month - 1, getDaysInMonth(date));
+    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+    const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+    
+    // Obter escalas do usuário para este mês
+    const monthSchedule = currentSchedules.find(s => s.month === month && s.year === year);
+    const userSchedule = monthSchedule?.entries || [];
+    
+    return (
+      <div className="bg-muted/30 border border-border/30 rounded-lg p-3">
+        <div className="flex items-center gap-2 mb-2">
+          <CalendarDays className="w-4 h-4 text-muted-foreground" />
+          <div className="text-xs font-medium text-muted-foreground">
+            {format(monthStart, 'MMMM yyyy', { locale: ptBR })}
+          </div>
+        </div>
+        
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7 gap-1 text-xs">
+          {/* Week headers */}
+          {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((day, i) => (
+            <div key={i} className="text-center text-muted-foreground font-medium p-1">
+              {day}
+            </div>
+          ))}
+          
+          {/* Calendar days */}
+          {calendarDays.map((calendarDay, index) => {
+            const isCurrentMonth = isSameMonth(calendarDay, date);
+            const isTargetDay = isSameDay(calendarDay, date);
+            const dayNumber = calendarDay.getDate();
+            const dayStr = `${dayNumber.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`;
+            
+            // Verificar se usuário está escalado neste dia
+            const daySchedule = userSchedule.find(entry => entry.date === dayStr);
+            const hasMeioPeriodo = daySchedule?.meioPeriodo === currentUser.name;
+            const hasFechamento = daySchedule?.fechamento === currentUser.name;
+            const isScheduled = hasMeioPeriodo || hasFechamento;
+            
+            return (
+              <div
+                key={index}
+                className={`
+                  text-center p-1 rounded
+                  ${!isCurrentMonth ? 'text-muted-foreground/30' : 'text-muted-foreground'}
+                  ${isTargetDay ? (
+                    isOriginal 
+                      ? 'bg-primary/20 text-primary font-bold' 
+                      : 'bg-success/20 text-success font-bold'
+                  ) : ''}
+                  ${isScheduled && !isTargetDay ? 'bg-secondary/20 text-secondary font-medium' : ''}
+                `}
+              >
+                {dayNumber}
+                {isTargetDay && (
+                  <div className="text-xs mt-1">
+                    {shift === 'meioPeriodo' ? 'MP' : shift === 'fechamento' ? 'FE' : 'AB'}
+                  </div>
+                )}
+                {isScheduled && !isTargetDay && (
+                  <div className="text-xs mt-1">
+                    {hasMeioPeriodo && hasFechamento ? 'AB' : hasMeioPeriodo ? 'MP' : 'FE'}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        
+        <div className="mt-2 text-xs text-muted-foreground border-t border-border/20 pt-2">
+          <div className="flex items-center gap-2">
+            <span className={`w-3 h-3 rounded-full ${
+              isOriginal ? 'bg-primary/20' : 'bg-success/20'
+            }`}></span>
+            <span>Dia {day} ({shift === 'meioPeriodo' ? 'MP' : shift === 'fechamento' ? 'FE' : 'AB'})</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const handleRespond = (requestId: string, accept: boolean) => {
     respondToSwap(requestId, accept);
@@ -74,7 +163,18 @@ const RequestsView: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground ml-10">
                       <Calendar className="w-4 h-4" />
-                      <span>Data: {request.originalDate}</span>
+                      <span>Vou ceder: Dia {request.originalDate.split('/')[0]} de {getMonthName(parseInt(request.originalDate.split('/')[1]))} ({request.originalShift === 'meioPeriodo' ? 'MP' : 'FE'})</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground ml-10">
+                      <ArrowRight className="w-4 h-4" />
+                      <span>Vou assumir: Dia {request.targetDate.split('/')[0]} de {getMonthName(parseInt(request.targetDate.split('/')[1]))} ({request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'})</span>
+                    </div>
+                    
+                    {/* Mini Calendar View */}
+                    <div className="flex items-center gap-3 ml-10 mt-2">
+                      {getMiniCalendar(request.originalDate, request.originalShift, true)}
+                      <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                      {getMiniCalendar(request.targetDate, request.targetShift, false)}
                     </div>
                   </div>
                   
