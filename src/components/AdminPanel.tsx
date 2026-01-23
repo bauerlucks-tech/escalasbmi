@@ -49,6 +49,8 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const [selectedMonth, setSelectedMonth] = useState<number>(1); // January 2026
   const [selectedYear, setSelectedYear] = useState<number>(2026);
   
+  const [hoveredSchedule, setHoveredSchedule] = useState<{month: number, year: number} | null>(null);
+  
   // Import state
   const [importMonth, setImportMonth] = useState<number>(() => new Date().getMonth() + 2); // Next month
   const [importYear, setImportYear] = useState<number>(2026);
@@ -885,10 +887,56 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                             // Mudar para a aba de escala para mostrar o calendário
                             setActiveTab('schedule');
                           }}
-                          className="border-primary/50 text-primary hover:bg-primary/10"
+                          onMouseEnter={() => setHoveredSchedule({month: schedule.month, year: schedule.year})}
+                          onMouseLeave={() => setHoveredSchedule(null)}
+                          className="border-primary/50 text-primary hover:bg-primary/10 relative"
                         >
                           <Calendar className="w-4 h-4 mr-1" />
                           Visualizar
+                          {hoveredSchedule?.month === schedule.month && hoveredSchedule?.year === schedule.year && (
+                            <div className="absolute top-full mt-2 left-0 z-50 glass-card-elevated p-4 min-w-[300px] animate-scale-in">
+                              <div className="text-sm font-medium mb-2">
+                                {getMonthName(schedule.month)}/{schedule.year}
+                              </div>
+                              <div className="grid grid-cols-7 gap-1 text-xs">
+                                {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(day => (
+                                  <div key={day} className="text-center font-medium text-muted-foreground py-1">
+                                    {day}
+                                  </div>
+                                ))}
+                                {(() => {
+                                  const monthSchedule = currentSchedules.find(s => s.month === schedule.month && s.year === schedule.year);
+                                  const entries = monthSchedule?.entries || [];
+                                  const daysInMonth = new Date(schedule.year, schedule.month, 0).getDate();
+                                  const firstDay = new Date(schedule.year, schedule.month - 1, 1).getDay();
+                                  const calendarDays = Array.from({ length: firstDay }, () => null).concat(
+                                    Array.from({ length: daysInMonth }, (_, i) => i + 1)
+                                  );
+                                  
+                                  return calendarDays.map((day, index) => {
+                                    if (day === null) {
+                                      return <div key={`empty-${index}`} className="min-h-[20px]" />;
+                                    }
+                                    
+                                    const dateStr = `${String(day).padStart(2, '0')}/${String(schedule.month).padStart(2, '0')}/${schedule.year}`;
+                                    const entry = entries.find(e => e.date === dateStr);
+                                    
+                                    return (
+                                      <div
+                                        key={day}
+                                        className={`
+                                          min-h-[20px] rounded p-1 text-center
+                                          ${entry ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}
+                                        `}
+                                      >
+                                        {day}
+                                      </div>
+                                    );
+                                  });
+                                })()}
+                              </div>
+                            </div>
+                          )}
                         </Button>
                         <Button
                           size="sm"
