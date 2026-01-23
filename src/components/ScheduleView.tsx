@@ -8,7 +8,7 @@ import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 
 const ScheduleView: React.FC = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, operators } = useAuth();
   const { scheduleData } = useSwap();
 
   // Check if we're in the last week of the month
@@ -75,6 +75,27 @@ const ScheduleView: React.FC = () => {
 
   // Get first name only for display
   const getFirstName = (name: string) => name.split(' ')[0];
+
+  // Calculate statistics for all operators (for RICARDO view)
+  const isRicardo = currentUser?.name === 'RICARDO';
+  
+  const operatorStats = isRicardo ? operators
+    .filter(op => op.name !== 'RICARDO' && !op.hideFromSchedule)
+    .map(operator => {
+      const operatorSchedule = scheduleData.filter(
+        entry => entry.meioPeriodo === operator.name || entry.fechamento === operator.name
+      );
+      
+      return {
+        name: operator.name,
+        totalDays: operatorSchedule.length,
+        daysOff: 31 - operatorSchedule.length,
+        meioPeriodo: operatorSchedule.filter(s => s.meioPeriodo === operator.name).length,
+        fechamento: operatorSchedule.filter(s => s.fechamento === operator.name).length,
+        weekends: operatorSchedule.filter(s => s.dayOfWeek === 'SABADO' || s.dayOfWeek === 'DOMINGO').length,
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name)) : [];
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -276,36 +297,76 @@ const ScheduleView: React.FC = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-        <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{mySchedule.length}</div>
-          <div className="text-xs text-muted-foreground mt-1">Dias de Trabalho</div>
-        </div>
-        <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-muted-foreground">
-            {31 - mySchedule.length}
+      {isRicardo ? (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-primary" />
+            Estatísticas dos Operadores - Janeiro 2026
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {operatorStats.map(stat => (
+              <div key={stat.name} className="glass-card-elevated p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-lg">{stat.name}</h4>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-primary">{stat.totalDays}</div>
+                    <div className="text-xs text-muted-foreground mt-1">Dias de Trabalho</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-muted-foreground">{stat.daysOff}</div>
+                    <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-secondary">{stat.meioPeriodo}</div>
+                    <div className="text-xs text-muted-foreground mt-1">Meio Período</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-warning">{stat.fechamento}</div>
+                    <div className="text-xs text-muted-foreground mt-1">Fechamento</div>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-border/50 text-center">
+                  <div className="text-xl font-bold text-helipad-orange">{stat.weekends}</div>
+                  <div className="text-xs text-muted-foreground mt-1">Fins de Semana</div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
         </div>
-        <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-secondary">
-            {mySchedule.filter(s => s.meioPeriodo === currentUser.name).length}
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div className="glass-card p-4 text-center">
+            <div className="text-3xl font-bold text-primary">{mySchedule.length}</div>
+            <div className="text-xs text-muted-foreground mt-1">Dias de Trabalho</div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Meio Período</div>
-        </div>
-        <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-warning">
-            {mySchedule.filter(s => s.fechamento === currentUser.name).length}
+          <div className="glass-card p-4 text-center">
+            <div className="text-3xl font-bold text-muted-foreground">
+              {31 - mySchedule.length}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Fechamento</div>
-        </div>
-        <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-helipad-orange">
-            {mySchedule.filter(s => s.dayOfWeek === 'SABADO' || s.dayOfWeek === 'DOMINGO').length}
+          <div className="glass-card p-4 text-center">
+            <div className="text-3xl font-bold text-secondary">
+              {mySchedule.filter(s => s.meioPeriodo === currentUser.name).length}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">Meio Período</div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Fins de Semana</div>
+          <div className="glass-card p-4 text-center">
+            <div className="text-3xl font-bold text-warning">
+              {mySchedule.filter(s => s.fechamento === currentUser.name).length}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">Fechamento</div>
+          </div>
+          <div className="glass-card p-4 text-center">
+            <div className="text-3xl font-bold text-helipad-orange">
+              {mySchedule.filter(s => s.dayOfWeek === 'SABADO' || s.dayOfWeek === 'DOMINGO').length}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">Fins de Semana</div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
