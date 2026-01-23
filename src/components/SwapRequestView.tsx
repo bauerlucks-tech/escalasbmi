@@ -371,6 +371,11 @@ const SwapRequestView: React.FC = () => {
                         <div className="flex items-center gap-2 text-left">
                           <User className="w-4 h-4 text-success" />
                           <span className="font-medium">{selectedOperator}</span>
+                          {getOperatorShiftsForDay(selectedTargetEntry, selectedOperator).length > 0 && (
+                            <span className="text-xs text-muted-foreground ml-1">
+                              ({getShiftLabel(getOperatorShiftsForDay(selectedTargetEntry, selectedOperator)[0])})
+                            </span>
+                          )}
                         </div>
                       )}
                     </SelectValue>
@@ -378,14 +383,36 @@ const SwapRequestView: React.FC = () => {
                   <SelectContent className="max-h-[300px]">
                     {[selectedTargetEntry.meioPeriodo, selectedTargetEntry.fechamento]
                       .filter((name, index, self) => name && self.indexOf(name) === index)
-                      .map(operatorName => (
-                        <SelectItem key={operatorName} value={operatorName} className="py-3">
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-success" />
-                            <span className="font-medium">{operatorName}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
+                      .map(operatorName => {
+                        const shifts = getOperatorShiftsForDay(selectedTargetEntry, operatorName);
+                        return (
+                          <SelectItem key={operatorName} value={operatorName} className="py-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
+                                <Users className="w-4 h-4 text-success" />
+                              </div>
+                              <div>
+                                <div className="font-medium">{operatorName}</div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  {shifts.map((shift, idx) => (
+                                    <span key={shift}>
+                                      {shift === 'meioPeriodo' ? (
+                                        <span className="flex items-center gap-1 text-secondary">
+                                          <Sun className="w-3 h-3" /> MP
+                                        </span>
+                                      ) : (
+                                        <span className="flex items-center gap-1 text-warning">
+                                          <Sunset className="w-3 h-3" /> FE
+                                        </span>
+                                      )}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                   </SelectContent>
                 </Select>
 

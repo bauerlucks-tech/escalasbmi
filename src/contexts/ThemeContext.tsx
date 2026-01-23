@@ -13,7 +13,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('escala_theme');
-    return (saved as Theme) || 'system';
+    return (saved as Theme) || 'dark'; // MUDADO: 'system' para 'dark'
   });
 
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
