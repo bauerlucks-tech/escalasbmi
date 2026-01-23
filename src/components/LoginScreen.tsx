@@ -8,7 +8,7 @@ import { PartnerLogos, AviationBadge } from '@/components/logos/CompanyLogos';
 import { AlertCircle, Lock, User } from 'lucide-react';
 
 const LoginScreen: React.FC = () => {
-  const { login, users } = useAuth();
+  const { login } = useAuth();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -72,7 +72,7 @@ const LoginScreen: React.FC = () => {
           </div>
           <h1 className="text-2xl font-bold text-gradient mb-2">Operações Aéreas Offshore</h1>
           <p className="text-muted-foreground text-sm mb-3">
-            Sistema de Gestão de Escalas - Tripulações
+            Sistema de Gestão de Escalas - Área Branca SBMI
           </p>
           <AviationBadge />
         </div>
@@ -130,20 +130,7 @@ const LoginScreen: React.FC = () => {
 
         {/* User hints */}
         <div className="mt-6 pt-6 border-t border-border/50">
-          <p className="text-xs text-muted-foreground text-center mb-3">
-            Operadores cadastrados:
-          </p>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {users.map(user => (
-              <span 
-                key={user.id}
-                className="px-2 py-1 text-xs bg-muted/50 rounded-md text-muted-foreground"
-              >
-                {user.name}
-              </span>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground text-center mt-3">
+          <p className="text-xs text-muted-foreground text-center">
             Senha padrão: <span className="font-mono text-primary">1234</span>
           </p>
         </div>
