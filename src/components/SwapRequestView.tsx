@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
-import { ScheduleEntry } from '@/data/scheduleData';
+import { ScheduleEntry, getCurrentSchedules, getMonthName } from '@/data/scheduleData';
 import { Button } from '@/components/ui/button';
 import { ArrowLeftRight, Calendar, User, AlertCircle, Check, Clock, ArrowRight, Sun, Sunset, Users } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,7 +17,10 @@ type ShiftType = 'meioPeriodo' | 'fechamento';
 
 const SwapRequestView: React.FC = () => {
   const { currentUser, users } = useAuth();
-  const { createSwapRequest, getMyRequests, scheduleData } = useSwap();
+  const { createSwapRequest, getMyRequests, currentSchedules, switchToSchedule } = useSwap();
+  
+  // Step 0: Select month
+  const [selectedMonth, setSelectedMonth] = useState<{month: number, year: number} | null>(null);
   
   // Step 1: Select my day to give away
   const [selectedMyDay, setSelectedMyDay] = useState<string | null>(null);
@@ -48,6 +51,23 @@ const SwapRequestView: React.FC = () => {
     return dateTime >= today.getTime();
   };
 
+  // Get available months for selection
+  const availableMonths = useMemo(() => {
+    return currentSchedules.map(schedule => ({
+      month: schedule.month,
+      year: schedule.year,
+      label: `${getMonthName(schedule.month)}/${schedule.year}`,
+      entries: schedule.entries
+    }));
+  }, [currentSchedules]);
+  
+  // Get schedule data for selected month
+  const currentScheduleData = useMemo(() => {
+    if (!selectedMonth) return [];
+    const schedule = currentSchedules.find(s => s.month === selectedMonth.month && s.year === selectedMonth.year);
+    return schedule ? schedule.entries : [];
+  }, [selectedMonth, currentSchedules]);
+
   // Get available operators (other active users) - DEFINIR PRIMEIRO
   const availableOperators = useMemo(() => {
     return users.filter(u => 
@@ -60,40 +80,40 @@ const SwapRequestView: React.FC = () => {
 
   // Get days where user is scheduled (from today onwards)
   const myScheduledDays = useMemo(() => {
-    return scheduleData.filter(entry => 
+    return currentScheduleData.filter(entry => 
       (entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name) &&
       isDateTodayOrFuture(entry.date)
     );
-  }, [scheduleData, currentUser.name]);
+  }, [currentScheduleData, currentUser.name]);
 
   // Get all available days (from today onwards) to select target day
   const availableDays = useMemo(() => {
-    return scheduleData.filter(entry => isDateTodayOrFuture(entry.date));
-  }, [scheduleData]);
+    return currentScheduleData.filter(entry => isDateTodayOrFuture(entry.date));
+  }, [currentScheduleData]);
 
   // Get operators available on the selected target day
   const operatorsOnTargetDay = useMemo(() => {
     if (!selectedTargetDay) return [];
-    const targetEntry = scheduleData.find(e => e.date === selectedTargetDay);
+    const targetEntry = currentScheduleData.find(e => e.date === selectedTargetDay);
     if (!targetEntry) return [];
     
     return availableOperators.filter(op => 
       op.name === targetEntry.meioPeriodo || 
       op.name === targetEntry.fechamento
     );
-  }, [selectedTargetDay, availableOperators, scheduleData]);
+  }, [selectedTargetDay, availableOperators, currentScheduleData]);
 
   // Get days where selected operator is scheduled (from today onwards)
   const operatorScheduledDays = useMemo(() => {
     if (!selectedOperator) return [];
-    return scheduleData.filter(entry => 
+    return currentScheduleData.filter(entry => 
       (entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator) &&
       isDateTodayOrFuture(entry.date)
     );
-  }, [scheduleData, selectedOperator]);
+  }, [currentScheduleData, selectedOperator]);
 
   const getScheduleByDate = (dateStr: string): ScheduleEntry | undefined => {
-    return scheduleData.find(s => s.date === dateStr);
+    return currentScheduleData.find(s => s.date === dateStr);
   };
 
   const getMyShiftsForDay = (entry: ScheduleEntry): ShiftType[] => {
@@ -151,6 +171,7 @@ const SwapRequestView: React.FC = () => {
   };
 
   const resetForm = () => {
+    setSelectedMonth(null);
     setSelectedMyDay(null);
     setSelectedMyShift(null);
     setSelectedOperator(null);
@@ -188,11 +209,53 @@ const SwapRequestView: React.FC = () => {
         </div>
 
         <div className="p-4 space-y-6">
+          {/* Step 0: Select month */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">0</div>
+              Selecione o mês da escala
+            </label>
+            
+            <Select 
+              value={selectedMonth ? `${selectedMonth.month}/${selectedMonth.year}` : ''} 
+              onValueChange={(v) => {
+                const [month, year] = v.split('/').map(Number);
+                setSelectedMonth({ month, year });
+                setSelectedMyDay(null);
+                setSelectedMyShift(null);
+                setSelectedOperator(null);
+                setSelectedTargetDay(null);
+                setSelectedTargetShift(null);
+              }}
+            >
+              <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                <SelectValue placeholder="Selecione o mês">
+                  {selectedMonth && (
+                    <div className="flex items-center gap-2 text-left">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      <span className="font-medium">{getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>
+                    </div>
+                  )}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {availableMonths.map(month => (
+                  <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      <span>{month.label}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Step 1: Select my day and shift */}
           <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</div>
-              Qual dia e turno você quer ceder?
+              Qual dia e turno você quer ceder? {selectedMonth && <span className="text-muted-foreground">- {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
             </label>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -206,6 +269,7 @@ const SwapRequestView: React.FC = () => {
                   setSelectedTargetDay(null);
                   setSelectedTargetShift(null);
                 }}
+                disabled={!selectedMonth}
               >
                 <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
                   <SelectValue placeholder="Selecione o dia">
@@ -363,7 +427,7 @@ const SwapRequestView: React.FC = () => {
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">3</div>
-                Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}?
+                Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}? {selectedMonth && <span className="text-muted-foreground">- {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
               </label>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -486,7 +550,7 @@ const SwapRequestView: React.FC = () => {
             <div className="glass-card p-4 bg-muted/20 animate-fade-in">
               <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
                 <Check className="w-4 h-4 text-success" />
-                Resumo da Troca
+                Resumo da Troca {selectedMonth && <span className="text-muted-foreground">- {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -561,8 +625,30 @@ const SwapRequestView: React.FC = () => {
           </div>
         ) : (
           <div className="divide-y divide-border/30">
-            {myRequests.map(request => (
-              <div key={request.id} className="flex items-center justify-between p-4">
+            {myRequests.map(request => {
+              const getMonthFromRequest = (dateStr: string) => {
+                const [day, month, year] = dateStr.split('/').map(Number);
+                return `${getMonthName(month)}/${year}`;
+              };
+              
+              return (
+                <div key={request.id} className="flex items-center justify-between p-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-medium">{getMonthFromRequest(request.originalDate)}</span>
+                      {getStatusBadge(request.status)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span>Você cede:</span>
+                        <span className="font-medium">Dia {request.originalDate.split('/')[0]} ({getShiftLabel(request.originalShift)})</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>Assume:</span>
+                        <span className="font-medium">Dia {request.targetDate.split('/')[0]} ({getShiftLabel(request.targetShift)}) de {request.targetName}</span>
+                      </div>
+                    </div>
+                  </div>
                 <div>
                   <div className="font-medium text-sm flex items-center gap-2 flex-wrap">
                     <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 text-primary rounded text-xs">
@@ -596,7 +682,8 @@ const SwapRequestView: React.FC = () => {
                 </div>
                 {getStatusBadge(request.status)}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
