@@ -1,8 +1,12 @@
-export default function Index() {
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Escalas</h1>
-      <p>Sistema carregado com sucesso.</p>
-    </div>
-  );
-}
+import React from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import LoginScreen from '@/components/LoginScreen';
+import Dashboard from '@/components/Dashboard';
+
+const Index: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
+  return isAuthenticated ? <Dashboard /> : <LoginScreen />;
+};
+
+export default Index;

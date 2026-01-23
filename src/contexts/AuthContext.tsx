@@ -1,57 +1,191 @@
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User, UserRole, UserStatus, initialUsers } from '@/data/scheduleData';
 
-type Role = "admin" | "user" | "suser";
-
-type User = {
-  name: string;
-  role: Role;
-};
-
-type AuthContextType = {
-  user: User | null;
-  isAuthenticated: boolean;
+interface AuthContextType {
+  currentUser: User | null;
+  users: User[];
+  activeUsers: User[];
+  operators: User[];
   login: (name: string, password: string) => boolean;
   logout: () => void;
-};
+  resetPassword: (userId: string, newPassword: string) => void;
+  updateUserRole: (userId: string, role: UserRole) => void;
+  updateUserStatus: (userId: string, status: UserStatus) => void;
+  createUser: (name: string, password: string, role: UserRole) => User | null;
+  archiveUser: (userId: string) => void;
+  isAuthenticated: boolean;
+  isAdmin: (user: User | null) => boolean;
+  updateUserPassword: (userId: string, currentPassword: string, newPassword: string) => boolean;
+  updateUserProfile: (userId: string, profileImage: string) => void;
+}
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const USERS = [
-  { name: "RICARDO", password: "admin123", role: "admin" as Role },
-  { name: "LUCAS", password: "suser123", role: "suser" as Role },
-  { name: "CARLOS", password: "user123", role: "user" as Role },
-];
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [users, setUsers] = useState<User[]>(() => {
+    const saved = localStorage.getItem('escala_users');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Migration: add role/status if missing
+      return parsed.map((u: any) => ({
+        ...u,
+        role: u.role || (u.isAdmin ? 'administrador' : 'operador'),
+        status: u.status || 'ativo',
+      }));
+    }
+    return initialUsers;
+  });
+  
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('escala_currentUser');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        ...parsed,
+        role: parsed.role || (parsed.isAdmin ? 'administrador' : 'operador'),
+        status: parsed.status || 'ativo',
+      };
+    }
+    return null;
+  });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  // Computed lists
+  const activeUsers = users.filter(u => u.status === 'ativo');
+  const operators = users.filter(u => u.role === 'operador' && u.status === 'ativo');
 
-  const login = (name: string, password: string) => {
-    const found = USERS.find(
-      (u) => u.name === name.toUpperCase() && u.password === password
+  useEffect(() => {
+    localStorage.setItem('escala_users', JSON.stringify(users));
+  }, [users]);
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('escala_currentUser', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('escala_currentUser');
+    }
+  }, [currentUser]);
+
+  const isAdmin = (user: User | null): boolean => {
+    return user?.role === 'administrador';
+  };
+
+  const login = (name: string, password: string): boolean => {
+    const user = users.find(
+      u => u.name.toUpperCase() === name.toUpperCase() && 
+           u.password === password && 
+           u.status === 'ativo'
     );
-
-    if (!found) return false;
-
-    setUser({ name: found.name, role: found.role });
-    return true;
+    if (user) {
+      setCurrentUser(user);
+      return true;
+    }
+    return false;
   };
 
   const logout = () => {
-    setUser(null);
+    setCurrentUser(null);
+  };
+
+  const resetPassword = (userId: string, newPassword: string) => {
+    setUsers(prev => prev.map(u => 
+      u.id === userId ? { ...u, password: newPassword } : u
+    ));
+  };
+
+  const updateUserRole = (userId: string, role: UserRole) => {
+    setUsers(prev => prev.map(u => 
+      u.id === userId ? { ...u, role } : u
+    ));
+    // Update current user if it's the same user
+    if (currentUser?.id === userId) {
+      setCurrentUser(prev => prev ? { ...prev, role } : null);
+    }
+  };
+
+  const updateUserStatus = (userId: string, status: UserStatus) => {
+    setUsers(prev => prev.map(u => 
+      u.id === userId ? { ...u, status } : u
+    ));
+  };
+
+  const createUser = (name: string, password: string, role: UserRole): User | null => {
+    const existingUser = users.find(u => u.name.toUpperCase() === name.toUpperCase());
+    if (existingUser) {
+      return null; // User already exists
+    }
+
+    const newUser: User = {
+      id: String(Date.now()),
+      name: name.toUpperCase(),
+      password,
+      role,
+      status: 'ativo',
+    };
+
+    setUsers(prev => [...prev, newUser]);
+    return newUser;
+  };
+
+  const archiveUser = (userId: string) => {
+    updateUserStatus(userId, 'arquivado');
+  };
+
+  const updateUserPassword = (userId: string, currentPassword: string, newPassword: string): boolean => {
+    const user = users.find(u => u.id === userId);
+    if (!user || user.password !== currentPassword) {
+      return false;
+    }
+
+    setUsers(prev => prev.map(u => 
+      u.id === userId ? { ...u, password: newPassword } : u
+    ));
+    
+    // Update current user if it's the same user
+    if (currentUser?.id === userId) {
+      setCurrentUser(prev => prev ? { ...prev, password: newPassword } : null);
+    }
+    
+    return true;
+  };
+
+  const updateUserProfile = (userId: string, profileImage: string) => {
+    setUsers(prev => prev.map(u => 
+      u.id === userId ? { ...u, profileImage } : u
+    ));
+    
+    // Update current user if it's the same user
+    if (currentUser?.id === userId) {
+      setCurrentUser(prev => prev ? { ...prev, profileImage } : null);
+    }
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{
+      currentUser,
+      users,
+      activeUsers,
+      operators,
+      login,
+      logout,
+      resetPassword,
+      updateUserRole,
+      updateUserStatus,
+      createUser,
+      archiveUser,
+      isAuthenticated: !!currentUser,
+      isAdmin,
+      updateUserPassword,
+      updateUserProfile,
+    }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
