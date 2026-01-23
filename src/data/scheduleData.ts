@@ -206,10 +206,10 @@ export const addNewMonthSchedule = (
     };
   }
   
-  // Archive old schedules if needed (keep last 3 months)
+  // Archive old schedules if needed (keep last 6 months instead of 3)
   const archived: ArchivedSchedule[] = [];
   const cutoffDate = new Date(year, month - 1, 1);
-  cutoffDate.setMonth(cutoffDate.getMonth() - 3); // Keep last 3 months
+  cutoffDate.setMonth(cutoffDate.getMonth() - 6); // Keep last 6 months
   
   const toArchive = storage.current.filter(schedule => {
     const scheduleDate = new Date(schedule.year, schedule.month - 1);
@@ -314,6 +314,7 @@ export const getArchivedSchedules = (): ArchivedSchedule[] => {
 
 export const getCurrentSchedules = (): MonthSchedule[] => {
   const storage = createScheduleStorage();
+  // Sort by date (newest first) but don't filter by active status
   return storage.current.sort((a, b) => {
     const dateA = new Date(a.year, a.month - 1);
     const dateB = new Date(b.year, b.month - 1);
