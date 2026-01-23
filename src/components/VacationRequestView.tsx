@@ -270,18 +270,43 @@ const VacationRequestView: React.FC = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Data de Fim</label>
-                <Input
-                  type="date"
-                  value={endDate ? format(endDate, 'yyyy-MM-dd') : ''}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setEndDate(new Date(e.target.value));
-                    } else {
-                      setEndDate(undefined);
-                    }
-                  }}
-                  min={startDate ? format(startDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')}
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                      disabled={!startDate}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? formatDate(endDate) : "Selecione a data"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          setEndDate(date);
+                        }
+                      }}
+                      disabled={(date) => {
+                        if (!startDate) return true;
+                        return isBefore(date, startDate) || isDateDisabled(date);
+                      }}
+                      locale={ptBR}
+                      initialFocus
+                    />
+                    
+                    {/* Conflict Legend */}
+                    <div className="p-3 border-t border-border/50">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-3 h-3 rounded bg-destructive/10 border border-destructive/30 line-through"></div>
+                        <span>Dia indisponível (férias aprovadas)</span>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
