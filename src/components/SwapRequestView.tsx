@@ -34,10 +34,25 @@ const SwapRequestView: React.FC = () => {
 
   const myRequests = getMyRequests(currentUser.id);
 
-  // Get days where user is scheduled
+  // Helper function to convert date string (DD/MM/YYYY) to timestamp
+  const convertDateToTime = (dateStr: string): number => {
+    const [day, month, year] = dateStr.split('/').map(Number);
+    return new Date(year, month - 1, day).getTime();
+  };
+
+  // Helper function to check if date is today or in the future
+  const isDateTodayOrFuture = (dateStr: string): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dateTime = convertDateToTime(dateStr);
+    return dateTime >= today.getTime();
+  };
+
+  // Get days where user is scheduled (from today onwards)
   const myScheduledDays = useMemo(() => {
     return scheduleData.filter(entry => 
-      entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
+      (entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name) &&
+      isDateTodayOrFuture(entry.date)
     );
   }, [scheduleData, currentUser.name]);
 
@@ -50,11 +65,12 @@ const SwapRequestView: React.FC = () => {
     );
   }, [users, currentUser.id]);
 
-  // Get days where selected operator is scheduled
+  // Get days where selected operator is scheduled (from today onwards)
   const operatorScheduledDays = useMemo(() => {
     if (!selectedOperator) return [];
     return scheduleData.filter(entry => 
-      entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator
+      (entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator) &&
+      isDateTodayOrFuture(entry.date)
     );
   }, [scheduleData, selectedOperator]);
 
