@@ -10,9 +10,9 @@ const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('schedule');
   const { currentUser } = useAuth();
 
-  // Redireciona RICARDO se tentar acessar a aba de troca
+  // Redireciona RICARDO se tentar acessar as abas de troca ou solicitações
   useEffect(() => {
-    if (currentUser?.name === 'RICARDO' && activeTab === 'swap') {
+    if (currentUser?.name === 'RICARDO' && (activeTab === 'swap' || activeTab === 'requests')) {
       setActiveTab('schedule');
     }
   }, [currentUser, activeTab]);

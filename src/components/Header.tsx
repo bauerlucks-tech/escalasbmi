@@ -26,9 +26,9 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { id: 'requests', label: 'Solicitações', icon: Bell, badge: pendingCount },
   ];
 
-  // Remove "Solicitar Troca" para o usuário RICARDO
+  // Remove "Solicitar Troca" e "Solicitações" para o usuário RICARDO
   if (currentUser?.name === 'RICARDO') {
-    tabs = tabs.filter(tab => tab.id !== 'swap');
+    tabs = tabs.filter(tab => tab.id !== 'swap' && tab.id !== 'requests');
   }
 
   if (isAdmin(currentUser)) {
