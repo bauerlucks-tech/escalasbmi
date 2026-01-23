@@ -23,25 +23,32 @@ const SwapRequestView: React.FC = () => {
   const [selectedMyDay, setSelectedMyDay] = useState<string | null>(null);
   const [selectedMyShift, setSelectedMyShift] = useState<ShiftType | null>(null);
   
-  // Step 2: Select target operator
-  const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
-  
-  // Step 3: Select day and shift to take
+  // Step 2: Select target day
   const [selectedTargetDay, setSelectedTargetDay] = useState<string | null>(null);
+  
+  // Step 3: Select target operator and shift
+  const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [selectedTargetShift, setSelectedTargetShift] = useState<ShiftType | null>(null);
 
   if (!currentUser) return null;
 
   const myRequests = getMyRequests(currentUser.id);
 
-  // Get days where user is scheduled
-  const myScheduledDays = useMemo(() => {
-    return scheduleData.filter(entry => 
-      entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
-    );
-  }, [scheduleData, currentUser.name]);
+  // Helper function to convert date string (DD/MM/YYYY) to timestamp
+  const convertDateToTime = (dateStr: string): number => {
+    const [day, month, year] = dateStr.split('/').map(Number);
+    return new Date(year, month - 1, day).getTime();
+  };
 
-  // Get available operators (other active users)
+  // Helper function to check if date is today or in the future
+  const isDateTodayOrFuture = (dateStr: string): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dateTime = convertDateToTime(dateStr);
+    return dateTime >= today.getTime();
+  };
+
+  // Get available operators (other active users) - DEFINIR PRIMEIRO
   const availableOperators = useMemo(() => {
     return users.filter(u => 
       u.id !== currentUser.id && 
@@ -50,11 +57,37 @@ const SwapRequestView: React.FC = () => {
     );
   }, [users, currentUser.id]);
 
-  // Get days where selected operator is scheduled
+  // Get days where user is scheduled (from today onwards)
+  const myScheduledDays = useMemo(() => {
+    return scheduleData.filter(entry => 
+      (entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name) &&
+      isDateTodayOrFuture(entry.date)
+    );
+  }, [scheduleData, currentUser.name]);
+
+  // Get all available days (from today onwards) to select target day
+  const availableDays = useMemo(() => {
+    return scheduleData.filter(entry => isDateTodayOrFuture(entry.date));
+  }, [scheduleData]);
+
+  // Get operators available on the selected target day
+  const operatorsOnTargetDay = useMemo(() => {
+    if (!selectedTargetDay) return [];
+    const targetEntry = scheduleData.find(e => e.date === selectedTargetDay);
+    if (!targetEntry) return [];
+    
+    return availableOperators.filter(op => 
+      op.name === targetEntry.meioPeriodo || 
+      op.name === targetEntry.fechamento
+    );
+  }, [selectedTargetDay, availableOperators, scheduleData]);
+
+  // Get days where selected operator is scheduled (from today onwards)
   const operatorScheduledDays = useMemo(() => {
     if (!selectedOperator) return [];
     return scheduleData.filter(entry => 
-      entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator
+      (entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator) &&
+      isDateTodayOrFuture(entry.date)
     );
   }, [scheduleData, selectedOperator]);
 
@@ -69,11 +102,10 @@ const SwapRequestView: React.FC = () => {
     return shifts;
   };
 
-  const getOperatorShiftsForDay = (entry: ScheduleEntry): ShiftType[] => {
-    if (!selectedOperator) return [];
+  const getOperatorShiftsForDay = (entry: ScheduleEntry, operator: string): ShiftType[] => {
     const shifts: ShiftType[] = [];
-    if (entry.meioPeriodo === selectedOperator) shifts.push('meioPeriodo');
-    if (entry.fechamento === selectedOperator) shifts.push('fechamento');
+    if (entry.meioPeriodo === operator) shifts.push('meioPeriodo');
+    if (entry.fechamento === operator) shifts.push('fechamento');
     return shifts;
   };
 
@@ -259,61 +291,65 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
 
-          {/* Step 2: Select operator */}
+          {/* Step 2: Select target day */}
           {selectedMyDay && selectedMyShift && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
-                Com quem você quer trocar?
+                Qual data você quer trocar?
               </label>
               
               <Select 
-                value={selectedOperator || ''} 
+                value={selectedTargetDay || ''} 
                 onValueChange={(v) => {
-                  setSelectedOperator(v);
-                  setSelectedTargetDay(null);
+                  setSelectedTargetDay(v);
+                  setSelectedOperator(null);
                   setSelectedTargetShift(null);
                 }}
               >
                 <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
-                  <SelectValue placeholder="Selecione o operador">
-                    {selectedOperator && (
+                  <SelectValue placeholder="Selecione o dia">
+                    {selectedTargetEntry && (
                       <div className="flex items-center gap-2 text-left">
-                        <User className="w-4 h-4 text-secondary" />
-                        <span className="font-medium">{selectedOperator}</span>
+                        <Calendar className="w-4 h-4 text-success" />
+                        <span className="font-medium">Dia {getDayNumber(selectedTargetDay!)}</span>
+                        <span className="text-muted-foreground">- {selectedTargetEntry.dayOfWeek}</span>
                       </div>
                     )}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
-                  {availableOperators.map(operator => {
-                    const operatorDays = scheduleData.filter(e => 
-                      e.meioPeriodo === operator.name || e.fechamento === operator.name
-                    ).length;
-                    
-                    return (
-                      <SelectItem key={operator.id} value={operator.name} className="py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
-                            <Users className="w-5 h-5 text-secondary" />
-                          </div>
-                          <div>
-                            <div className="font-medium">{operator.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {operatorDays} dias escalados
-                            </div>
+                  {availableDays.map(entry => (
+                    <SelectItem key={entry.date} value={entry.date} className="py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+                          <span className="text-success font-bold">{getDayNumber(entry.date)}</span>
+                        </div>
+                        <div>
+                          <div className="font-medium">{entry.dayOfWeek}</div>
+                          <div className="text-xs text-muted-foreground flex items-center gap-2">
+                            {entry.meioPeriodo && (
+                              <span className="flex items-center gap-1 text-secondary">
+                                <Sun className="w-3 h-3" /> {entry.meioPeriodo}
+                              </span>
+                            )}
+                            {entry.fechamento && (
+                              <span className="flex items-center gap-1 text-warning">
+                                <Sunset className="w-3 h-3" /> {entry.fechamento}
+                              </span>
+                            )}
                           </div>
                         </div>
-                      </SelectItem>
-                    );
-                  })}
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           )}
 
           {/* Arrow Divider */}
-          {selectedOperator && (
+          {selectedTargetDay && (
             <div className="flex justify-center">
               <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center animate-fade-in">
                 <ArrowRight className="w-5 h-5 text-muted-foreground" />
@@ -321,70 +357,76 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
 
-          {/* Step 3: Select target day and shift */}
-          {selectedOperator && (
+          {/* Step 3: Select operator and shift */}
+          {selectedTargetDay && selectedTargetEntry && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">3</div>
-                Qual dia e turno de {selectedOperator} você quer assumir?
+                Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}?
               </label>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Target Day Selection */}
+                {/* Operator Selection */}
                 <Select 
-                  value={selectedTargetDay || ''} 
+                  value={selectedOperator || ''} 
                   onValueChange={(v) => {
-                    setSelectedTargetDay(v);
+                    setSelectedOperator(v);
                     setSelectedTargetShift(null);
                   }}
                 >
                   <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
-                    <SelectValue placeholder="Selecione o dia">
-                      {selectedTargetEntry && (
+                    <SelectValue placeholder="Selecione o operador">
+                      {selectedOperator && (
                         <div className="flex items-center gap-2 text-left">
-                          <Calendar className="w-4 h-4 text-success" />
-                          <span className="font-medium">Dia {getDayNumber(selectedTargetDay!)}</span>
-                          <span className="text-muted-foreground">- {selectedTargetEntry.dayOfWeek}</span>
+                          <User className="w-4 h-4 text-success" />
+                          <span className="font-medium">{selectedOperator}</span>
+                          {getOperatorShiftsForDay(selectedTargetEntry, selectedOperator).length > 0 && (
+                            <span className="text-xs text-muted-foreground ml-1">
+                              ({getShiftLabel(getOperatorShiftsForDay(selectedTargetEntry, selectedOperator)[0])})
+                            </span>
+                          )}
                         </div>
                       )}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
-                    {operatorScheduledDays.length === 0 ? (
-                      <div className="p-4 text-center text-muted-foreground text-sm">
-                        {selectedOperator} não tem dias escalados
-                      </div>
-                    ) : (
-                      operatorScheduledDays.map(entry => (
-                        <SelectItem key={entry.date} value={entry.date} className="py-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
-                              <span className="text-success font-bold">{getDayNumber(entry.date)}</span>
-                            </div>
-                            <div>
-                              <div className="font-medium">{entry.dayOfWeek}</div>
-                              <div className="text-xs text-muted-foreground flex items-center gap-2">
-                                {entry.meioPeriodo === selectedOperator && (
-                                  <span className="flex items-center gap-1 text-secondary">
-                                    <Sun className="w-3 h-3" /> Meio Período
-                                  </span>
-                                )}
-                                {entry.fechamento === selectedOperator && (
-                                  <span className="flex items-center gap-1 text-warning">
-                                    <Sunset className="w-3 h-3" /> Fechamento
-                                  </span>
-                                )}
+                    {[selectedTargetEntry.meioPeriodo, selectedTargetEntry.fechamento]
+                      .filter((name, index, self) => name && self.indexOf(name) === index)
+                      .map(operatorName => {
+                        const shifts = getOperatorShiftsForDay(selectedTargetEntry, operatorName);
+                        return (
+                          <SelectItem key={operatorName} value={operatorName} className="py-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center">
+                                <Users className="w-4 h-4 text-success" />
+                              </div>
+                              <div>
+                                <div className="font-medium">{operatorName}</div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                  {shifts.map((shift, idx) => (
+                                    <span key={shift}>
+                                      {shift === 'meioPeriodo' ? (
+                                        <span className="flex items-center gap-1 text-secondary">
+                                          <Sun className="w-3 h-3" /> MP
+                                        </span>
+                                      ) : (
+                                        <span className="flex items-center gap-1 text-warning">
+                                          <Sunset className="w-3 h-3" /> FE
+                                        </span>
+                                      )}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </SelectItem>
-                      ))
-                    )}
+                          </SelectItem>
+                        );
+                      })}
                   </SelectContent>
                 </Select>
 
-                {/* Target Shift Selection */}
-                {selectedTargetDay && selectedTargetEntry && (
+                {/* Shift Selection */}
+                {selectedOperator && (
                   <Select 
                     value={selectedTargetShift || ''} 
                     onValueChange={(v) => setSelectedTargetShift(v as ShiftType)}
@@ -411,7 +453,7 @@ const SwapRequestView: React.FC = () => {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {getOperatorShiftsForDay(selectedTargetEntry).map(shift => (
+                      {getOperatorShiftsForDay(selectedTargetEntry, selectedOperator).map(shift => (
                         <SelectItem key={shift} value={shift} className="py-3">
                           <div className="flex items-center gap-2">
                             {shift === 'meioPeriodo' 
@@ -422,7 +464,7 @@ const SwapRequestView: React.FC = () => {
                           </div>
                         </SelectItem>
                       ))}
-                      {getOperatorShiftsForDay(selectedTargetEntry).length === 2 && (
+                      {getOperatorShiftsForDay(selectedTargetEntry, selectedOperator).length === 2 && (
                         <SelectItem value="ambos" className="py-3">
                           <div className="flex items-center gap-2">
                             <Sun className="w-4 h-4 text-secondary" />
