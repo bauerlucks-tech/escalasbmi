@@ -7,6 +7,24 @@ export interface ScheduleEntry {
 
 export type UserRole = 'operador' | 'administrador';
 export type UserStatus = 'ativo' | 'arquivado';
+export type VacationStatus = 'pending' | 'approved' | 'rejected';
+
+export interface VacationRequest {
+  id: string;
+  operatorId: string;
+  operatorName: string;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  reason?: string;
+  status: VacationStatus;
+  requestedAt: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+  month: number;
+  year: number;
+}
 
 export interface User {
   id: string;
@@ -37,6 +55,10 @@ export interface ArchivedSchedule extends MonthSchedule {
 export interface ScheduleStorage {
   current: MonthSchedule[];
   archived: ArchivedSchedule[];
+}
+
+export interface VacationStorage {
+  requests: VacationRequest[];
 }
 
 export interface SwapRequest {
@@ -365,4 +387,93 @@ export const calculateScheduleStats = (entries: ScheduleEntry[]): {
   return Object.entries(stats)
     .map(([name, data]) => ({ name, ...data }))
     .sort((a, b) => b.totalDays - a.totalDays);
+};
+
+// Vacation storage functions
+export const createVacationStorage = (): VacationStorage => {
+  const stored = localStorage.getItem('vacationRequests');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return { requests: [] };
+};
+
+export const saveVacationStorage = (storage: VacationStorage): void => {
+  localStorage.setItem('vacationRequests', JSON.stringify(storage));
+};
+
+export const getVacationRequests = (): VacationRequest[] => {
+  const storage = createVacationStorage();
+  return storage.requests.sort((a, b) => 
+    new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime()
+  );
+};
+
+export const addVacationRequest = (
+  operatorId: string,
+  operatorName: string,
+  startDate: string,
+  endDate: string,
+  reason?: string
+): VacationRequest => {
+  const storage = createVacationStorage();
+  
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const totalDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  
+  const request: VacationRequest = {
+    id: `vacation_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    operatorId,
+    operatorName,
+    startDate,
+    endDate,
+    totalDays,
+    reason,
+    status: 'pending',
+    requestedAt: new Date().toISOString(),
+    month: start.getMonth() + 1,
+    year: start.getFullYear()
+  };
+  
+  storage.requests.push(request);
+  saveVacationStorage(storage);
+  
+  return request;
+};
+
+export const updateVacationStatus = (
+  requestId: string,
+  status: VacationStatus,
+  approvedBy?: string,
+  rejectionReason?: string
+): boolean => {
+  const storage = createVacationStorage();
+  const requestIndex = storage.requests.findIndex(r => r.id === requestId);
+  
+  if (requestIndex === -1) return false;
+  
+  storage.requests[requestIndex].status = status;
+  storage.requests[requestIndex].approvedBy = approvedBy;
+  storage.requests[requestIndex].approvedAt = new Date().toISOString();
+  if (rejectionReason) {
+    storage.requests[requestIndex].rejectionReason = rejectionReason;
+  }
+  
+  saveVacationStorage(storage);
+  return true;
+};
+
+export const getVacationRequestsByOperator = (operatorId: string): VacationRequest[] => {
+  const storage = createVacationStorage();
+  return storage.requests
+    .filter(r => r.operatorId === operatorId)
+    .sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+};
+
+export const getPendingVacationRequests = (): VacationRequest[] => {
+  const storage = createVacationStorage();
+  return storage.requests
+    .filter(r => r.status === 'pending')
+    .sort((a, b) => new Date(a.requestedAt).getTime() - new Date(b.requestedAt).getTime());
 };

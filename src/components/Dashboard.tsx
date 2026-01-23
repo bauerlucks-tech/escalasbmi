@@ -4,6 +4,8 @@ import ScheduleView from '@/components/ScheduleView';
 import SwapRequestView from '@/components/SwapRequestView';
 import RequestsView from '@/components/RequestsView';
 import AdminPanel from '@/components/AdminPanel';
+import VacationRequestView from '@/components/VacationRequestView';
+import VacationAdminView from '@/components/VacationAdminView';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
@@ -27,6 +29,8 @@ const Dashboard: React.FC = () => {
         return <RequestsView />;
       case 'admin':
         return <AdminPanel setActiveTab={setActiveTab} />;
+      case 'vacations':
+        return currentUser?.role === 'administrador' ? <VacationAdminView /> : <VacationRequestView />;
       default:
         return <ScheduleView />;
     }
