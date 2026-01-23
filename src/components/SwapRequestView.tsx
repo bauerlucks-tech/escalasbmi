@@ -252,9 +252,9 @@ const SwapRequestView: React.FC = () => {
           </div>
 
           {/* Step 1: Select my day and shift */}
-          <div className="space-y-3">
+          <div className="space-y-3 animate-scale-in">
             <label className="text-sm font-medium flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</div>
+              <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold animate-pulse-slow">1</div>
               {selectedMonth && <span className="text-muted-foreground">{getMonthName(selectedMonth.month)}/{selectedMonth.year} - </span>}
               Qual dia e turno você quer ceder?
             </label>
@@ -272,7 +272,7 @@ const SwapRequestView: React.FC = () => {
                 }}
                 disabled={!selectedMonth}
               >
-                <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                <SelectTrigger className="w-full h-auto py-3 bg-muted/30 btn-interactive">
                   <SelectValue placeholder="Selecione o dia">
                     {selectedMyEntry && (
                       <div className="flex items-center gap-2 text-left">

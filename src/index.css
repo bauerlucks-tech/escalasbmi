@@ -159,11 +159,23 @@
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
     box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px hsl(215 50% 5% / 0.6);
   }
 
   .glass-card-elevated {
     @apply bg-card/90 backdrop-blur-2xl border border-border/60 rounded-2xl;
     box-shadow: var(--shadow-elevated);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card-elevated:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 70px hsl(215 50% 5% / 0.8);
   }
 
   .glow-primary {
@@ -183,6 +195,12 @@
   .aviation-badge {
     @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
     @apply bg-primary/10 text-primary border border-primary/20;
+    transition: all 0.2s ease;
+  }
+
+  .aviation-badge:hover {
+    @apply bg-primary/20 border-primary/40;
+    transform: scale(1.05);
   }
 
   .badge-status {
@@ -224,6 +242,18 @@
     animation: fadeIn 0.4s ease-out forwards;
   }
 
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  .animate-bounce-in {
+    animation: bounceIn 0.6s ease-out forwards;
+  }
+
   .animate-rotor {
     animation: rotor 0.5s linear infinite;
   }
@@ -252,6 +282,35 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes rotor {
@@ -290,8 +349,70 @@
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--steel));
   border-radius: 4px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary));
+}
+
+/* Enhanced button interactions */
+.btn-interactive {
+  transition: all 0.2s ease;
+}
+
+.btn-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(210 100% 50% / 0.2);
+}
+
+.btn-interactive:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px hsl(210 100% 50% / 0.1);
+}
+
+/* Enhanced calendar days */
+.calendar-day {
+  transition: all 0.2s ease;
+}
+
+.calendar-day:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.calendar-day.has-shift {
+  background: linear-gradient(135deg, hsl(210 100% 50% / 0.1) 0%, hsl(45 100% 50% / 0.05) 100%);
+}
+
+.calendar-day.today {
+  box-shadow: 0 0 0 2px hsl(210 100% 50% / 0.5);
+}
+
+/* Status indicators */
+.status-indicator {
+  position: relative;
+}
+
+.status-indicator::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.status-pending::before {
+  background: hsl(var(--warning));
+}
+
+.status-success::before {
+  background: hsl(var(--success));
+}
+
+.status-error::before {
+  background: hsl(var(--destructive));
 }
