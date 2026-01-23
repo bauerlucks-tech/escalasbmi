@@ -6,10 +6,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarIcon, Plane, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { format, addDays, differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
+import { CalendarIcon, Plane, Clock, CheckCircle, XCircle, AlertCircle, Users } from 'lucide-react';
+import { format, addDays, differenceInDays, isAfter, isBefore, startOfDay, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { VacationRequest, VacationStatus, addVacationRequest, getVacationRequestsByOperator } from '@/data/scheduleData';
+import { VacationRequest, VacationStatus, addVacationRequest, getVacationRequestsByOperator, getVacationRequests } from '@/data/scheduleData';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -19,12 +19,14 @@ const VacationRequestView: React.FC = () => {
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [reason, setReason] = useState('');
   const [myVacations, setMyVacations] = useState<VacationRequest[]>([]);
+  const [approvedVacations, setApprovedVacations] = useState<VacationRequest[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
     // Load user's vacation requests
     loadMyVacations();
+    loadApprovedVacations();
   }, []);
 
   const loadMyVacations = () => {
@@ -38,9 +40,52 @@ const VacationRequestView: React.FC = () => {
     }
   };
 
+  const loadApprovedVacations = () => {
+    try {
+      const allVacations = getVacationRequests();
+      const approved = allVacations.filter(v => v.status === 'approved');
+      setApprovedVacations(approved);
+    } catch (error) {
+      console.error('Error loading approved vacations:', error);
+    }
+  };
+
   const calculateTotalDays = () => {
     if (!startDate || !endDate) return 0;
     return differenceInDays(endDate, startDate) + 1;
+  };
+
+  const checkDateConflicts = (date: Date): { hasConflict: boolean; conflicts: VacationRequest[] } => {
+    if (!currentUser) return { hasConflict: false, conflicts: [] };
+    
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const conflicts = approvedVacations.filter(vacation => {
+      if (vacation.operatorId === currentUser.id) return false;
+      
+      const vacationStart = new Date(vacation.startDate);
+      const vacationEnd = new Date(vacation.endDate);
+      
+      return date >= vacationStart && date <= vacationEnd;
+    });
+    
+    return { hasConflict: conflicts.length > 0, conflicts };
+  };
+
+  const isDateDisabled = (date: Date): boolean => {
+    if (isBefore(date, startOfDay(new Date()))) return true;
+    
+    const { hasConflict } = checkDateConflicts(date);
+    return hasConflict;
+  };
+
+  const getDateClassName = (date: Date): string => {
+    const { hasConflict } = checkDateConflicts(date);
+    
+    if (hasConflict) {
+      return 'bg-destructive/10 text-destructive border-destructive/30 line-through';
+    }
+    
+    return '';
   };
 
   const getStatusBadge = (status: VacationStatus) => {
@@ -89,6 +134,25 @@ const VacationRequestView: React.FC = () => {
 
     if (isBefore(startDate, startOfDay(new Date()))) {
       toast.error('A data de início não pode ser no passado');
+      return;
+    }
+
+    // Check for conflicts with approved vacations
+    const conflicts: string[] = [];
+    let currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
+      const { conflicts: dateConflicts } = checkDateConflicts(currentDate);
+      
+      dateConflicts.forEach(conflict => {
+        conflicts.push(`${format(currentDate, 'dd/MM/yyyy')} - ${conflict.operatorName}`);
+      });
+      
+      currentDate = addDays(currentDate, 1);
+    }
+    
+    if (conflicts.length > 0) {
+      toast.error(`Conflito com férias aprovadas: ${conflicts.join(', ')}`);
       return;
     }
 
@@ -177,9 +241,29 @@ const VacationRequestView: React.FC = () => {
                           }
                         }
                       }}
-                      disabled={(date) => isBefore(date, startOfDay(new Date()))}
+                      disabled={isDateDisabled}
                       locale={ptBR}
+                      modifiers={{
+                        disabled: isDateDisabled,
+                        booked: (date) => checkDateConflicts(date).hasConflict
+                      }}
+                      modifiersStyles={{
+                        booked: {
+                          backgroundColor: 'hsl(var(--destructive) / 0.1)',
+                          color: 'hsl(var(--destructive))',
+                          border: '1px solid hsl(var(--destructive) / 0.3)',
+                          textDecoration: 'line-through'
+                        }
+                      }}
                     />
+                    
+                    {/* Conflict Legend */}
+                    <div className="p-3 border-t border-border/50">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-3 h-3 rounded bg-destructive/10 border border-destructive/30 line-through"></div>
+                        <span>Dia indisponível (férias aprovadas)</span>
+                      </div>
+                    </div>
                   </PopoverContent>
                 </Popover>
               </div>
