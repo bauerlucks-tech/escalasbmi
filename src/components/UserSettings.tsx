@@ -14,7 +14,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
-  Settings, Sun, Moon, Monitor, Camera, Trash2, Lock, Eye, EyeOff, Check, Palette
+  Settings, Sun, Moon, Monitor, Camera, Trash2, Lock, Eye, EyeOff, Check
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -24,7 +24,7 @@ interface UserSettingsProps {
 
 const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
   const { currentUser, updateUserPassword, updateUserProfile } = useAuth();
-  const { theme, setTheme, colorScheme, setColorScheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Password form
@@ -135,7 +135,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
             {/* Theme Selection */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Palette className="w-5 h-5 text-primary" />
+                <Sun className="w-5 h-5 text-primary" />
                 <h3 className="text-lg font-semibold">Tema</h3>
               </div>
               
@@ -157,51 +157,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
                       `}
                     >
                       <Icon className={`w-6 h-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
-                      <span className={`text-xs font-medium ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}>
-                        {option.label}
-                      </span>
-                      {isSelected && (
-                        <Check className="w-4 h-4 text-primary" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Color Scheme Selection */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Palette className="w-5 h-5 text-primary" />
-                <h3 className="text-lg font-semibold">Esquema de Cores</h3>
-              </div>
-              
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { value: 'blue', label: 'Azul', color: 'bg-blue-500' },
-                  { value: 'green', label: 'Verde', color: 'bg-green-500' },
-                  { value: 'purple', label: 'Roxo', color: 'bg-purple-500' },
-                  { value: 'orange', label: 'Laranja', color: 'bg-orange-500' },
-                  { value: 'teal', label: 'Verde-água', color: 'bg-teal-500' },
-                  { value: 'rose', label: 'Rosa', color: 'bg-rose-500' },
-                  { value: 'slate', label: 'Cinza', color: 'bg-slate-500' },
-                  { value: 'zinc', label: 'Zinco', color: 'bg-zinc-500' },
-                ].map((option) => {
-                  const isSelected = colorScheme === option.value;
-                  
-                  return (
-                    <button
-                      key={option.value}
-                      onClick={() => setColorScheme(option.value as any)}
-                      className={`
-                        flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all
-                        ${isSelected 
-                          ? 'border-primary bg-primary/10' 
-                          : 'border-border hover:border-primary/50'
-                        }
-                      `}
-                    >
-                      <div className={`w-8 h-8 rounded-full ${option.color} ${isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}`} />
                       <span className={`text-xs font-medium ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}>
                         {option.label}
                       </span>
