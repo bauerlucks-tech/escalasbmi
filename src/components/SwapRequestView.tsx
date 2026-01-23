@@ -53,7 +53,8 @@ const SwapRequestView: React.FC = () => {
     return users.filter(u => 
       u.id !== currentUser.id && 
       u.status === 'ativo' && 
-      u.role === 'operador'
+      u.role === 'operador' &&
+      !u.hideFromSchedule
     );
   }, [users, currentUser.id]);
 
