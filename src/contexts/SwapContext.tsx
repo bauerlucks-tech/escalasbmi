@@ -1,10 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { SwapRequest, ScheduleEntry } from '@/data/scheduleData';
-import { scheduleData as initialScheduleData } from '@/data/scheduleData';
+import { 
+  SwapRequest, 
+  ScheduleEntry, 
+  getCurrentSchedule, 
+  addNewMonthSchedule, 
+  archiveSchedule, 
+  restoreArchivedSchedule,
+  getArchivedSchedules,
+  getCurrentSchedules,
+  getScheduleByMonth,
+  MonthSchedule,
+  ArchivedSchedule
+} from '@/data/scheduleData';
 
 interface SwapContextType {
   swapRequests: SwapRequest[];
   scheduleData: ScheduleEntry[];
+  currentSchedules: MonthSchedule[];
+  archivedSchedules: ArchivedSchedule[];
   createSwapRequest: (request: Omit<SwapRequest, 'id' | 'createdAt'>) => void;
   respondToSwap: (requestId: string, accept: boolean) => void;
   adminApproveSwap: (requestId: string, adminName: string) => void;
@@ -14,6 +27,11 @@ interface SwapContextType {
   getPendingAdminApproval: () => SwapRequest[];
   getApprovedSwaps: () => SwapRequest[];
   updateSchedule: (newSchedule: ScheduleEntry[]) => void;
+  importNewSchedule: (month: number, year: number, entries: ScheduleEntry[], importedBy: string) => { success: boolean; message: string; archived?: ArchivedSchedule[] };
+  archiveCurrentSchedule: (month: number, year: number, archivedBy: string) => boolean;
+  restoreArchivedSchedule: (month: number, year: number) => boolean;
+  switchToSchedule: (month: number, year: number) => boolean;
+  refreshSchedules: () => void;
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -25,8 +43,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
 
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
-    const saved = localStorage.getItem('escala_scheduleData');
-    return saved ? JSON.parse(saved) : initialScheduleData;
+    return getCurrentSchedule();
+  });
+
+  const [currentSchedules, setCurrentSchedules] = useState<MonthSchedule[]>(() => {
+    return getCurrentSchedules();
+  });
+
+  const [archivedSchedules, setArchivedSchedules] = useState<ArchivedSchedule[]>(() => {
+    return getArchivedSchedules();
   });
 
   useEffect(() => {
@@ -149,10 +174,59 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return swapRequests.filter(req => req.status === 'approved');
   };
 
+  const importNewSchedule = (month: number, year: number, entries: ScheduleEntry[], importedBy: string) => {
+    const result = addNewMonthSchedule(month, year, entries, importedBy);
+    if (result.success) {
+      refreshSchedules();
+      // Switch to the newly imported schedule
+      switchToSchedule(month, year);
+    }
+    return result;
+  };
+
+  const archiveCurrentSchedule = (month: number, year: number, archivedBy: string) => {
+    const success = archiveSchedule(month, year, archivedBy);
+    if (success) {
+      refreshSchedules();
+      // Switch to the most recent schedule
+      const schedules = getCurrentSchedules();
+      if (schedules.length > 0) {
+        switchToSchedule(schedules[0].month, schedules[0].year);
+      }
+    }
+    return success;
+  };
+
+  const restoreArchivedScheduleFunc = (month: number, year: number) => {
+    const success = restoreArchivedSchedule(month, year);
+    if (success) {
+      refreshSchedules();
+      switchToSchedule(month, year);
+    }
+    return success;
+  };
+
+  const switchToSchedule = (month: number, year: number) => {
+    const schedule = getScheduleByMonth(month, year);
+    if (schedule) {
+      setScheduleData(schedule.entries);
+      return true;
+    }
+    return false;
+  };
+
+  const refreshSchedules = () => {
+    setCurrentSchedules(getCurrentSchedules());
+    setArchivedSchedules(getArchivedSchedules());
+    setScheduleData(getCurrentSchedule());
+  };
+
   return (
     <SwapContext.Provider value={{
       swapRequests,
       scheduleData,
+      currentSchedules,
+      archivedSchedules,
       createSwapRequest,
       respondToSwap,
       adminApproveSwap,
@@ -162,6 +236,11 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       getPendingAdminApproval,
       getApprovedSwaps,
       updateSchedule,
+      importNewSchedule,
+      archiveCurrentSchedule,
+      restoreArchivedSchedule: restoreArchivedScheduleFunc,
+      switchToSchedule,
+      refreshSchedules,
     }}>
       {children}
     </SwapContext.Provider>

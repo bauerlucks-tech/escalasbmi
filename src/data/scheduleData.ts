@@ -24,6 +24,18 @@ export interface MonthSchedule {
   entries: ScheduleEntry[];
   importedAt?: string;
   importedBy?: string;
+  isArchived?: boolean;
+  archivedAt?: string;
+}
+
+export interface ArchivedSchedule extends MonthSchedule {
+  archivedAt: string;
+  archivedBy: string;
+}
+
+export interface ScheduleStorage {
+  current: MonthSchedule[];
+  archived: ArchivedSchedule[];
 }
 
 export interface SwapRequest {
@@ -89,13 +101,172 @@ export const initialUsers: User[] = [
   { id: "8", name: "ADMIN", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
 ];
 
-export const getUniqueEmployees = (): string[] => {
-  const employees = new Set<string>();
-  scheduleData.forEach(entry => {
-    employees.add(entry.meioPeriodo);
-    employees.add(entry.fechamento);
+// Helper functions for schedule management
+export const createScheduleStorage = (): ScheduleStorage => {
+  const saved = localStorage.getItem('escala_scheduleStorage');
+  if (saved) {
+    return JSON.parse(saved);
+  }
+  
+  // Initialize with January 2026 as current schedule
+  return {
+    current: [{
+      month: 1,
+      year: 2026,
+      entries: scheduleData,
+      importedAt: new Date().toISOString(),
+      importedBy: 'system'
+    }],
+    archived: []
+  };
+};
+
+export const saveScheduleStorage = (storage: ScheduleStorage): void => {
+  localStorage.setItem('escala_scheduleStorage', JSON.stringify(storage));
+};
+
+export const getCurrentSchedule = (): ScheduleEntry[] => {
+  const storage = createScheduleStorage();
+  if (storage.current.length === 0) return scheduleData;
+  
+  // Get the most recent schedule
+  const mostRecent = storage.current.sort((a, b) => {
+    const dateA = new Date(a.year, a.month - 1);
+    const dateB = new Date(b.year, b.month - 1);
+    return dateB.getTime() - dateA.getTime();
+  })[0];
+  
+  return mostRecent.entries;
+};
+
+export const getScheduleByMonth = (month: number, year: number): MonthSchedule | null => {
+  const storage = createScheduleStorage();
+  return storage.current.find(s => s.month === month && s.year === year) || null;
+};
+
+export const addNewMonthSchedule = (
+  month: number, 
+  year: number, 
+  entries: ScheduleEntry[], 
+  importedBy: string
+): { success: boolean; message: string; archived?: ArchivedSchedule[] } => {
+  const storage = createScheduleStorage();
+  
+  // Check if month already exists
+  const existingIndex = storage.current.findIndex(s => s.month === month && s.year === year);
+  
+  if (existingIndex !== -1) {
+    return { 
+      success: false, 
+      message: `Já existe uma escala para ${getMonthName(month)}/${year}` 
+    };
+  }
+  
+  // Archive old schedules if needed (keep last 3 months)
+  const archived: ArchivedSchedule[] = [];
+  const cutoffDate = new Date(year, month - 1, 1);
+  cutoffDate.setMonth(cutoffDate.getMonth() - 3); // Keep last 3 months
+  
+  const toArchive = storage.current.filter(schedule => {
+    const scheduleDate = new Date(schedule.year, schedule.month - 1);
+    return scheduleDate < cutoffDate;
   });
-  return Array.from(employees).sort();
+  
+  toArchive.forEach(schedule => {
+    const archivedSchedule: ArchivedSchedule = {
+      ...schedule,
+      isArchived: true,
+      archivedAt: new Date().toISOString(),
+      archivedBy: importedBy
+    };
+    archived.push(archivedSchedule);
+  });
+  
+  // Remove archived from current and add to archived
+  storage.current = storage.current.filter(schedule => {
+    const scheduleDate = new Date(schedule.year, schedule.month - 1);
+    return scheduleDate >= cutoffDate;
+  });
+  storage.archived.push(...archived);
+  
+  // Add new schedule
+  const newSchedule: MonthSchedule = {
+    month,
+    year,
+    entries,
+    importedAt: new Date().toISOString(),
+    importedBy
+  };
+  
+  storage.current.push(newSchedule);
+  saveScheduleStorage(storage);
+  
+  return { 
+    success: true, 
+    message: `Escala de ${getMonthName(month)}/${year} importada com sucesso`,
+    archived: archived.length > 0 ? archived : undefined
+  };
+};
+
+export const archiveSchedule = (month: number, year: number, archivedBy: string): boolean => {
+  const storage = createScheduleStorage();
+  const scheduleIndex = storage.current.findIndex(s => s.month === month && s.year === year);
+  
+  if (scheduleIndex === -1) return false;
+  
+  const schedule = storage.current[scheduleIndex];
+  const archivedSchedule: ArchivedSchedule = {
+    ...schedule,
+    isArchived: true,
+    archivedAt: new Date().toISOString(),
+    archivedBy
+  };
+  
+  storage.current.splice(scheduleIndex, 1);
+  storage.archived.push(archivedSchedule);
+  saveScheduleStorage(storage);
+  
+  return true;
+};
+
+export const restoreArchivedSchedule = (month: number, year: number): boolean => {
+  const storage = createScheduleStorage();
+  const archivedIndex = storage.archived.findIndex(s => s.month === month && s.year === year);
+  
+  if (archivedIndex === -1) return false;
+  
+  const archivedSchedule = storage.archived[archivedIndex];
+  const { archivedAt, archivedBy, isArchived, ...schedule } = archivedSchedule;
+  
+  storage.current.push(schedule);
+  storage.archived.splice(archivedIndex, 1);
+  saveScheduleStorage(storage);
+  
+  return true;
+};
+
+export const getArchivedSchedules = (): ArchivedSchedule[] => {
+  const storage = createScheduleStorage();
+  return storage.archived.sort((a, b) => {
+    const dateA = new Date(a.archivedAt);
+    const dateB = new Date(b.archivedAt);
+    return dateB.getTime() - dateA.getTime();
+  });
+};
+
+export const getCurrentSchedules = (): MonthSchedule[] => {
+  const storage = createScheduleStorage();
+  return storage.current.sort((a, b) => {
+    const dateA = new Date(a.year, a.month - 1);
+    const dateB = new Date(b.year, b.month - 1);
+    return dateB.getTime() - dateA.getTime();
+  });
+};
+
+export const getMonthName = (month: number): string => {
+  const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  return months[month - 1];
 };
 
 export const getEmployeeSchedule = (name: string): ScheduleEntry[] => {

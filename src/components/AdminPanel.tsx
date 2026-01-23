@@ -24,7 +24,21 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminPanel: React.FC = () => {
   const { currentUser, users, activeUsers, operators, isAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
-  const { getPendingAdminApproval, getApprovedSwaps, adminApproveSwap, swapRequests, scheduleData, updateSchedule } = useSwap();
+  const { 
+    getPendingAdminApproval, 
+    getApprovedSwaps, 
+    adminApproveSwap, 
+    swapRequests, 
+    scheduleData, 
+    updateSchedule,
+    importNewSchedule,
+    currentSchedules,
+    archivedSchedules,
+    archiveCurrentSchedule,
+    restoreArchivedSchedule,
+    switchToSchedule,
+    refreshSchedules
+  } = useSwap();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
@@ -149,10 +163,21 @@ const AdminPanel: React.FC = () => {
       return;
     }
 
-    // Replace current schedule with imported data
-    updateSchedule(csvValidation.data);
+    if (!currentUser) return;
+
+    // Import new schedule without replacing existing ones
+    const result = importNewSchedule(importMonth, importYear, csvValidation.data, currentUser.name);
     
-    toast.success(`Escala de ${getMonthName(importMonth)}/${importYear} importada com sucesso! ${csvValidation.data.length} dias atualizados.`);
+    if (result.success) {
+      toast.success(result.message);
+      
+      if (result.archived && result.archived.length > 0) {
+        const archivedNames = result.archived.map(a => `${getMonthName(a.month)}/${a.year}`).join(', ');
+        toast.info(`Escalas arquivadas automaticamente: ${archivedNames}`);
+      }
+    } else {
+      toast.error(result.message);
+    }
     
     // Reset import state
     setCsvValidation(null);
@@ -265,7 +290,7 @@ const AdminPanel: React.FC = () => {
 
       {/* Tabs */}
       <Tabs defaultValue="swaps" className="space-y-4">
-        <TabsList className="grid grid-cols-3 w-full">
+        <TabsList className="grid grid-cols-4 w-full">
           <TabsTrigger value="swaps" className="flex items-center gap-2">
             <ArrowLeftRight className="w-4 h-4" />
             Trocas
@@ -278,6 +303,10 @@ const AdminPanel: React.FC = () => {
           <TabsTrigger value="schedule" className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             Escala
+          </TabsTrigger>
+          <TabsTrigger value="months" className="flex items-center gap-2">
+            <Archive className="w-4 h-4" />
+            Meses
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
@@ -418,7 +447,7 @@ const AdminPanel: React.FC = () => {
                     Importar Escala via CSV
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Substitua completamente a escala atual. Apenas colaboradores cadastrados são aceitos.
+                    Adicione um novo mês à escala. Escalas com mais de 3 meses de antiguidade são arquivadas automaticamente.
                   </p>
                 </div>
               </div>
@@ -613,9 +642,9 @@ const AdminPanel: React.FC = () => {
                       Cancelar
                     </Button>
                   </div>
-                  <p className="text-xs text-destructive mt-2 flex items-center gap-1">
+                  <p className="text-xs text-warning mt-2 flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
-                    Atenção: Isso substituirá completamente a escala atual!
+                    Atenção: Um novo mês será adicionado ao sistema!
                   </p>
                 </div>
               )}
@@ -773,6 +802,125 @@ const AdminPanel: React.FC = () => {
                 })}
               </div>
             </div>
+          </div>
+        </TabsContent>
+
+        {/* Months Tab */}
+        <TabsContent value="months" className="space-y-4">
+          {/* Current Schedules */}
+          <div className="glass-card overflow-hidden">
+            <div className="p-4 border-b border-border/50">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-primary" />
+                Escalas Atuais
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Escalas ativas no sistema (máximo 3 meses)
+              </p>
+            </div>
+
+            {currentSchedules.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                <Calendar className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <p>Nenhuma escala encontrada</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border/30">
+                {currentSchedules.map(schedule => (
+                  <div key={`${schedule.month}-${schedule.year}`} className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">
+                          {getMonthName(schedule.month)}/{schedule.year}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {schedule.entries.length} dias • 
+                          Importado: {schedule.importedBy} • 
+                          {schedule.importedAt && new Date(schedule.importedAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => switchToSchedule(schedule.month, schedule.year)}
+                          className="border-primary/50 text-primary hover:bg-primary/10"
+                        >
+                          <Calendar className="w-4 h-4 mr-1" />
+                          Visualizar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            if (currentUser && archiveCurrentSchedule(schedule.month, schedule.year, currentUser.name)) {
+                              toast.success(`Escala de ${getMonthName(schedule.month)}/${schedule.year} arquivada`);
+                            }
+                          }}
+                          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Archive className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Archived Schedules */}
+          <div className="glass-card overflow-hidden">
+            <div className="p-4 border-b border-border/50">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Archive className="w-4 h-4 text-muted-foreground" />
+                Escalas Arquivadas
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Escalas antigas que podem ser restauradas
+              </p>
+            </div>
+
+            {archivedSchedules.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                <Archive className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <p>Nenhuma escala arquivada</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border/30">
+                {archivedSchedules.map(schedule => (
+                  <div key={`${schedule.month}-${schedule.year}`} className="p-4 opacity-75">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">
+                          {getMonthName(schedule.month)}/{schedule.year}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {schedule.entries.length} dias • 
+                          Arquivado: {schedule.archivedBy} • 
+                          {new Date(schedule.archivedAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            if (restoreArchivedSchedule(schedule.month, schedule.year)) {
+                              toast.success(`Escala de ${getMonthName(schedule.month)}/${schedule.year} restaurada`);
+                            }
+                          }}
+                          className="border-success/50 text-success hover:bg-success/10"
+                        >
+                          <Archive className="w-4 h-4 mr-1" />
+                          Restaurar
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </TabsContent>
 
