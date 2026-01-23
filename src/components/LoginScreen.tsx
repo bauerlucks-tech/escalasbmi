@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { HelicopterDetailedIcon, HelipadIcon, PlatformIcon } from '@/components/icons/OffshoreIcons';
-import { PartnerLogos, AviationBadge } from '@/components/logos/CompanyLogos';
+import { AviationBadge } from '@/components/logos/CompanyLogos';
 import { AlertCircle, Lock, User } from 'lucide-react';
 
 const LoginScreen: React.FC = () => {
@@ -135,12 +135,11 @@ const LoginScreen: React.FC = () => {
           </p>
         </div>
 
-        {/* Partner logos footer */}
+        {/* Created by footer */}
         <div className="mt-6 pt-6 border-t border-border/30">
-          <p className="text-xs text-muted-foreground text-center mb-4 uppercase tracking-wider">
-            Empresas Parceiras
+          <p className="text-xs text-muted-foreground text-center">
+            Criado por Lucas Pott
           </p>
-          <PartnerLogos compact />
         </div>
       </div>
     </div>

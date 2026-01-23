@@ -72,8 +72,17 @@ export function normalizeColumnName(name: string): string {
   
   // Find matching standard column
   for (const [standard, alternatives] of Object.entries(ALTERNATE_COLUMNS)) {
-    if (alternatives.some(alt => normalized.includes(alt.replace('_', '')))) {
-      return standard;
+    for (const alt of alternatives) {
+      const altNormalized = alt.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
+      
+      if (normalized === altNormalized || normalized.includes(altNormalized) || altNormalized.includes(normalized)) {
+        return standard;
+      }
     }
   }
   
