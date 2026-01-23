@@ -48,6 +48,15 @@ const SwapRequestView: React.FC = () => {
     return dateTime >= today.getTime();
   };
 
+  // Get available operators (other active users) - DEFINIR PRIMEIRO
+  const availableOperators = useMemo(() => {
+    return users.filter(u => 
+      u.id !== currentUser.id && 
+      u.status === 'ativo' && 
+      u.role === 'operador'
+    );
+  }, [users, currentUser.id]);
+
   // Get days where user is scheduled (from today onwards)
   const myScheduledDays = useMemo(() => {
     return scheduleData.filter(entry => 
@@ -68,21 +77,10 @@ const SwapRequestView: React.FC = () => {
     if (!targetEntry) return [];
     
     return availableOperators.filter(op => 
-      op.meioPeriodo === targetEntry.meioPeriodo || 
-      op.meioPeriodo === targetEntry.fechamento ||
-      op.name === targetEntry.meioPeriodo ||
+      op.name === targetEntry.meioPeriodo || 
       op.name === targetEntry.fechamento
     );
-  }, [selectedTargetDay]);
-
-  // Get available operators (other active users)
-  const availableOperators = useMemo(() => {
-    return users.filter(u => 
-      u.id !== currentUser.id && 
-      u.status === 'ativo' && 
-      u.role === 'operador'
-    );
-  }, [users, currentUser.id]);
+  }, [selectedTargetDay, availableOperators, scheduleData]);
 
   const getScheduleByDate = (dateStr: string): ScheduleEntry | undefined => {
     return scheduleData.find(s => s.date === dateStr);
