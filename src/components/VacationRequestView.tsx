@@ -289,6 +289,10 @@ const VacationRequestView: React.FC = () => {
                   <div className="w-4 h-4 rounded bg-blue-100 text-blue-800 border border-blue-300"></div>
                   <span className="text-muted-foreground">Férias aprovadas</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border border-border bg-transparent"></div>
+                  <span className="text-muted-foreground">Disponível</span>
+                </div>
               </div>
 
               {/* Calendar */}
@@ -299,7 +303,8 @@ const VacationRequestView: React.FC = () => {
                   className="rounded-md"
                   modifiers={{
                     disabled: isDateDisabled,
-                    vacation: (date) => getVacationInfoForDate(date).length > 0
+                    vacation: (date) => getVacationInfoForDate(date).length > 0,
+                    available: (date) => !isDateDisabled(date) && getVacationInfoForDate(date).length === 0
                   }}
                   modifiersStyles={{
                     disabled: {
@@ -311,6 +316,10 @@ const VacationRequestView: React.FC = () => {
                     vacation: {
                       backgroundColor: 'hsl(var(--primary) / 0.1)',
                       border: '1px solid hsl(var(--primary) / 0.3)'
+                    },
+                    available: {
+                      border: '1px solid hsl(var(--border))',
+                      backgroundColor: 'transparent'
                     }
                   }}
                   components={{
