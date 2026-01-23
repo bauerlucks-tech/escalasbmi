@@ -23,6 +23,7 @@ const VacationRequestView: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDays, setSelectedDays] = useState<number | null>(null);
+  const [showFullCalendar, setShowFullCalendar] = useState(false);
 
   useEffect(() => {
     // Load user's vacation requests
@@ -82,6 +83,31 @@ const VacationRequestView: React.FC = () => {
     });
     
     return { hasConflict: conflicts.length > 0, conflicts };
+  };
+
+  const getVacationInfoForDate = (date: Date): VacationRequest[] => {
+    return approvedVacations.filter(vacation => {
+      const vacationStart = new Date(vacation.startDate);
+      const vacationEnd = new Date(vacation.endDate);
+      return date >= vacationStart && date <= vacationEnd;
+    });
+  };
+
+  const getVacationColor = (vacation: VacationRequest): string => {
+    // Generate consistent colors based on operator name
+    const colors = [
+      'bg-blue-100 text-blue-800 border-blue-300',
+      'bg-green-100 text-green-800 border-green-300',
+      'bg-purple-100 text-purple-800 border-purple-300',
+      'bg-orange-100 text-orange-800 border-orange-300',
+      'bg-pink-100 text-pink-800 border-pink-300',
+      'bg-teal-100 text-teal-800 border-teal-300',
+      'bg-indigo-100 text-indigo-800 border-indigo-300',
+      'bg-yellow-100 text-yellow-800 border-yellow-300',
+    ];
+    
+    const hash = vacation.operatorName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
   };
 
   const isDateDisabled = (date: Date): boolean => {
@@ -226,6 +252,124 @@ const VacationRequestView: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Full Calendar View */}
+      <Card className="glass-card-elevated">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarIcon className="w-5 h-5 text-primary" />
+                Calendário de Férias
+              </CardTitle>
+              <CardDescription>
+                Visualize todas as férias aprovadas da equipe
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowFullCalendar(!showFullCalendar)}
+              className="flex items-center gap-2"
+            >
+              <CalendarIcon className="w-4 h-4" />
+              {showFullCalendar ? 'Ocultar' : 'Mostrar'} Calendário
+            </Button>
+          </div>
+        </CardHeader>
+        
+        {showFullCalendar && (
+          <CardContent>
+            <div className="space-y-4">
+              {/* Legend */}
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-destructive/10 border border-destructive/30 line-through"></div>
+                  <span className="text-muted-foreground">Indisponível (outras férias)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-blue-100 text-blue-800 border border-blue-300"></div>
+                  <span className="text-muted-foreground">Férias aprovadas</span>
+                </div>
+              </div>
+
+              {/* Calendar */}
+              <div className="border border-border/50 rounded-lg p-4">
+                <Calendar
+                  mode="single"
+                  locale={ptBR}
+                  className="rounded-md"
+                  modifiers={{
+                    disabled: isDateDisabled,
+                    vacation: (date) => getVacationInfoForDate(date).length > 0
+                  }}
+                  modifiersStyles={{
+                    disabled: {
+                      backgroundColor: 'hsl(var(--destructive) / 0.1)',
+                      color: 'hsl(var(--destructive))',
+                      border: '1px solid hsl(var(--destructive) / 0.3)',
+                      textDecoration: 'line-through'
+                    },
+                    vacation: {
+                      backgroundColor: 'hsl(var(--primary) / 0.1)',
+                      border: '1px solid hsl(var(--primary) / 0.3)'
+                    }
+                  }}
+                  components={{
+                    DayContent: ({ date, displayMonth, activeModifiers, ...props }) => {
+                      const vacations = getVacationInfoForDate(date);
+                      const hasConflict = checkDateConflicts(date).hasConflict;
+                      
+                      return (
+                        <div className="relative w-full h-full">
+                          <div {...(props as any)} />
+                          {vacations.length > 0 && !hasConflict && (
+                            <div className="absolute bottom-0 left-0 right-0 flex flex-wrap gap-1 p-1">
+                              {vacations.slice(0, 2).map((vacation, idx) => (
+                                <div
+                                  key={vacation.id}
+                                  className={`w-2 h-2 rounded-full ${getVacationColor(vacation).split(' ')[0]}`}
+                                  title={`${vacation.operatorName}: ${format(new Date(vacation.startDate), 'dd/MM')} a ${format(new Date(vacation.endDate), 'dd/MM')}`}
+                                />
+                              ))}
+                              {vacations.length > 2 && (
+                                <div className="w-2 h-2 rounded-full bg-gray-400" title={`+${vacations.length - 2} mais`} />
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Vacation Details */}
+              {approvedVacations.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Férias Aprovadas:</h4>
+                  <div className="grid gap-2">
+                    {approvedVacations.map((vacation) => (
+                      <div
+                        key={vacation.id}
+                        className={`flex items-center justify-between p-2 rounded-lg border ${getVacationColor(vacation)}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-current opacity-60"></div>
+                          <span className="font-medium text-sm">{vacation.operatorName}</span>
+                        </div>
+                        <div className="text-sm">
+                          {format(new Date(vacation.startDate), "dd/MM")} - {format(new Date(vacation.endDate), "dd/MM/yyyy")}
+                          <span className="ml-2 text-xs opacity-75">({vacation.totalDays} dias)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        )}
+      </Card>
+
       {/* Request Form */}
       <Card className="glass-card-elevated">
         <CardHeader>
