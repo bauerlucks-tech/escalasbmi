@@ -86,6 +86,7 @@ export const initialUsers: User[] = [
   { id: "5", name: "KELLY", password: "1234", role: "operador", status: "ativo" },
   { id: "6", name: "GUILHERME", password: "1234", role: "operador", status: "ativo" },
   { id: "7", name: "RICARDO", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
+  { id: "8", name: "ADMIN", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
 ];
 
 export const getUniqueEmployees = (): string[] => {

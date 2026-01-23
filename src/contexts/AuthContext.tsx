@@ -24,16 +24,44 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [users, setUsers] = useState<User[]>(() => {
     const saved = localStorage.getItem('escala_users');
+    let userList: User[];
     if (saved) {
       const parsed = JSON.parse(saved);
       // Migration: add role/status if missing
-      return parsed.map((u: any) => ({
+      userList = parsed.map((u: any) => ({
         ...u,
         role: u.role || (u.isAdmin ? 'administrador' : 'operador'),
         status: u.status || 'ativo',
       }));
+    } else {
+      userList = initialUsers;
     }
-    return initialUsers;
+    
+    // Ensure admin user exists with correct password and settings
+    const adminUser = userList.find(u => u.name.toUpperCase() === 'ADMIN');
+    if (adminUser) {
+      // Update admin user if password is not 1234 or missing hideFromSchedule
+      if (adminUser.password !== '1234' || adminUser.hideFromSchedule !== true) {
+        userList = userList.map(u => 
+          u.id === adminUser.id 
+            ? { ...u, password: '1234', hideFromSchedule: true }
+            : u
+        );
+      }
+    } else {
+      // Create admin user if it doesn't exist
+      const newAdmin: User = {
+        id: String(Date.now()),
+        name: 'ADMIN',
+        password: '1234',
+        role: 'administrador',
+        status: 'ativo',
+        hideFromSchedule: true,
+      };
+      userList = [...userList, newAdmin];
+    }
+    
+    return userList;
   });
   
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
