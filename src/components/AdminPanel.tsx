@@ -890,19 +890,19 @@ const AdminPanel: React.FC = () => {
                         </Button>
                         <Button
                           size="sm"
-                          variant={schedule.isActive !== false ? "default" : "outline"}
+                          variant={schedule.isActive === false ? "default" : "outline"}
                           onClick={() => {
                             if (toggleScheduleActivation(schedule.month, schedule.year)) {
                               const newStatus = schedule.isActive === false ? "ativada" : "desativada";
                               toast.success(`Escala de ${getMonthName(schedule.month)}/${schedule.year} ${newStatus}`);
                             }
                           }}
-                          className={schedule.isActive !== false ? "bg-success hover:bg-success/90" : "border-warning/50 text-warning hover:bg-warning/10"}
+                          className={schedule.isActive === false ? "bg-success hover:bg-success/90" : "border-warning/50 text-warning hover:bg-warning/10"}
                         >
-                          {schedule.isActive !== false ? (
-                            <><Power className="w-4 h-4 mr-1" />Ativa</>
+                          {schedule.isActive === false ? (
+                            <><Power className="w-4 h-4 mr-1" />Ativar</>
                           ) : (
-                            <><PowerOff className="w-4 h-4 mr-1" />Inativa</>
+                            <><PowerOff className="w-4 h-4 mr-1" />Desativar</>
                           )}
                         </Button>
                         <Button
