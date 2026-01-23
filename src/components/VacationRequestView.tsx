@@ -22,6 +22,7 @@ const VacationRequestView: React.FC = () => {
   const [approvedVacations, setApprovedVacations] = useState<VacationRequest[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<number | null>(null);
 
   useEffect(() => {
     // Load user's vacation requests
@@ -55,6 +56,18 @@ const VacationRequestView: React.FC = () => {
     return differenceInDays(endDate, startDate) + 1;
   };
 
+  const handleDaysSelection = (days: number) => {
+    setSelectedDays(days);
+    // Reset dates when changing days selection
+    setStartDate(undefined);
+    setEndDate(undefined);
+  };
+
+  const getMaxEndDate = (start: Date): Date => {
+    if (!selectedDays) return start;
+    return addDays(start, selectedDays - 1);
+  };
+
   const checkDateConflicts = (date: Date): { hasConflict: boolean; conflicts: VacationRequest[] } => {
     if (!currentUser) return { hasConflict: false, conflicts: [] };
     
@@ -75,7 +88,15 @@ const VacationRequestView: React.FC = () => {
     if (isBefore(date, startOfDay(new Date()))) return true;
     
     const { hasConflict } = checkDateConflicts(date);
-    return hasConflict;
+    if (hasConflict) return true;
+    
+    // Limit selection based on selected days
+    if (startDate && selectedDays) {
+      const maxDate = getMaxEndDate(startDate);
+      return isAfter(date, maxDate);
+    }
+    
+    return false;
   };
 
   const getDateClassName = (date: Date): string => {
@@ -122,6 +143,11 @@ const VacationRequestView: React.FC = () => {
       return;
     }
 
+    if (!selectedDays) {
+      toast.error('Selecione a quantidade de dias de férias');
+      return;
+    }
+
     if (!startDate || !endDate) {
       toast.error('Selecione as datas de início e fim');
       return;
@@ -134,6 +160,13 @@ const VacationRequestView: React.FC = () => {
 
     if (isBefore(startDate, startOfDay(new Date()))) {
       toast.error('A data de início não pode ser no passado');
+      return;
+    }
+
+    // Verify selected days matches the range
+    const actualDays = calculateTotalDays();
+    if (actualDays !== selectedDays) {
+      toast.error(`Selecione exatamente ${selectedDays} dias (selecionados: ${actualDays})`);
       return;
     }
 
@@ -156,12 +189,6 @@ const VacationRequestView: React.FC = () => {
       return;
     }
 
-    const totalDays = calculateTotalDays();
-    if (totalDays < 1) {
-      toast.error('Selecione pelo menos 1 dia de férias');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -176,6 +203,7 @@ const VacationRequestView: React.FC = () => {
       toast.success('Solicitação de férias enviada com sucesso!');
       
       // Reset form
+      setSelectedDays(null);
       setStartDate(undefined);
       setEndDate(undefined);
       setReason('');
@@ -211,115 +239,142 @@ const VacationRequestView: React.FC = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Date Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Data de Início</label>
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? formatDate(startDate) : "Selecione a data"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="range"
-                      selected={{
-                        from: startDate,
-                        to: endDate
-                      }}
-                      onSelect={(range) => {
-                        if (range?.from) {
-                          setStartDate(range.from);
-                          if (range.to) {
-                            setEndDate(range.to);
-                            setIsCalendarOpen(false);
-                          }
-                        }
-                      }}
-                      disabled={isDateDisabled}
-                      locale={ptBR}
-                      modifiers={{
-                        disabled: isDateDisabled,
-                        booked: (date) => checkDateConflicts(date).hasConflict
-                      }}
-                      modifiersStyles={{
-                        booked: {
-                          backgroundColor: 'hsl(var(--destructive) / 0.1)',
-                          color: 'hsl(var(--destructive))',
-                          border: '1px solid hsl(var(--destructive) / 0.3)',
-                          textDecoration: 'line-through'
-                        }
-                      }}
-                    />
-                    
-                    {/* Conflict Legend */}
-                    <div className="p-3 border-t border-border/50">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className="w-3 h-3 rounded bg-destructive/10 border border-destructive/30 line-through"></div>
-                        <span>Dia indisponível (férias aprovadas)</span>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Data de Fim</label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                      disabled={!startDate}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? formatDate(endDate) : "Selecione a data"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={(date) => {
-                        if (date) {
-                          setEndDate(date);
-                        }
-                      }}
-                      disabled={(date) => {
-                        if (!startDate) return true;
-                        return isBefore(date, startDate) || isDateDisabled(date);
-                      }}
-                      locale={ptBR}
-                      initialFocus
-                    />
-                    
-                    {/* Conflict Legend */}
-                    <div className="p-3 border-t border-border/50">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className="w-3 h-3 rounded bg-destructive/10 border border-destructive/30 line-through"></div>
-                        <span>Dia indisponível (férias aprovadas)</span>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+            {/* Days Selection */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Quantos dias de férias?</label>
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                {[7, 10, 15, 20, 30].map((days) => (
+                  <Button
+                    key={days}
+                    type="button"
+                    variant={selectedDays === days ? "default" : "outline"}
+                    onClick={() => handleDaysSelection(days)}
+                    className="h-12"
+                  >
+                    {days} dias
+                  </Button>
+                ))}
               </div>
             </div>
 
-            {/* Total Days Display */}
-            {startDate && endDate && (
-              <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">
-                    Total de dias: <span className="text-primary">{calculateTotalDays()}</span>
-                  </span>
+            {/* Date Selection - Only show after days selection */}
+            {selectedDays && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Data de Início</label>
+                    <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {startDate ? formatDate(startDate) : "Selecione a data"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="range"
+                          selected={{
+                            from: startDate,
+                            to: endDate
+                          }}
+                          onSelect={(range) => {
+                            if (range?.from) {
+                              setStartDate(range.from);
+                              // Auto-calculate end date based on selected days
+                              const autoEndDate = addDays(range.from, selectedDays - 1);
+                              setEndDate(autoEndDate);
+                              setIsCalendarOpen(false);
+                            }
+                          }}
+                          disabled={isDateDisabled}
+                          locale={ptBR}
+                          modifiers={{
+                            disabled: isDateDisabled,
+                            booked: (date) => checkDateConflicts(date).hasConflict
+                          }}
+                          modifiersStyles={{
+                            booked: {
+                              backgroundColor: 'hsl(var(--destructive) / 0.1)',
+                              color: 'hsl(var(--destructive))',
+                              border: '1px solid hsl(var(--destructive) / 0.3)',
+                              textDecoration: 'line-through'
+                            }
+                          }}
+                        />
+                        
+                        {/* Conflict Legend */}
+                        <div className="p-3 border-t border-border/50">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div className="w-3 h-3 rounded bg-destructive/10 border border-destructive/30 line-through"></div>
+                            <span>Dia indisponível (férias aprovadas)</span>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Data de Fim</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                          disabled={!startDate}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {endDate ? formatDate(endDate) : "Selecione a data"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={endDate}
+                          onSelect={(date) => {
+                            if (date) {
+                              setEndDate(date);
+                            }
+                          }}
+                          disabled={(date) => {
+                            if (!startDate) return true;
+                            return isBefore(date, startDate) || isDateDisabled(date);
+                          }}
+                          locale={ptBR}
+                          initialFocus
+                        />
+                        
+                        {/* Conflict Legend */}
+                        <div className="p-3 border-t border-border/50">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div className="w-3 h-3 rounded bg-destructive/10 border border-destructive/30 line-through"></div>
+                            <span>Dia indisponível (férias aprovadas)</span>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
-              </div>
+
+                {/* Total Days Display */}
+                {startDate && endDate && (
+                  <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium">
+                        Total de dias: <span className="text-primary">{calculateTotalDays()}</span>
+                        {selectedDays && calculateTotalDays() !== selectedDays && (
+                          <span className="text-warning ml-2">
+                            (esperado: {selectedDays})
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Reason */}
@@ -337,7 +392,7 @@ const VacationRequestView: React.FC = () => {
             <Button 
               type="submit" 
               className="w-full"
-              disabled={isSubmitting || !startDate || !endDate}
+              disabled={isSubmitting || !selectedDays || !startDate || !endDate}
             >
               {isSubmitting ? 'Enviando...' : 'Enviar Solicitação'}
             </Button>
