@@ -210,6 +210,10 @@ const AdminPanel: React.FC = () => {
 
   const getFirstName = (name: string) => name.split(' ')[0];
 
+  const getShiftName = (shift: 'meioPeriodo' | 'fechamento') => {
+    return shift === 'meioPeriodo' ? 'Meio Período' : 'Fechamento';
+  };
+
   const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
   const daysInMonth = 31;
   const firstDayOfMonth = new Date(2026, 0, 1).getDay();
@@ -351,28 +355,49 @@ const AdminPanel: React.FC = () => {
                 <>
                   {approvedSwaps.map(request => (
                     <div key={request.id} className="p-4 flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-sm">
+                      <div className="flex-1">
+                        <div className="font-medium text-sm mb-1">
                           {request.requesterName} ⇄ {request.targetName}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {request.originalDate} • Aprovado por {request.adminApprovedBy}
+                        <div className="text-xs text-muted-foreground space-y-0.5">
+                          <div>
+                            <span className="font-medium">Data:</span> {request.originalDate}
+                          </div>
+                          <div>
+                            <span className="font-medium">Turno solicitado:</span> {getShiftName(request.originalShift)}
+                          </div>
+                          <div>
+                            <span className="font-medium">Aceito por:</span> {request.targetName}
+                          </div>
+                          {request.adminApprovedBy && (
+                            <div>
+                              <span className="font-medium">Aprovado por:</span> {request.adminApprovedBy}
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <span className="badge-accepted">Aprovada</span>
+                      <span className="badge-accepted ml-4">Aprovada</span>
                     </div>
                   ))}
                   {rejectedSwaps.map(request => (
                     <div key={request.id} className="p-4 flex items-center justify-between opacity-60">
-                      <div>
-                        <div className="font-medium text-sm">
+                      <div className="flex-1">
+                        <div className="font-medium text-sm mb-1">
                           {request.requesterName} ⇄ {request.targetName}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {request.originalDate}
+                        <div className="text-xs text-muted-foreground space-y-0.5">
+                          <div>
+                            <span className="font-medium">Data:</span> {request.originalDate}
+                          </div>
+                          <div>
+                            <span className="font-medium">Turno solicitado:</span> {getShiftName(request.originalShift)}
+                          </div>
+                          <div>
+                            <span className="font-medium">Aceito por:</span> {request.targetName}
+                          </div>
                         </div>
                       </div>
-                      <span className="badge-rejected">Recusada</span>
+                      <span className="badge-rejected ml-4">Recusada</span>
                     </div>
                   ))}
                 </>
