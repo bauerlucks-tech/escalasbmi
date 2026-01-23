@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { validateAndParseCSV, downloadCSVTemplate, CSVValidationResult } from '@/utils/csvParser';
+import { validateAndParseCSV, downloadCSVTemplate, downloadScheduleCSV, CSVValidationResult } from '@/utils/csvParser';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminPanel: React.FC = () => {
@@ -601,14 +601,28 @@ const AdminPanel: React.FC = () => {
                 <Calendar className="w-5 h-5 text-primary" />
                 Janeiro 2026 - Editar Escala
               </h3>
-              <div className="flex items-center gap-4 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-secondary" />
-                  <span className="text-muted-foreground">Meio Período</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-warning" />
-                  <span className="text-muted-foreground">Fechamento</span>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    downloadScheduleCSV(scheduleData);
+                    toast.success('Escala baixada com sucesso!');
+                  }}
+                  className="border-primary/50 text-primary hover:bg-primary/10"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar Escala
+                </Button>
+                <div className="flex items-center gap-4 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-secondary" />
+                    <span className="text-muted-foreground">Meio Período</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-warning" />
+                    <span className="text-muted-foreground">Fechamento</span>
+                  </div>
                 </div>
               </div>
             </div>

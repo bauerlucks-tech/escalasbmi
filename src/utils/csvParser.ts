@@ -368,3 +368,49 @@ export function downloadCSVTemplate(month: number, year: number): void {
   link.click();
   document.body.removeChild(link);
 }
+
+export function exportScheduleToCSV(schedule: ScheduleEntry[]): string {
+  const lines = ['data,dia_semana,posto,colaborador'];
+  
+  // Sort by date
+  const sortedSchedule = [...schedule].sort((a, b) => {
+    const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+    const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+    const dateA = new Date(yearA, monthA - 1, dayA);
+    const dateB = new Date(yearB, monthB - 1, dayB);
+    return dateA.getTime() - dateB.getTime();
+  });
+  
+  sortedSchedule.forEach(entry => {
+    // Add two lines per day (meio período and fechamento)
+    lines.push(`${entry.date},${entry.dayOfWeek},meio_periodo,${entry.meioPeriodo}`);
+    lines.push(`${entry.date},${entry.dayOfWeek},fechamento,${entry.fechamento}`);
+  });
+  
+  return lines.join('\n');
+}
+
+export function downloadScheduleCSV(schedule: ScheduleEntry[]): void {
+  if (schedule.length === 0) {
+    return;
+  }
+  
+  // Get month and year from first entry
+  const firstDate = schedule[0].date;
+  const [, month, year] = firstDate.split('/').map(Number);
+  
+  const content = exportScheduleToCSV(schedule);
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  const monthNames = ['janeiro', 'fevereiro', 'marco', 'abril', 'maio', 'junho', 
+                      'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `escala_${monthNames[month - 1]}_${year}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
