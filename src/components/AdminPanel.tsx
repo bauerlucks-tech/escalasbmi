@@ -22,7 +22,7 @@ import {
 import { validateAndParseCSV, downloadCSVTemplate, downloadScheduleCSV, CSVValidationResult } from '@/utils/csvParser';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const AdminPanel: React.FC = () => {
+const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActiveTab }) => {
   const { currentUser, users, activeUsers, operators, isAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
   const { 
     getPendingAdminApproval, 
@@ -882,6 +882,8 @@ const AdminPanel: React.FC = () => {
                           onClick={() => {
                             switchToSchedule(schedule.month, schedule.year);
                             toast.success(`Visualizando escala de ${getMonthName(schedule.month)}/${schedule.year}`);
+                            // Mudar para a aba de escala para mostrar o calendário
+                            setActiveTab('schedule');
                           }}
                           className="border-primary/50 text-primary hover:bg-primary/10"
                         >

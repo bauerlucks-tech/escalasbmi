@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
       case 'requests':
         return <RequestsView />;
       case 'admin':
-        return <AdminPanel />;
+        return <AdminPanel setActiveTab={setActiveTab} />;
       default:
         return <ScheduleView />;
     }
