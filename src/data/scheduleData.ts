@@ -91,6 +91,66 @@ export const scheduleData: ScheduleEntry[] = [
   { date: "31/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "GUILHERME", fechamento: "GUILHERME" },
 ];
 
+// February 2026 schedule
+export const februaryScheduleData: ScheduleEntry[] = [
+  { date: "01/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "01/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "02/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "02/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "03/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "03/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "04/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "04/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "05/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "05/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "06/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "06/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "07/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+  { date: "07/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+  { date: "08/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "08/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "09/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "09/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "10/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "10/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "11/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "11/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "12/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "12/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "13/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "13/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "14/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+  { date: "14/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+  { date: "15/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "15/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "16/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "16/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "17/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "17/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "18/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "18/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "19/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "19/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "20/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "20/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "21/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+  { date: "21/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+  { date: "22/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "22/02/2026", dayOfWeek: "DOMINGO", meioPeriodo: "", fechamento: "" },
+  { date: "23/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "23/02/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "24/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "24/02/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "25/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "25/02/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "26/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "26/02/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "27/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "27/02/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "", fechamento: "" },
+  { date: "28/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+  { date: "28/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "", fechamento: "" },
+];
+
 export const initialUsers: User[] = [
   { id: "1", name: "LUCAS", password: "1234", role: "operador", status: "ativo" },
   { id: "2", name: "CARLOS", password: "1234", role: "operador", status: "ativo" },
@@ -109,15 +169,26 @@ export const createScheduleStorage = (): ScheduleStorage => {
     return JSON.parse(saved);
   }
   
-  // Initialize with January 2026 as current schedule
+  // Initialize with January and February 2026 as current schedules
   return {
-    current: [{
-      month: 1,
-      year: 2026,
-      entries: scheduleData,
-      importedAt: new Date().toISOString(),
-      importedBy: 'system'
-    }],
+    current: [
+      {
+        month: 1,
+        year: 2026,
+        entries: scheduleData,
+        importedAt: new Date().toISOString(),
+        importedBy: 'system',
+        isActive: true
+      },
+      {
+        month: 2,
+        year: 2026,
+        entries: februaryScheduleData,
+        importedAt: new Date().toISOString(),
+        importedBy: 'system',
+        isActive: true
+      }
+    ],
     archived: []
   };
 };
