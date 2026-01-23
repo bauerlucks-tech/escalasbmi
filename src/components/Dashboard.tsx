@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import ScheduleView from '@/components/ScheduleView';
 import SwapRequestView from '@/components/SwapRequestView';
 import RequestsView from '@/components/RequestsView';
 import AdminPanel from '@/components/AdminPanel';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('schedule');
+  const { currentUser } = useAuth();
+
+  // Redireciona RICARDO se tentar acessar a aba de troca
+  useEffect(() => {
+    if (currentUser?.name === 'RICARDO' && activeTab === 'swap') {
+      setActiveTab('schedule');
+    }
+  }, [currentUser, activeTab]);
 
   const renderContent = () => {
     switch (activeTab) {

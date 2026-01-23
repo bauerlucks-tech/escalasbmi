@@ -20,11 +20,16 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
 
-  const tabs = [
+  let tabs = [
     { id: 'schedule', label: 'Escala SBMIBZ', icon: Calendar },
     { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight },
     { id: 'requests', label: 'Solicitações', icon: Bell, badge: pendingCount },
   ];
+
+  // Remove "Solicitar Troca" para o usuário RICARDO
+  if (currentUser?.name === 'RICARDO') {
+    tabs = tabs.filter(tab => tab.id !== 'swap');
+  }
 
   if (isAdmin(currentUser)) {
     tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
