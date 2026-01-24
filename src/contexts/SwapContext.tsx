@@ -28,7 +28,7 @@ interface SwapContextType {
   getPendingAdminApproval: () => SwapRequest[];
   getApprovedSwaps: () => SwapRequest[];
   updateSchedule: (newSchedule: ScheduleEntry[]) => void;
-  importNewSchedule: (month: number, year: number, entries: ScheduleEntry[], importedBy: string) => { success: boolean; message: string; archived?: ArchivedSchedule[] };
+  importNewSchedule: (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate?: boolean) => { success: boolean; message: string; archived?: ArchivedSchedule[] };
   archiveCurrentSchedule: (month: number, year: number, archivedBy: string) => boolean;
   restoreArchivedSchedule: (month: number, year: number) => boolean;
   switchToSchedule: (month: number, year: number) => boolean;
@@ -176,8 +176,8 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return swapRequests.filter(req => req.status === 'approved');
   };
 
-  const importNewSchedule = (month: number, year: number, entries: ScheduleEntry[], importedBy: string) => {
-    const result = addNewMonthSchedule(month, year, entries, importedBy);
+  const importNewSchedule = (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate = true) => {
+    const result = addNewMonthSchedule(month, year, entries, importedBy, activate);
     if (result.success) {
       refreshSchedules();
       // Switch to the newly imported schedule

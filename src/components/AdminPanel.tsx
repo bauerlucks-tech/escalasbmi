@@ -57,6 +57,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const [importedStats, setImportedStats] = useState<{name: string; totalDays: number; weekendDays: number}[] | null>(null);
   const [csvValidation, setCsvValidation] = useState<CSVValidationResult | null>(null);
   const [isProcessingCSV, setIsProcessingCSV] = useState(false);
+  const [activateOnImport, setActivateOnImport] = useState<boolean>(true); // New state for activation control
   
   // New user form
   const [showNewUserForm, setShowNewUserForm] = useState(false);
@@ -173,10 +174,11 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     if (!currentUser) return;
 
     // Import new schedule without replacing existing ones
-    const result = importNewSchedule(importMonth, importYear, csvValidation.data, currentUser.name);
+    const result = importNewSchedule(importMonth, importYear, csvValidation.data, currentUser.name, activateOnImport);
     
     if (result.success) {
-      toast.success(result.message);
+      const statusText = activateOnImport ? 'ativada' : 'carregada como inativa';
+      toast.success(`Escala ${result.message.replace('importada com sucesso', statusText + ' com sucesso')}`);
       
       if (result.archived && result.archived.length > 0) {
         const archivedNames = result.archived.map(a => `${getMonthName(a.month)}/${a.year}`).join(', ');
@@ -540,6 +542,26 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                 </div>
               </div>
 
+              {/* Activation Option */}
+              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="activateOnImport"
+                  checked={activateOnImport}
+                  onChange={(e) => setActivateOnImport(e.target.checked)}
+                  className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary focus:ring-2"
+                />
+                <label htmlFor="activateOnImport" className="text-sm cursor-pointer">
+                  <span className="font-medium">Ativar escala imediatamente após importação</span>
+                  <span className="text-muted-foreground block text-xs">
+                    {activateOnImport 
+                      ? "A escala ficará visível e disponível para todos os usuários após a importação."
+                      : "A escala será carregada no sistema mas permanecerá inativa até ser ativada manualmente."
+                    }
+                  </span>
+                </label>
+              </div>
+
               {/* CSV Validation Results */}
               {csvValidation && (
                 <div className={`glass-card p-4 ${csvValidation.isValid ? 'bg-success/10 border-success/30' : 'bg-destructive/10 border-destructive/30'} border`}>
@@ -654,10 +676,25 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                       Cancelar
                     </Button>
                   </div>
-                  <p className="text-xs text-warning mt-2 flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" />
-                    Atenção: Um novo mês será adicionado ao sistema!
-                  </p>
+                  <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                    <p className="flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3" />
+                      Um novo mês será adicionado ao sistema!
+                    </p>
+                    <p className="flex items-center gap-1">
+                      {activateOnImport ? (
+                        <>
+                          <Power className="w-3 h-3 text-success" />
+                          <span className="text-success">A escala será <strong>ativada</strong> e ficará visível para todos os usuários.</span>
+                        </>
+                      ) : (
+                        <>
+                          <PowerOff className="w-3 h-3 text-warning" />
+                          <span className="text-warning">A escala será <strong>carregada como inativa</strong> e poderá ser ativada posteriormente.</span>
+                        </>
+                      )}
+                    </p>
+                  </div>
                 </div>
               )}
             </div>

@@ -214,7 +214,8 @@ export const addNewMonthSchedule = (
   month: number, 
   year: number, 
   entries: ScheduleEntry[], 
-  importedBy: string
+  importedBy: string,
+  activate: boolean = true
 ): { success: boolean; message: string; archived?: ArchivedSchedule[] } => {
   const storage = createScheduleStorage();
   
@@ -262,7 +263,7 @@ export const addNewMonthSchedule = (
     entries,
     importedAt: new Date().toISOString(),
     importedBy,
-    isActive: true // New schedules are active by default
+    isActive: activate // Use the activation parameter
   };
   
   storage.current.push(newSchedule);
