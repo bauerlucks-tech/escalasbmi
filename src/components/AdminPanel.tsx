@@ -962,6 +962,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                           variant="outline"
                           onClick={() => {
                             switchToSchedule(schedule.month, schedule.year);
+                            // Atualizar o mês/ano selecionado no AdminPanel para corresponder
+                            setSelectedMonth(schedule.month);
+                            setSelectedYear(schedule.year);
                             toast.success(`Visualizando escala de ${getMonthName(schedule.month)}/${schedule.year}`);
                             // Mudar para a aba de escala para mostrar o calendário
                             setActiveTab('schedule');
@@ -973,7 +976,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                           <Calendar className="w-4 h-4 mr-1" />
                           Visualizar
                           {hoveredSchedule?.month === schedule.month && hoveredSchedule?.year === schedule.year && (
-                            <div className="absolute top-full mt-2 left-0 z-50 glass-card-elevated p-4 min-w-[300px] animate-scale-in">
+                            <div className="absolute top-full mt-2 right-0 z-50 glass-card-elevated p-4 min-w-[280px] max-w-[90vw] animate-scale-in">
                               <div className="text-sm font-medium mb-2">
                                 {getMonthName(schedule.month)}/{schedule.year}
                               </div>
