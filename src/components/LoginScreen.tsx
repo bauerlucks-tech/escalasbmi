@@ -98,6 +98,20 @@ const LoginScreen: React.FC = () => {
             Senha padrão: <span className="font-mono text-primary">1234</span>
           </p>
         </div>
+
+        {/* Footer info */}
+        <div className="mt-4 space-y-2">
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground">
+              Criado por: <span className="text-primary font-medium">Lucas Pott</span>
+            </p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground">
+              Versão: <span className="text-primary font-mono">1.0.0</span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
