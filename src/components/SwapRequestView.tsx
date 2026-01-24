@@ -474,6 +474,7 @@ const SwapRequestView: React.FC = () => {
                   <SelectContent className="max-h-[300px]">
                     {[selectedTargetEntry.meioPeriodo, selectedTargetEntry.fechamento]
                       .filter((name, index, self) => name && self.indexOf(name) === index)
+                      .filter(operatorName => operatorName !== currentUser?.name) // Impedir auto-seleção
                       .map(operatorName => {
                         const shifts = getOperatorShiftsForDay(selectedTargetEntry, operatorName);
                         return (
