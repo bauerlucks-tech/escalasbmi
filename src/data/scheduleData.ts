@@ -72,6 +72,8 @@ export interface SwapRequest {
   targetDate: string;        // Dia que o solicitante quer pegar
   targetShift: 'meioPeriodo' | 'fechamento';   // Turno que o solicitante quer assumir
   status: 'pending' | 'accepted' | 'rejected' | 'approved';
+  respondedAt?: string;       // Quando o colega respondeu
+  respondedBy?: string;       // Nome do colega que respondeu (targetName)
   adminApproved?: boolean;
   adminApprovedAt?: string;
   adminApprovedBy?: string;

@@ -139,7 +139,12 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const respondToSwap = (requestId: string, accept: boolean) => {
     setSwapRequests(prev => prev.map(req =>
       req.id === requestId
-        ? { ...req, status: accept ? 'accepted' : 'rejected' }
+        ? { 
+            ...req, 
+            status: accept ? 'accepted' : 'rejected',
+            respondedAt: new Date().toISOString(),
+            respondedBy: req.targetName
+          }
         : req
     ));
   };

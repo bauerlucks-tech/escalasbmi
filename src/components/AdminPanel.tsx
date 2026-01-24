@@ -399,7 +399,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               </h3>
             </div>
 
-            <div className="divide-y divide-border/30 max-h-[300px] overflow-y-auto">
+            <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto">
               {approvedSwaps.length === 0 && rejectedSwaps.length === 0 ? (
                 <div className="p-6 text-center text-muted-foreground text-sm">
                   Nenhuma troca no histórico
@@ -407,50 +407,82 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               ) : (
                 <>
                   {approvedSwaps.map(request => (
-                    <div key={request.id} className="p-4 flex items-center justify-between">
+                    <div key={request.id} className="p-4 flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="font-medium text-sm mb-1">
+                        <div className="font-medium text-sm mb-2">
                           {request.requesterName} ⇄ {request.targetName}
                         </div>
-                        <div className="text-xs text-muted-foreground space-y-0.5">
-                          <div>
-                            <span className="font-medium">Data:</span> {request.originalDate}
+                        
+                        {/* Seção DE (origem) */}
+                        <div className="bg-muted/30 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-primary mb-1">📍 DE (Origem):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.originalDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.originalShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.requesterName}</div>
                           </div>
-                          <div>
-                            <span className="font-medium">Turno solicitado:</span> {getShiftName(request.originalShift)}
+                        </div>
+                        
+                        {/* Seção PARA (destino) */}
+                        <div className="bg-muted/30 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-secondary mb-1">🎯 PARA (Destino):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.targetDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.targetShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.targetName}</div>
                           </div>
-                          <div>
-                            <span className="font-medium">Aceito por:</span> {request.targetName}
-                          </div>
-                          {request.adminApprovedBy && (
-                            <div>
-                              <span className="font-medium">Aprovado por:</span> {request.adminApprovedBy}
-                            </div>
+                        </div>
+                        
+                        {/* Seção de registro */}
+                        <div className="text-xs text-muted-foreground space-y-0.5 border-t pt-2">
+                          <div><span className="font-medium">Solicitado:</span> {new Date(request.createdAt).toLocaleString('pt-BR')}</div>
+                          {request.respondedAt && (
+                            <div><span className="font-medium">Respondido:</span> {new Date(request.respondedAt).toLocaleString('pt-BR')} por {request.respondedBy}</div>
+                          )}
+                          {request.adminApprovedAt && (
+                            <div><span className="font-medium">Aprovado:</span> {new Date(request.adminApprovedAt).toLocaleString('pt-BR')} por {request.adminApprovedBy}</div>
                           )}
                         </div>
                       </div>
-                      <span className="badge-accepted ml-4">Aprovada</span>
+                      <span className="badge-accepted ml-4 mt-1">Aprovada</span>
                     </div>
                   ))}
                   {rejectedSwaps.map(request => (
-                    <div key={request.id} className="p-4 flex items-center justify-between opacity-60">
+                    <div key={request.id} className="p-4 flex items-start justify-between opacity-60">
                       <div className="flex-1">
-                        <div className="font-medium text-sm mb-1">
+                        <div className="font-medium text-sm mb-2">
                           {request.requesterName} ⇄ {request.targetName}
                         </div>
-                        <div className="text-xs text-muted-foreground space-y-0.5">
-                          <div>
-                            <span className="font-medium">Data:</span> {request.originalDate}
-                          </div>
-                          <div>
-                            <span className="font-medium">Turno solicitado:</span> {getShiftName(request.originalShift)}
-                          </div>
-                          <div>
-                            <span className="font-medium">Aceito por:</span> {request.targetName}
+                        
+                        {/* Seção DE (origem) */}
+                        <div className="bg-muted/20 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-muted-foreground mb-1">📍 DE (Origem):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.originalDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.originalShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.requesterName}</div>
                           </div>
                         </div>
+                        
+                        {/* Seção PARA (destino) */}
+                        <div className="bg-muted/20 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-muted-foreground mb-1">🎯 PARA (Destino):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.targetDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.targetShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.targetName}</div>
+                          </div>
+                        </div>
+                        
+                        {/* Seção de registro */}
+                        <div className="text-xs text-muted-foreground space-y-0.5 border-t pt-2">
+                          <div><span className="font-medium">Solicitado:</span> {new Date(request.createdAt).toLocaleString('pt-BR')}</div>
+                          {request.respondedAt && (
+                            <div><span className="font-medium">Respondido:</span> {new Date(request.respondedAt).toLocaleString('pt-BR')} por {request.respondedBy}</div>
+                          )}
+                        </div>
                       </div>
-                      <span className="badge-rejected ml-4">Recusada</span>
+                      <span className="badge-rejected ml-4 mt-1">Recusada</span>
                     </div>
                   ))}
                 </>
