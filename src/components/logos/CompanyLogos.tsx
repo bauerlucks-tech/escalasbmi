@@ -5,71 +5,56 @@ interface LogoProps {
   showName?: boolean;
 }
 
-// Petrobras - Logo real baseado na imagem
+// Petrobras - Stylized logo (green/yellow BR shape)
 export const PetrobrasLogo: React.FC<LogoProps> = ({ className, showName = true }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <svg viewBox="0 0 40 40" className="w-12 h-12" fill="none">
-      {/* Background green rectangle */}
-      <rect x="2" y="8" width="36" height="24" rx="2" fill="#006B3F"/>
-      {/* PETROBRAS text */}
-      <text x="20" y="22" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontWeight="bold" fontFamily="Arial, sans-serif">PETROBRAS</text>
-      {/* Yellow horizontal bar */}
-      <rect x="2" y="26" width="36" height="2" fill="#FFD700"/>
+    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
+      <circle cx="20" cy="20" r="18" fill="url(#petrobras-gradient)" />
+      <text x="20" y="26" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="Arial">BR</text>
+      <defs>
+        <linearGradient id="petrobras-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#006B3F" />
+          <stop offset="100%" stopColor="#00A859" />
+        </linearGradient>
+      </defs>
     </svg>
     {showName && <span className="text-xs font-semibold text-muted-foreground">Petrobras</span>}
   </div>
 );
 
-// Omni Taxi Aéreo - Logo real baseado na imagem
+// Omni Taxi Aéreo - Stylized helicopter outline
 export const OmniLogo: React.FC<LogoProps> = ({ className, showName = true }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <svg viewBox="0 0 40 40" className="w-12 h-12" fill="none">
-      {/* Background blue rectangle */}
-      <rect x="2" y="8" width="36" height="24" rx="2" fill="#1E3A8A"/>
-      {/* OMNI text */}
-      <text x="20" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="Arial, sans-serif">OMNI</text>
-      {/* Taxi Aéreo subtitle */}
-      <text x="20" y="26" textAnchor="middle" fill="#FFFFFF" fontSize="5" fontFamily="Arial, sans-serif">TAXI AÉREO</text>
-      {/* Small helicopter icon */}
-      <circle cx="8" cy="20" r="2" fill="#FFFFFF" opacity="0.8"/>
-      <path d="M6 20h4" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.6"/>
+    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
+      <rect x="4" y="4" width="32" height="32" rx="4" fill="#1E3A8A" />
+      <text x="20" y="24" textAnchor="middle" fill="#FBBF24" fontSize="10" fontWeight="bold" fontFamily="Arial">OMNI</text>
+      <path d="M12 30l16-2" stroke="#FBBF24" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
     {showName && <span className="text-xs font-semibold text-muted-foreground">Omni</span>}
   </div>
 );
 
-// Líder Taxi Aéreo - Logo real baseado na imagem
+// Líder Taxi Aéreo - Bold L with wing
 export const LiderLogo: React.FC<LogoProps> = ({ className, showName = true }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <svg viewBox="0 0 40 40" className="w-12 h-12" fill="none">
-      {/* Background red rectangle */}
-      <rect x="2" y="8" width="36" height="24" rx="2" fill="#C41E3A"/>
-      {/* LÍDER text */}
-      <text x="20" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="Arial, sans-serif">LÍDER</text>
-      {/* Taxi Aéreo subtitle */}
-      <text x="20" y="26" textAnchor="middle" fill="#FFFFFF" fontSize="5" fontFamily="Arial, sans-serif">TAXI AÉREO</text>
-      {/* Small wing icon */}
-      <path d="M6 18h10M6 20h10" stroke="#FFFFFF" strokeWidth="1" opacity="0.7"/>
+    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
+      <circle cx="20" cy="20" r="18" fill="#C41E3A" />
+      <text x="20" y="26" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold" fontFamily="Arial">L</text>
+      <path d="M14 14l12 3" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
     </svg>
     {showName && <span className="text-xs font-semibold text-muted-foreground">Líder</span>}
   </div>
 );
 
-// CHC do Brasil - Logo real baseado na imagem
+// CHC do Brasil - CHC text with helicopter silhouette
 export const CHCLogo: React.FC<LogoProps> = ({ className, showName = true }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <svg viewBox="0 0 40 40" className="w-12 h-12" fill="none">
-      {/* Background blue rectangle */}
-      <rect x="2" y="8" width="36" height="24" rx="2" fill="#0D4F8B"/>
-      {/* CHC text */}
-      <text x="20" y="20" textAnchor="middle" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="Arial, sans-serif">CHC</text>
-      {/* do Brasil subtitle */}
-      <text x="20" y="26" textAnchor="middle" fill="#FFFFFF" fontSize="5" fontFamily="Arial, sans-serif">do Brasil</text>
-      {/* Small helicopter icon */}
-      <ellipse cx="8" cy="18" rx="3" ry="1" fill="#FFFFFF" opacity="0.8"/>
-      <path d="M11 18l3-0.5v1l-3 0.5z" fill="#FFFFFF" opacity="0.7"/>
-      <path d="M5 16h6" stroke="#FFFFFF" strokeWidth="0.6" opacity="0.6"/>
-      <path d="M8 13v10" stroke="#FFFFFF" strokeWidth="0.6" opacity="0.6"/>
+    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
+      <rect x="4" y="4" width="32" height="32" rx="4" fill="#0D4F8B" />
+      <text x="20" y="22" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="Arial">CHC</text>
+      <path d="M10 28h20" stroke="#00B5E2" strokeWidth="2" strokeLinecap="round" />
+      {/* Mini helicopter silhouette */}
+      <ellipse cx="20" cy="12" rx="6" ry="2" fill="#00B5E2" opacity="0.6" />
     </svg>
     {showName && <span className="text-xs font-semibold text-muted-foreground">CHC</span>}
   </div>
