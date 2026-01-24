@@ -3,8 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { HelicopterDetailedIcon, HelipadIcon, PlatformIcon } from '@/components/icons/OffshoreIcons';
-import { AviationBadge } from '@/components/logos/CompanyLogos';
+import { HelicopterDetailedIcon } from '@/components/icons/OffshoreIcons';
 import { AlertCircle, Lock, User } from 'lucide-react';
 
 const LoginScreen: React.FC = () => {
@@ -29,52 +28,17 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Flying helicopter animation */}
-        <div className="absolute top-1/4 animate-fly">
-          <HelicopterDetailedIcon className="w-24 h-24 text-primary opacity-20" />
-        </div>
-        
-        {/* Helipad decoration top left */}
-        <div className="absolute top-16 left-16 opacity-10">
-          <HelipadIcon className="w-32 h-32 text-primary" />
-        </div>
-        
-        {/* Platform decoration bottom right */}
-        <div className="absolute bottom-16 right-16 opacity-10">
-          <PlatformIcon className="w-48 h-48 text-secondary" />
-        </div>
-        
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-        
-        {/* Grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: `
-              linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px),
-              linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px'
-          }}
-        />
-      </div>
-
-      <div className="glass-card-elevated w-full max-w-md p-8 animate-slide-up relative z-10">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <div className="glass-card-elevated w-full max-w-md p-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 mb-4 glow-primary relative">
-            <HelicopterDetailedIcon className="w-12 h-12 text-primary" />
-            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-success animate-pulse" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
+            <HelicopterDetailedIcon className="w-10 h-10 text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-gradient mb-2">Operações Aéreas Offshore</h1>
-          <p className="text-muted-foreground text-sm mb-3">
+          <p className="text-muted-foreground text-sm">
             Sistema de Gestão de Escalas - Área Branca SBMI
           </p>
-          <AviationBadge />
         </div>
 
         {/* Login Form */}
@@ -132,13 +96,6 @@ const LoginScreen: React.FC = () => {
         <div className="mt-6 pt-6 border-t border-border/50">
           <p className="text-xs text-muted-foreground text-center">
             Senha padrão: <span className="font-mono text-primary">1234</span>
-          </p>
-        </div>
-
-        {/* Created by footer */}
-        <div className="mt-6 pt-6 border-t border-border/30">
-          <p className="text-xs text-muted-foreground text-center">
-            Criado por Lucas Pott
           </p>
         </div>
       </div>
