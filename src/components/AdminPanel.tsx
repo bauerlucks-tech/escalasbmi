@@ -142,8 +142,10 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     try {
       const content = await file.text();
       
-      // Get registered employees from active users
-      const registeredEmployees = activeUsers.map(u => u.name);
+      // Get registered employees from active users (excluding hidden ones)
+      const registeredEmployees = activeUsers
+        .filter(u => !u.hideFromSchedule)
+        .map(u => u.name);
       
       // Validate and parse CSV
       const result = validateAndParseCSV(content, registeredEmployees, importMonth, importYear);
