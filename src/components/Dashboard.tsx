@@ -6,6 +6,7 @@ import RequestsView from '@/components/RequestsView';
 import AdminPanel from '@/components/AdminPanel';
 import VacationRequestView from '@/components/VacationRequestView';
 import VacationAdminView from '@/components/VacationAdminView';
+import OperatorHelp from '@/components/OperatorHelp';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
@@ -27,6 +28,8 @@ const Dashboard: React.FC = () => {
         return <SwapRequestView />;
       case 'requests':
         return <RequestsView />;
+      case 'help':
+        return <OperatorHelp />;
       case 'admin':
         return <AdminPanel setActiveTab={setActiveTab} />;
       case 'vacations':

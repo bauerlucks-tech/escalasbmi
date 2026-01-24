@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
 import { PartnerLogos } from '@/components/logos/CompanyLogos';
-import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User } from 'lucide-react';
+import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle } from 'lucide-react';
 import UserSettings from '@/components/UserSettings';
+import OperatorHelp from '@/components/OperatorHelp';
 
 interface HeaderProps {
   activeTab: string;
@@ -16,6 +17,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { currentUser, logout, isAdmin } = useAuth();
   const { getPendingCount, getPendingAdminApproval } = useSwap();
+  const [showHelp, setShowHelp] = React.useState(false);
   
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
@@ -30,6 +32,11 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   // Remove "Solicitar Troca" e "Solicitações" para o usuário RICARDO
   if (currentUser?.name === 'RICARDO') {
     tabs = tabs.filter(tab => tab.id !== 'swap' && tab.id !== 'requests');
+  }
+
+  // Adicionar aba de ajuda para operadores (não administradores)
+  if (!isAdmin(currentUser)) {
+    tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });
   }
 
   if (isAdmin(currentUser)) {
@@ -135,6 +142,27 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
           })}
         </nav>
       </div>
+
+      {/* Help Modal */}
+      {showHelp && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-background rounded-xl border border-border/50 max-w-6xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-4 border-b border-border/50 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Guia do Operador</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHelp(false)}
+              >
+                ✕
+              </Button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
+              <OperatorHelp />
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
