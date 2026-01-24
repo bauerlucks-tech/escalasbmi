@@ -31,6 +31,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     swapRequests, 
     scheduleData, 
     updateSchedule,
+    updateMonthSchedule,
     importNewSchedule,
     currentSchedules,
     archivedSchedules,
@@ -111,10 +112,17 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
         ? { ...entry, meioPeriodo: editForm.meioPeriodo.toUpperCase(), fechamento: editForm.fechamento.toUpperCase() }
         : entry
     );
-    updateSchedule(updatedSchedule);
-    setEditingEntry(null);
-    setEditForm({ meioPeriodo: '', fechamento: '' });
-    toast.success('Escala atualizada com sucesso!');
+    
+    // Save to the specific month schedule
+    const success = updateMonthSchedule(selectedMonth, selectedYear, updatedSchedule);
+    
+    if (success) {
+      setEditingEntry(null);
+      setEditForm({ meioPeriodo: '', fechamento: '' });
+      toast.success('Escala atualizada com sucesso!');
+    } else {
+      toast.error('Erro ao atualizar escala');
+    }
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {

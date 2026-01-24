@@ -276,6 +276,19 @@ export const addNewMonthSchedule = (
   };
 };
 
+export const updateMonthSchedule = (month: number, year: number, entries: ScheduleEntry[]): boolean => {
+  const storage = createScheduleStorage();
+  const scheduleIndex = storage.current.findIndex(s => s.month === month && s.year === year);
+  
+  if (scheduleIndex === -1) return false;
+  
+  // Update the schedule entries
+  storage.current[scheduleIndex].entries = entries;
+  saveScheduleStorage(storage);
+  
+  return true;
+};
+
 export const toggleScheduleActivation = (month: number, year: number): boolean => {
   const storage = createScheduleStorage();
   const scheduleIndex = storage.current.findIndex(s => s.month === month && s.year === year);
