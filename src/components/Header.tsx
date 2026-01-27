@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
 import { PartnerLogos } from '@/components/logos/CompanyLogos';
-import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle } from 'lucide-react';
+import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database } from 'lucide-react';
 import UserSettings from '@/components/UserSettings';
 import OperatorHelp from '@/components/OperatorHelp';
 
@@ -15,7 +15,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
-  const { currentUser, logout, isAdmin } = useAuth();
+  const { currentUser, logout, isAdmin, isSuperAdmin } = useAuth();
   const { getPendingCount, getPendingAdminApproval } = useSwap();
   const [showHelp, setShowHelp] = React.useState(false);
   
@@ -41,6 +41,11 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
   if (isAdmin(currentUser)) {
     tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
+  }
+
+  // Adicionar aba de Backup apenas para Super Admin
+  if (isSuperAdmin(currentUser)) {
+    tabs.push({ id: 'backup', label: 'Backup', icon: Database });
   }
 
   const getInitials = (name: string) => {
@@ -78,7 +83,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             </div>
             
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50">
-              {isAdmin(currentUser) && (
+              {isSuperAdmin(currentUser) && (
+                <Shield className="w-4 h-4 text-destructive" />
+              )}
+              {isAdmin(currentUser) && !isSuperAdmin(currentUser) && (
                 <Shield className="w-4 h-4 text-primary" />
               )}
               {currentUser?.profileImage ? (

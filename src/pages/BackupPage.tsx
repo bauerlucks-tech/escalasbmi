@@ -1,0 +1,375 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSwap } from '@/contexts/SwapContext';
+import { downloadCompleteBackup, restoreCompleteBackup, CompleteBackup } from '@/utils/backupUtils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
+import { Download, Upload, Clock, Database, Shield, Calendar, FileJson } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+interface StoredBackup extends CompleteBackup {
+  id: string;
+  createdAt: string;
+}
+
+const BackupPage: React.FC = () => {
+  const { currentUser, isSuperAdmin } = useAuth();
+  const { currentSchedules, swapRequests } = useSwap();
+  const [storedBackups, setStoredBackups] = useState<StoredBackup[]>([]);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  // Check if user is Super Admin
+  if (!isSuperAdmin(currentUser)) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-96">
+          <CardHeader className="text-center">
+            <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <CardTitle className="text-xl">Acesso Restrito</CardTitle>
+            <CardDescription>
+              Apenas Super Admin pode acessar esta página.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  // Load stored backups from localStorage
+  useEffect(() => {
+    const loadStoredBackups = () => {
+      const stored = localStorage.getItem('system_backups');
+      if (stored) {
+        try {
+          const backups = JSON.parse(stored);
+          setStoredBackups(backups.sort((a: StoredBackup, b: StoredBackup) => 
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          ));
+        } catch (error) {
+          console.error('Error loading stored backups:', error);
+        }
+      }
+    };
+
+    loadStoredBackups();
+  }, []);
+
+  // Auto backup at 00:00
+  useEffect(() => {
+    const checkAndRunAutoBackup = () => {
+      const now = new Date();
+      const lastBackup = localStorage.getItem('last_auto_backup');
+      
+      // Check if it's 00:00 and backup hasn't run today
+      if (now.getHours() === 0 && now.getMinutes() === 0) {
+        const today = now.toDateString();
+        
+        if (!lastBackup || lastBackup !== today) {
+          runAutoBackup();
+          localStorage.setItem('last_auto_backup', today);
+        }
+      }
+    };
+
+    const interval = setInterval(checkAndRunAutoBackup, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const runAutoBackup = async () => {
+    try {
+      const backup = await createAutoBackup();
+      if (backup) {
+        toast.success('Backup automático realizado com sucesso!');
+      }
+    } catch (error) {
+      console.error('Auto backup failed:', error);
+    }
+  };
+
+  const createAutoBackup = (): Promise<StoredBackup | null> => {
+    return new Promise((resolve) => {
+      try {
+        // Get all data from localStorage
+        const storedSchedules = localStorage.getItem('schedules');
+        const storedVacations = localStorage.getItem('vacations');
+        const storedSwapRequests = localStorage.getItem('swapRequests');
+        const storedUsers = localStorage.getItem('users');
+
+        const schedules = storedSchedules ? JSON.parse(storedSchedules) : { current: [], archived: [] };
+        const vacations = storedVacations ? JSON.parse(storedVacations) : { requests: [] };
+        const swapRequestsData = storedSwapRequests ? JSON.parse(storedSwapRequests) : [];
+        const usersData = storedUsers ? JSON.parse(storedUsers) : [];
+
+        const backup: CompleteBackup = {
+          version: '1.0.0',
+          timestamp: new Date().toISOString(),
+          data: {
+            schedules: schedules,
+            vacations: vacations,
+            swapRequests: swapRequestsData,
+            users: usersData
+          }
+        };
+
+        const storedBackup: StoredBackup = {
+          ...backup,
+          id: `auto_${Date.now()}`,
+          createdAt: new Date().toISOString()
+        };
+
+        // Store backup in localStorage
+        const existingBackups = JSON.parse(localStorage.getItem('system_backups') || '[]');
+        existingBackups.push(storedBackup);
+        
+        // Keep only last 30 backups to prevent storage overflow
+        if (existingBackups.length > 30) {
+          existingBackups.splice(0, existingBackups.length - 30);
+        }
+        
+        localStorage.setItem('system_backups', JSON.stringify(existingBackups));
+        setStoredBackups(existingBackups.sort((a: StoredBackup, b: StoredBackup) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ));
+
+        resolve(storedBackup);
+      } catch (error) {
+        console.error('Error creating auto backup:', error);
+        resolve(null);
+      }
+    });
+  };
+
+  const handleManualBackup = () => {
+    downloadCompleteBackup();
+  };
+
+  const handleRestoreBackup = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    if (!file.name.endsWith('.json')) {
+      toast.error('Por favor, selecione um arquivo de backup (.json)');
+      return;
+    }
+    
+    setIsRestoring(true);
+    
+    try {
+      await restoreCompleteBackup(file);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      console.error('Restore failed:', error);
+    } finally {
+      setIsRestoring(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleDownloadStoredBackup = (backup: StoredBackup) => {
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { 
+      type: 'application/json' 
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date(backup.timestamp).toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    link.download = `backup_${backup.id}_${timestamp}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Backup baixado com sucesso!');
+  };
+
+  const handleDeleteStoredBackup = (backupId: string) => {
+    const existingBackups = JSON.parse(localStorage.getItem('system_backups') || '[]');
+    const filteredBackups = existingBackups.filter((b: StoredBackup) => b.id !== backupId);
+    localStorage.setItem('system_backups', JSON.stringify(filteredBackups));
+    setStoredBackups(filteredBackups.sort((a: StoredBackup, b: StoredBackup) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    ));
+    toast.success('Backup excluído com sucesso!');
+  };
+
+  const formatBackupSize = (backup: StoredBackup) => {
+    const size = new Blob([JSON.stringify(backup)]).size;
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const formatBackupDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center">
+            <Database className="w-6 h-6 text-destructive" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold">Sistema de Backup</h1>
+            <p className="text-muted-foreground">
+              Gerenciamento completo de backups do sistema
+            </p>
+          </div>
+        </div>
+
+        {/* Manual Backup Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Download className="w-5 h-5 text-success" />
+                Backup Manual
+              </CardTitle>
+              <CardDescription>
+                Baixe um backup completo do sistema agora mesmo
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleManualBackup}
+                className="w-full bg-success hover:bg-success/90"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Baixar Backup Completo
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="w-5 h-5 text-warning" />
+                Restaurar Backup
+              </CardTitle>
+              <CardDescription>
+                Restaure o sistema a partir de um arquivo de backup
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleRestoreBackup}
+                className="hidden"
+                id="restore-backup"
+              />
+              <Button
+                variant="outline"
+                onClick={() => document.getElementById('restore-backup')?.click()}
+                className="w-full border-warning/50 text-warning hover:bg-warning/10"
+                disabled={isRestoring}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {isRestoring ? 'Restaurando...' : 'Restaurar Backup'}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Auto Backup Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary" />
+              Backup Automático
+            </CardTitle>
+            <CardDescription>
+              O sistema realiza backup automaticamente todos os dias às 00:00
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="w-4 h-4" />
+              <span>Próximo backup: Hoje às 00:00</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stored Backups */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileJson className="w-5 h-5 text-primary" />
+              Backups Armazenados ({storedBackups.length})
+            </CardTitle>
+            <CardDescription>
+              Backups automáticos armazenados no sistema
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {storedBackups.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Database className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Nenhum backup armazenado ainda</p>
+                <p className="text-sm">O primeiro backup automático será criado às 00:00</p>
+              </div>
+            ) : (
+              <ScrollArea className="h-96">
+                <div className="space-y-3">
+                  {storedBackups.map((backup) => (
+                    <div key={backup.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <FileJson className="w-4 h-4 text-primary" />
+                          <span className="font-medium text-sm">
+                            {backup.id.startsWith('auto_') ? 'Backup Automático' : 'Backup Manual'}
+                          </span>
+                        </div>
+                        <div className="text-xs text-muted-foreground space-y-1">
+                          <div>Criado: {formatBackupDate(backup.createdAt)}</div>
+                          <div>Tamanho: {formatBackupSize(backup)}</div>
+                          <div>Versão: {backup.version}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDownloadStoredBackup(backup)}
+                        >
+                          <Download className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteStoredBackup(backup.id)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default BackupPage;

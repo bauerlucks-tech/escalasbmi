@@ -411,12 +411,6 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             <Users className="w-4 h-4" />
             Usuários
           </TabsTrigger>
-          {isSuperAdmin(currentUser) && (
-            <TabsTrigger value="superadmin" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              SuperAdmin
-            </TabsTrigger>
-          )}
         </TabsList>
 
         {/* Swaps Tab */}
@@ -1434,68 +1428,6 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             </div>
           </div>
         </TabsContent>
-
-        {/* SuperAdmin Tab - Only for Super Admin */}
-        {isSuperAdmin(currentUser) && (
-          <TabsContent value="superadmin" className="space-y-4">
-            <div className="glass-card overflow-hidden">
-              <div className="p-6 border-b border-border/50">
-                <h3 className="font-semibold flex items-center gap-2 mb-3">
-                  <Shield className="w-5 h-5 text-destructive" />
-                  Painel Super Admin
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Funções exclusivas do Super Admin para gerenciamento completo do sistema.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 border border-border/50 rounded-lg bg-background/50">
-                    <h4 className="font-medium flex items-center gap-2 mb-3">
-                      <Download className="w-4 h-4 text-success" />
-                      Backup Completo do Sistema
-                    </h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Exporte todos os dados do sistema em um arquivo JSON completo.
-                    </p>
-                    <Button
-                      onClick={handleBackupDownload}
-                      className="w-full bg-success hover:bg-success/90"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Baixar Backup Completo
-                    </Button>
-                  </div>
-                  <div className="p-4 border border-border/50 rounded-lg bg-background/50">
-                    <h4 className="font-medium flex items-center gap-2 mb-3">
-                      <Upload className="w-4 h-4 text-warning" />
-                      Restauração do Backup
-                    </h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Restaure todos os dados a partir de um arquivo de backup anterior.
-                    </p>
-                    <div>
-                      <input
-                        ref={backupFileInputRef}
-                        type="file"
-                        accept=".json"
-                        onChange={handleBackupRestore}
-                        className="hidden"
-                        id="backup-upload"
-                      />
-                      <Button
-                        variant="outline"
-                        onClick={() => document.getElementById('backup-upload')?.click()}
-                        className="w-full border-warning/50 text-warning hover:bg-warning/10"
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Restaurar Backup
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        )}
       </Tabs>
     </div>
   );

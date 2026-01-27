@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import ScheduleView from '@/components/ScheduleView';
 import SwapRequestView from '@/components/SwapRequestView';
@@ -7,11 +9,11 @@ import AdminPanel from '@/components/AdminPanel';
 import VacationRequestView from '@/components/VacationRequestView';
 import VacationAdminView from '@/components/VacationAdminView';
 import OperatorHelp from '@/components/OperatorHelp';
-import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('schedule');
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   // Redireciona RICARDO se tentar acessar as abas de troca ou solicitações
   useEffect(() => {
@@ -19,6 +21,13 @@ const Dashboard: React.FC = () => {
       setActiveTab('schedule');
     }
   }, [currentUser, activeTab]);
+
+  // Redireciona para página de backup se aba backup for selecionada
+  useEffect(() => {
+    if (activeTab === 'backup') {
+      navigate('/backup');
+    }
+  }, [activeTab, navigate]);
 
   const renderContent = () => {
     switch (activeTab) {
