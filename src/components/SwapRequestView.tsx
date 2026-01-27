@@ -511,10 +511,10 @@ const SwapRequestView: React.FC = () => {
                                   <div>
                                     <div className="font-medium">{operatorName}</div>
                                     <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                      <span className="flex items-center gap-1 text-secondary">
+                                      <span className="flex items-center gap-1 text-meioPeriodo">
                                         <Sun className="w-3 h-3" /> MP
                                       </span>
-                                      <span className="flex items-center gap-1 text-warning">
+                                      <span className="flex items-center gap-1 text-fechamento">
                                         <Sunset className="w-3 h-3" /> FE
                                       </span>
                                       <span className="ml-1 font-medium">Ambos</span>
@@ -560,10 +560,10 @@ const SwapRequestView: React.FC = () => {
                   <div className="text-sm text-muted-foreground">{selectedTargetEntry.dayOfWeek}</div>
                   <div className="text-xs mt-2 flex items-center gap-1">
                     {selectedTargetShift === 'meioPeriodo' 
-                      ? <Sun className="w-3 h-3 text-secondary" />
+                      ? <Sun className="w-3 h-3 text-meioPeriodo" />
                       : selectedTargetShift === 'fechamento'
-                      ? <Sunset className="w-3 h-3 text-warning" />
-                      : <><Sun className="w-3 h-3 text-secondary" /><Sunset className="w-3 h-3 text-warning" /></>
+                      ? <Sunset className="w-3 h-3 text-fechamento" />
+                      : <><Sun className="w-3 h-3 text-meioPeriodo" /><Sunset className="w-3 h-3 text-fechamento" /></>
                     }
                     Turno de: {selectedOperator} {selectedTargetShift === 'ambos' ? '(Ambos)' : `(${getShiftLabel(selectedTargetShift)})`}
                   </div>
@@ -643,9 +643,9 @@ const SwapRequestView: React.FC = () => {
                     <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 text-primary rounded text-xs">
                       Dia {request.originalDate.split('/')[0]}
                       {request.originalShift === 'meioPeriodo' ? (
-                        <Sun className="w-3 h-3 text-secondary" />
+                        <Sun className="w-3 h-3 text-meioPeriodo" />
                       ) : (
-                        <Sunset className="w-3 h-3 text-warning" />
+                        <Sunset className="w-3 h-3 text-fechamento" />
                       )}
                       <span className="font-bold">{request.originalShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
                     </span>
@@ -653,9 +653,9 @@ const SwapRequestView: React.FC = () => {
                     <span className="flex items-center gap-1 px-2 py-0.5 bg-success/20 text-success rounded text-xs">
                       Dia {request.targetDate?.split('/')[0] || '??'}
                       {request.targetShift === 'meioPeriodo' ? (
-                        <Sun className="w-3 h-3 text-secondary" />
+                        <Sun className="w-3 h-3 text-meioPeriodo" />
                       ) : (
-                        <Sunset className="w-3 h-3 text-warning" />
+                        <Sunset className="w-3 h-3 text-fechamento" />
                       )}
                       <span className="font-bold">{request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
                     </span>
