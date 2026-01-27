@@ -115,11 +115,41 @@ const ScheduleView: React.FC = () => {
   const nextWorkDay = sortedSchedule
     .find(s => isAfter(parseDate(s.date), today));
 
-  // Find days off (days not in schedule)
+  // Find days off (days not in schedule) and calculate consecutive days off
   const allDates = viewingMonthData.map(s => s.date);
   const myDates = new Set(mySchedule.map(s => s.date));
   const daysOff = allDates.filter(d => !myDates.has(d) && isAfter(parseDate(d), today));
   const nextDayOff = daysOff.length > 0 ? daysOff[0] : null;
+
+  // Calculate consecutive days off until next work day
+  const calculateDaysOffUntilNextWork = () => {
+    if (!nextDayOff) return { count: 0, nextWorkDate: null };
+    
+    let consecutiveDaysOff = 0;
+    let currentDate = parseDate(nextDayOff);
+    let nextWorkDate = null;
+    
+    // Count consecutive days off starting from next day off
+    while (true) {
+      const dateStr = format(currentDate, 'dd/MM/yyyy');
+      const hasWork = myDates.has(dateStr);
+      
+      if (hasWork) {
+        nextWorkDate = currentDate;
+        break;
+      }
+      
+      consecutiveDaysOff++;
+      currentDate = addDays(currentDate, 1);
+      
+      // Safety limit to prevent infinite loop
+      if (consecutiveDaysOff > 30) break;
+    }
+    
+    return { count: consecutiveDaysOff, nextWorkDate };
+  };
+  
+  const { count: daysOffCount, nextWorkDate } = calculateDaysOffUntilNextWork();
 
   // Calendar setup for viewing month
   const daysInMonth = getDaysInMonth(viewingMonth);
@@ -352,6 +382,16 @@ const ScheduleView: React.FC = () => {
                         <span className="text-sm font-normal text-muted-foreground ml-1">
                           {format(parseDate(nextDayOff), 'EEEE', { locale: ptBR })}
                         </span>
+                        {daysOffCount > 1 && (
+                          <div className="text-xs text-success font-medium mt-1">
+                            {daysOffCount} dias seguidos
+                          </div>
+                        )}
+                        {nextWorkDate && (
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Volta: {format(nextWorkDate, 'dd/MM', { locale: ptBR })}
+                          </div>
+                        )}
                       </>
                     ) : (
                       <span className="text-muted-foreground">-</span>
