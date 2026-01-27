@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
 import { getEmployeeSchedule, ScheduleEntry, getCurrentSchedules } from '@/data/scheduleData';
 import { Calendar, Clock, Sun, Sunset, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
-import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth, startOfMonth, addMonths, subMonths, getMonth, getYear } from 'date-fns';
+import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth, startOfMonth, addMonths, subMonths, getMonth, getYear, subDays, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -89,7 +89,21 @@ const ScheduleView: React.FC = () => {
   // Parse dates for comparison
   const parseDate = (dateStr: string) => parse(dateStr, 'dd/MM/yyyy', new Date());
 
-  // Find last worked day and next off day
+  // Calculate yesterday, today, and tomorrow workers for RICARDO view
+  const yesterday = subDays(today, 1);
+  const tomorrow = addDays(today, 1);
+  
+  const getWorkersForDate = (date: Date) => {
+    const dateStr = format(date, 'dd/MM/yyyy');
+    const entry = viewingMonthData.find(s => s.date === dateStr);
+    return entry ? { meioPeriodo: entry.meioPeriodo, fechamento: entry.fechamento } : null;
+  };
+  
+  const yesterdayWorkers = getWorkersForDate(yesterday);
+  const todayWorkers = getWorkersForDate(today);
+  const tomorrowWorkers = getWorkersForDate(tomorrow);
+
+  // Find last worked day and next off day (for regular users)
   const sortedSchedule = [...mySchedule].sort((a, b) =>
     parseDate(a.date).getTime() - parseDate(b.date).getTime()
   );
@@ -189,74 +203,165 @@ const ScheduleView: React.FC = () => {
 
       {/* Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="glass-card-elevated p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-secondary" />
+        {isRicardo ? (
+          <>
+            {/* Yesterday Workers - RICARDO View */}
+            <div className="glass-card-elevated p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Quem trabalhou ontem</p>
+                  <p className="font-bold text-lg">
+                    {yesterdayWorkers ? (
+                      <div className="text-sm">
+                        <div className="flex items-center gap-1">
+                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                          {yesterdayWorkers.meioPeriodo || '-'}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Sunset className="w-3 h-3 text-fechamento" />
+                          {yesterdayWorkers.fechamento || '-'}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">Sem dados</span>
+                    )}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Último dia trabalhado</p>
-              <p className="font-bold text-lg">
-                {lastWorkedDay ? (
-                  <>
-                    {parseDate(lastWorkedDay.date).getDate()}
-                    <span className="text-sm font-normal text-muted-foreground ml-1">
-                      {format(parseDate(lastWorkedDay.date), 'EEEE', { locale: ptBR })}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">-</span>
-                )}
-              </p>
-            </div>
-          </div>
-        </div>
 
-        <div className="glass-card-elevated p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-primary" />
+            {/* Today Workers - RICARDO View */}
+            <div className="glass-card-elevated p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Quem está hoje</p>
+                  <p className="font-bold text-lg">
+                    {todayWorkers ? (
+                      <div className="text-sm">
+                        <div className="flex items-center gap-1">
+                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                          {todayWorkers.meioPeriodo || '-'}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Sunset className="w-3 h-3 text-fechamento" />
+                          {todayWorkers.fechamento || '-'}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">Sem dados</span>
+                    )}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Próximo trabalho</p>
-              <p className="font-bold text-lg">
-                {nextWorkDay ? (
-                  <>
-                    {parseDate(nextWorkDay.date).getDate()}
-                    <span className="text-sm font-normal text-muted-foreground ml-1">
-                      {format(parseDate(nextWorkDay.date), 'EEEE', { locale: ptBR })}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">-</span>
-                )}
-              </p>
-            </div>
-          </div>
-        </div>
 
-        <div className="glass-card-elevated p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-              <Coffee className="w-6 h-6 text-success" />
+            {/* Tomorrow Workers - RICARDO View */}
+            <div className="glass-card-elevated p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-success" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Quem estará amanhã</p>
+                  <p className="font-bold text-lg">
+                    {tomorrowWorkers ? (
+                      <div className="text-sm">
+                        <div className="flex items-center gap-1">
+                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                          {tomorrowWorkers.meioPeriodo || '-'}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Sunset className="w-3 h-3 text-fechamento" />
+                          {tomorrowWorkers.fechamento || '-'}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">Sem dados</span>
+                    )}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Próxima folga</p>
-              <p className="font-bold text-lg">
-                {nextDayOff ? (
-                  <>
-                    {parseDate(nextDayOff).getDate()}
-                    <span className="text-sm font-normal text-muted-foreground ml-1">
-                      {format(parseDate(nextDayOff), 'EEEE', { locale: ptBR })}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">Sem folgas</span>
-                )}
-              </p>
+          </>
+        ) : (
+          <>
+            {/* Regular User View */}
+            <div className="glass-card-elevated p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Último dia trabalhado</p>
+                  <p className="font-bold text-lg">
+                    {lastWorkedDay ? (
+                      <>
+                        {parseDate(lastWorkedDay.date).getDate()}
+                        <span className="text-sm font-normal text-muted-foreground ml-1">
+                          {format(parseDate(lastWorkedDay.date), 'EEEE', { locale: ptBR })}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+
+            <div className="glass-card-elevated p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Próximo trabalho</p>
+                  <p className="font-bold text-lg">
+                    {nextWorkDay ? (
+                      <>
+                        {parseDate(nextWorkDay.date).getDate()}
+                        <span className="text-sm font-normal text-muted-foreground ml-1">
+                          {format(parseDate(nextWorkDay.date), 'EEEE', { locale: ptBR })}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="glass-card-elevated p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
+                  <Coffee className="w-6 h-6 text-success" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Próxima folga</p>
+                  <p className="font-bold text-lg">
+                    {nextDayOff ? (
+                      <>
+                        {parseDate(nextDayOff).getDate()}
+                        <span className="text-sm font-normal text-muted-foreground ml-1">
+                          {format(parseDate(nextDayOff), 'EEEE', { locale: ptBR })}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Calendar View */}
