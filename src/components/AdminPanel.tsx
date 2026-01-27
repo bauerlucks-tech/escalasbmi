@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { validateAndParseCSV, downloadCSVTemplate, downloadScheduleCSV, CSVValidationResult } from '@/utils/csvParser';
+import { downloadCompleteBackup, restoreCompleteBackup } from '@/utils/backupUtils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActiveTab }) => {
@@ -46,6 +47,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ meioPeriodo: '', fechamento: '' });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const backupFileInputRef = useRef<HTMLInputElement>(null);
   
   const [selectedMonth, setSelectedMonth] = useState<number>(1); // January 2026
   const [selectedYear, setSelectedYear] = useState<number>(2026);
@@ -82,6 +84,36 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const pendingApproval = getPendingAdminApproval();
   const approvedSwaps = getApprovedSwaps();
   const rejectedSwaps = swapRequests.filter(r => r.status === 'rejected');
+
+  const handleBackupDownload = () => {
+    downloadCompleteBackup();
+  };
+
+  const handleBackupRestore = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    if (!file.name.endsWith('.json')) {
+      toast.error('Por favor, selecione um arquivo de backup (.json)');
+      return;
+    }
+    
+    restoreCompleteBackup(file)
+      .then(() => {
+        // Refresh the page after successful restore
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      })
+      .catch((error) => {
+        console.error('Restore failed:', error);
+      });
+    
+    // Clear the input
+    if (backupFileInputRef.current) {
+      backupFileInputRef.current.value = '';
+    }
+  };
 
   const handleResetPassword = (userId: string) => {
     if (!newPassword || newPassword.length < 4) {
@@ -308,6 +340,47 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           <div className="glass-card p-3 text-center">
             <div className="text-2xl font-bold text-muted-foreground">{activeUsers.length}</div>
             <div className="text-xs text-muted-foreground">Usuários ativos</div>
+          </div>
+        </div>
+
+        {/* Backup Section */}
+        <div className="mt-4 p-4 border border-border/50 rounded-xl bg-background/50">
+          <h3 className="font-semibold flex items-center gap-2 mb-3">
+            <Download className="w-4 h-4 text-primary" />
+            Backup Completo do Sistema
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Faça backup completo de todas as escalas, férias, trocas e usuários. Use para restaurar ou migrar dados.
+          </p>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleBackupDownload}
+              className="border-primary/50 text-primary hover:bg-primary/10"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Baixar Backup Completo
+            </Button>
+            <div className="flex items-center gap-2">
+              <input
+                ref={backupFileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleBackupRestore}
+                className="hidden"
+                id="backup-upload"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById('backup-upload')?.click()}
+                className="border-warning/50 text-warning hover:bg-warning/10"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Restaurar Backup
+              </Button>
+            </div>
           </div>
         </div>
       </div>
