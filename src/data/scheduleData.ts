@@ -154,7 +154,7 @@ export const initialUsers: User[] = [
   { id: "4", name: "HENRIQUE", password: "1234", role: "operador", status: "ativo" },
   { id: "5", name: "KELLY", password: "1234", role: "operador", status: "ativo" },
   { id: "6", name: "GUILHERME", password: "1234", role: "operador", status: "ativo" },
-  { id: "7", name: "RICARDO", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
+  { id: "7", name: "RICARDO", password: "1234", role: "operador", status: "ativo" },
   { id: "8", name: "ADMIN", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
 ];
 
