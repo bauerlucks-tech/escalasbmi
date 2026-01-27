@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
 import { PartnerLogos } from '@/components/logos/CompanyLogos';
-import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database } from 'lucide-react';
+import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database, TestTube } from 'lucide-react';
 import UserSettings from '@/components/UserSettings';
 import OperatorHelp from '@/components/OperatorHelp';
 import ThemeToggle from '@/components/ThemeToggle';
+import TestPanel from '@/components/TestPanel';
 
 interface HeaderProps {
   activeTab: string;
@@ -19,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { currentUser, logout, isAdmin, isSuperAdmin } = useAuth();
   const { getPendingCount, getPendingAdminApproval } = useSwap();
   const [showHelp, setShowHelp] = React.useState(false);
+  const [showTestPanel, setShowTestPanel] = React.useState(false);
   
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
@@ -47,6 +49,11 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   // Adicionar aba de Backup apenas para Super Admin
   if (isSuperAdmin(currentUser)) {
     tabs.push({ id: 'backup', label: 'Backup', icon: Database });
+  }
+
+  // Adicionar aba de Testes apenas no branch de teste
+  if (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development' || window.location.pathname.includes('test')) {
+    tabs.push({ id: 'test', label: 'Testes', icon: TestTube });
   }
 
   const getInitials = (name: string) => {
@@ -187,6 +194,11 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Test Panel Modal */}
+      {showTestPanel && (
+        <TestPanel onClose={() => setShowTestPanel(false)} />
       )}
     </header>
   );

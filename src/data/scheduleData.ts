@@ -156,6 +156,11 @@ export const initialUsers: User[] = [
   { id: "6", name: "GUILHERME", password: "1234", role: "operador", status: "ativo" },
   { id: "7", name: "RICARDO", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
   { id: "8", name: "ADMIN", password: "1234", role: "super_admin", status: "ativo", hideFromSchedule: true },
+  // Usuários de teste para testes completos
+  { id: "9", name: "TESTE_OPERADOR1", password: "1234", role: "operador", status: "ativo" },
+  { id: "10", name: "TESTE_OPERADOR2", password: "1234", role: "operador", status: "ativo" },
+  { id: "11", name: "TESTE_ADMIN", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
+  { id: "12", name: "TESTE_SUPER", password: "1234", role: "super_admin", status: "ativo", hideFromSchedule: true },
 ];
 
 // Helper functions for schedule management
@@ -492,4 +497,141 @@ export const getPendingVacationRequests = (): VacationRequest[] => {
   return storage.requests
     .filter(r => r.status === 'pending')
     .sort((a, b) => new Date(a.requestedAt).getTime() - new Date(b.requestedAt).getTime());
+};
+
+// Funções de teste para testes completos do sistema
+export const createTestVacationRequests = (): void => {
+  const storage = createVacationStorage();
+  
+  // Adicionar solicitações de teste
+  const testRequests: VacationRequest[] = [
+    {
+      id: 'test_vacation_1',
+      operatorId: '9',
+      operatorName: 'TESTE_OPERADOR1',
+      startDate: '2026-01-15',
+      endDate: '2026-01-20',
+      totalDays: 6,
+      reason: 'Teste de solicitação de férias',
+      status: 'pending',
+      requestedAt: new Date().toISOString(),
+      month: 1,
+      year: 2026
+    },
+    {
+      id: 'test_vacation_2',
+      operatorId: '10',
+      operatorName: 'TESTE_OPERADOR2',
+      startDate: '2026-02-01',
+      endDate: '2026-02-05',
+      totalDays: 5,
+      reason: 'Teste de férias aprovadas',
+      status: 'approved',
+      requestedAt: new Date(Date.now() - 86400000).toISOString(),
+      approvedBy: 'TESTE_ADMIN',
+      approvedAt: new Date().toISOString(),
+      month: 2,
+      year: 2026
+    },
+    {
+      id: 'test_vacation_3',
+      operatorId: '1',
+      operatorName: 'LUCAS',
+      startDate: '2026-01-25',
+      endDate: '2026-01-27',
+      totalDays: 3,
+      reason: 'Teste de férias rejeitadas',
+      status: 'rejected',
+      requestedAt: new Date(Date.now() - 172800000).toISOString(),
+      approvedBy: 'TESTE_ADMIN',
+      approvedAt: new Date(Date.now() - 86400000).toISOString(),
+      rejectionReason: 'Período não disponível',
+      month: 1,
+      year: 2026
+    }
+  ];
+  
+  storage.requests.push(...testRequests);
+  saveVacationStorage(storage);
+};
+
+export const createTestSwapRequests = (): void => {
+  const storage = createSwapStorage();
+  
+  // Adicionar solicitações de troca de teste
+  const testSwaps: SwapRequest[] = [
+    {
+      id: 'test_swap_1',
+      requesterId: '9',
+      requesterName: 'TESTE_OPERADOR1',
+      targetId: '10',
+      targetName: 'TESTE_OPERADOR2',
+      originalDate: '15/01/2026',
+      originalShift: 'meioPeriodo',
+      targetDate: '16/01/2026',
+      targetShift: 'meioPeriodo',
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'test_swap_2',
+      requesterId: '1',
+      requesterName: 'LUCAS',
+      targetId: '2',
+      targetName: 'CARLOS',
+      originalDate: '10/01/2026',
+      originalShift: 'fechamento',
+      targetDate: '11/01/2026',
+      targetShift: 'fechamento',
+      status: 'accepted',
+      respondedAt: new Date().toISOString(),
+      respondedBy: 'CARLOS',
+      createdAt: new Date(Date.now() - 86400000).toISOString()
+    },
+    {
+      id: 'test_swap_3',
+      requesterId: '3',
+      requesterName: 'ROSANA',
+      targetId: '4',
+      targetName: 'HENRIQUE',
+      originalDate: '20/01/2026',
+      originalShift: 'meioPeriodo',
+      targetDate: '21/01/2026',
+      targetShift: 'meioPeriodo',
+      status: 'rejected',
+      respondedAt: new Date().toISOString(),
+      respondedBy: 'HENRIQUE',
+      createdAt: new Date(Date.now() - 172800000).toISOString()
+    }
+  ];
+  
+  storage.requests.push(...testSwaps);
+  saveSwapStorage(storage);
+};
+
+// Função auxiliar para swap storage
+export const createSwapStorage = (): { requests: SwapRequest[] } => {
+  const stored = localStorage.getItem('swapRequests');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return { requests: [] };
+};
+
+export const saveSwapStorage = (storage: { requests: SwapRequest[] }): void => {
+  localStorage.setItem('swapRequests', JSON.stringify(storage));
+};
+
+export const getSwapRequests = (): SwapRequest[] => {
+  const storage = createSwapStorage();
+  return storage.requests.sort((a, b) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+};
+
+// Função para limpar dados de teste
+export const clearTestData = (): void => {
+  localStorage.removeItem('vacationRequests');
+  localStorage.removeItem('swapRequests');
+  localStorage.removeItem('escala_scheduleStorage');
 };
