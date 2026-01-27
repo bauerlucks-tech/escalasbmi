@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala Área Branca - SBMIBZ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        neutral: {
+                            750: '#2a2a3a'
+                        },
+                        meioPeriodo: {
+                            50: '#fef3c7',
+                            100: '#fde68a',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                        },
+                        fechamento: {
+                            50: '#fecaca',
+                            100: '#fca5a5',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans text-gray-800">
+    <!-- Container Principal -->
+    <div class="max-w-6xl mx-auto p-4 md:p-6">
+        
+        <!-- Cabeçalho -->
+        <header class="mb-8 md:mb-12">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-primary-700">
+                        Escala Área Branca
+                        <span class="block text-xl md:text-2xl font-semibold text-primary-600 mt-1">SBMIBZ</span>
+                    </h1>
+                    <p class="text-gray-600 mt-2">Sistema de Gestão de Escalas Médicas</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
+                    <div class="flex items-center gap-3">
+                        <div class="hidden md:block">
+                            <p class="text-sm text-gray-500">Criado por</p>
+                            <p class="font-medium">Lucas Pott</p>
+                        </div>
+                        <div class="h-8 w-px bg-gray-200 hidden md:block"></div>
+                        <div>
+                            <p class="text-sm text-gray-500">Versão</p>
+                            <p class="font-mono font-medium bg-primary-50 text-primary-700 px-2 py-1 rounded">1.2beta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Área de Login -->
+        <div class="max-w-md mx-auto mb-10">
+            <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Acesso ao Sistema</h2>
+                    <p class="text-gray-600 mt-2">Use a senha padrão para entrar</p>
+                </div>
+
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Senha de Acesso</label>
+                        <div class="relative">
+                            <input type="password" 
+                                   class="w-full px-4 py-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
+                                   placeholder="Digite sua senha"
+                                   value="1234">
+                            <div class="absolute right-3 top-3.5">
+                                <span class="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">Padrão: 1234</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-3.5 px-4 rounded-xl hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg">
+                        Entrar no Sistema
+                    </button>
+                </form>
+
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <p class="text-sm text-gray-500 text-center">
+                        Sistema restrito para membros da Área Branca SBMI.
+                        <br>Em caso de problemas, contate o administrador.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Preview -->
+        <div class="mt-12">
+            <h3 class="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">Visualização do Sistema</h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Card: Próximas Escalas -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="font-bold text-gray-800">Próximas Escalas</h4>
+                        <span class="bg-primary-100 text-primary-800 text-xs font-semibold px-3 py-1 rounded-full">Esta Semana</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium">Dr. João Silva</p>
+                                <p class="text-sm text-gray-600">Plantão Noturno</p>
+                            </div>
+                            <span class="font-semibold text-primary-700">24/01</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium">Dra. Maria Santos</p>
+                                <p class="text-sm text-gray-600">Sobreguarda</p>
+                            </div>
+                            <span class="font-semibold text-primary-700">25/01</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-meioPeriodo-50 rounded-lg">
+                            <div>
+                                <p class="font-medium">Dr. Carlos Oliveira</p>
+                                <p class="text-sm text-meioPeriodo-700">Meio Período</p>
+                            </div>
+                            <span class="font-semibold text-meioPeriodo-700">26/01</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-fechamento-50 rounded-lg">
+                            <div>
+                                <p class="font-medium">Dra. Ana Costa</p>
+                                <p class="text-sm text-fechamento-700">Fechamento</p>
+                            </div>
+                            <span class="font-semibold text-fechamento-700">27/01</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card: Status do Sistema -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+                    <h4 class="font-bold text-gray-800 mb-4">Status do Sistema</h4>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Usuários Ativos</span>
+                            <span class="font-bold">24</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Escalas do Mês</span>
+                            <span class="font-bold">156</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Trocas Pendentes</span>
+                            <span class="font-bold text-yellow-600">3</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Férias Solicitadas</span>
+                            <span class="font-bold text-blue-600">2</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-700">Disponibilidade</span>
+                            <span class="inline-flex items-center">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                <span class="font-bold text-green-700">100%</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card: Ações Rápidas -->
+                <div class="bg-gradient-to-br from-primary-700 to-primary-800 rounded-xl shadow-lg p-6 text-white">
+                    <h4 class="font-bold mb-4">Ações Rápidas</h4>
+                    <div class="space-y-3">
+                        <button class="w-full bg-white/10 hover:bg-white/20 text-white py-2.5 px-4 rounded-lg transition text-left font-medium">
+                            📅 Nova Escala
+                        </button>
+                        <button class="w-full bg-white/10 hover:bg-white/20 text-white py-2.5 px-4 rounded-lg transition text-left font-medium">
+                            🔄 Solicitar Troca
+                        </button>
+                        <button class="w-full bg-white/10 hover:bg-white/20 text-white py-2.5 px-4 rounded-lg transition text-left font-medium">
+                            🏖️ Solicitar Férias
+                        </button>
+                        <button class="w-full bg-white/10 hover:bg-white/20 text-white py-2.5 px-4 rounded-lg transition text-left font-medium">
+                            📊 Gerar Relatório
+                        </button>
+                        <button class="w-full bg-white/10 hover:bg-white/20 text-white py-2.5 px-4 rounded-lg transition text-left font-medium">
+                            👥 Gerenciar Usuários
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Recursos -->
+            <div class="mt-12">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Recursos do Sistema</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 text-center">
+                        <div class="w-12 h-12 bg-meioPeriodo-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-xl">🌅</span>
+                        </div>
+                        <h5 class="font-bold text-gray-800 mb-2">Meio Período</h5>
+                        <p class="text-sm text-gray-600">Gestão de turnos diurnos com horários flexíveis</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 text-center">
+                        <div class="w-12 h-12 bg-fechamento-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-xl">🌙</span>
+                        </div>
+                        <h5 class="font-bold text-gray-800 mb-2">Fechamento</h5>
+                        <p class="text-sm text-gray-600">Controle de plantões noturnos e sobreguardas</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 text-center">
+                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-xl">🔄</span>
+                        </div>
+                        <h5 class="font-bold text-gray-800 mb-2">Sistema de Trocas</h5>
+                        <p class="text-sm text-gray-600">Trocas entre meses diferentes com aprovação</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 text-center">
+                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-xl">💾</span>
+                        </div>
+                        <h5 class="font-bold text-gray-800 mb-2">Backup Automático</h5>
+                        <p class="text-sm text-gray-600">Backup diário com restauração e comparação</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Escalas -->
+            <div class="mt-12">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Escala Semanal</h3>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Data</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Dia</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-meioPeriodo-700">Meio Período</th>
+                                <th class="px-4 py-3 text-left text-sm font-semibold text-fechamento-700">Fechamento</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm font-medium">24/01</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">Sexta</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-meioPeriodo-100 text-meioPeriodo-800">
+                                        Dr. João Silva
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-fechamento-100 text-fechamento-800">
+                                        Dra. Maria Santos
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm font-medium">25/01</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">Sábado</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-meioPeriodo-100 text-meioPeriodo-800">
+                                        Dr. Carlos Oliveira
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-fechamento-100 text-fechamento-800">
+                                        Dra. Ana Costa
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm font-medium">26/01</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">Domingo</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-meioPeriodo-100 text-meioPeriodo-800">
+                                        Dr. Pedro Lima
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-fechamento-100 text-fechamento-800">
+                                        Dra. Julia Fernandes
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pt-8 border-t border-gray-300">
+            <div class="flex flex-col md:flex-row justify-between items-center text-gray-600">
+                <p>© 2026 Sistema de Gestão de Escalas - Área Branca SBMI</p>
+                <p class="text-sm mt-2 md:mt-0">Versão: 1.2beta (178fb75) • Ambiente: Produção</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Interação básica para o formulário de login
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('form');
+            const passwordInput = document.querySelector('input[type="password"]');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if(passwordInput.value.trim() === '') {
+                    passwordInput.classList.add('border-red-500');
+                    alert('Por favor, digite a senha.');
+                    return;
+                }
+                
+                // Simulação de login
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                
+                submitBtn.textContent = 'Entrando...';
+                submitBtn.disabled = true;
+                
+                setTimeout(() => {
+                    alert('Login realizado com sucesso! Redirecionando para o dashboard...');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }, 1000);
+            });
+            
+            // Remover destaque de erro ao começar a digitar
+            passwordInput.addEventListener('input', function() {
+                this.classList.remove('border-red-500');
+            });
+        });
+    </script>
+</body>
+</html>
