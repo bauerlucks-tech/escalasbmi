@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Monitor } from 'lucide-react';
 
 const ThemeToggle: React.FC = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
@@ -17,7 +17,9 @@ const ThemeToggle: React.FC = () => {
   };
 
   const getIcon = () => {
-    if (resolvedTheme === 'dark') {
+    if (theme === 'system') {
+      return <Monitor className="w-5 h-5" />;
+    } else if (resolvedTheme === 'dark') {
       return <Moon className="w-5 h-5" />;
     } else {
       return <Sun className="w-5 h-5" />;
