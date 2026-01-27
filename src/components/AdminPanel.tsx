@@ -389,7 +389,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
       {/* Tabs */}
       <Tabs defaultValue="swaps" className="space-y-4">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className={`grid ${isSuperAdmin(currentUser) ? 'grid-cols-5' : 'grid-cols-4'} w-full`}>
           <TabsTrigger value="swaps" className="flex items-center gap-2">
             <ArrowLeftRight className="w-4 h-4" />
             Trocas
@@ -411,6 +411,12 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             <Users className="w-4 h-4" />
             Usuários
           </TabsTrigger>
+          {isSuperAdmin(currentUser) && (
+            <TabsTrigger value="backup" className="flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Backup
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Swaps Tab */}
@@ -1295,9 +1301,11 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                       <div className="flex items-center gap-3">
                         <div className={`
                           w-10 h-10 rounded-full flex items-center justify-center
-                          ${user.role === 'administrador' ? 'bg-primary/20' : 'bg-muted/50'}
+                          ${user.role === 'super_admin' ? 'bg-destructive/20' : user.role === 'administrador' ? 'bg-primary/20' : 'bg-muted/50'}
                         `}>
-                          {user.role === 'administrador' ? (
+                          {user.role === 'super_admin' ? (
+                            <Shield className="w-5 h-5 text-destructive" />
+                          ) : user.role === 'administrador' ? (
                             <Shield className="w-5 h-5 text-primary" />
                           ) : (
                             <User className="w-5 h-5 text-muted-foreground" />
@@ -1307,11 +1315,13 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                           <div className="font-medium">{user.name}</div>
                           <div className="text-xs text-muted-foreground flex items-center gap-2">
                             <span className={`px-2 py-0.5 rounded-full ${
-                              user.role === 'administrador' 
+                              user.role === 'super_admin' 
+                                ? 'bg-destructive/20 text-destructive' 
+                                : user.role === 'administrador' 
                                 ? 'bg-primary/20 text-primary' 
                                 : 'bg-meioPeriodo/20 text-meioPeriodo'
                             }`}>
-                              {user.role === 'administrador' ? 'Administrador' : 'Operador'}
+                              {user.role === 'super_admin' ? 'Super Admin' : user.role === 'administrador' ? 'Administrador' : 'Operador'}
                             </span>
                           </div>
                         </div>
@@ -1330,6 +1340,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                             <SelectContent>
                               <SelectItem value="operador">Operador</SelectItem>
                               <SelectItem value="administrador">Administrador</SelectItem>
+                              {isSuperAdmin(currentUser) && <SelectItem value="super_admin">Super Admin</SelectItem>}
                             </SelectContent>
                           </Select>
                         )}
@@ -1395,14 +1406,14 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
           {/* System Info */}
           <div className="glass-card p-4">
-            <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="grid grid-cols-4 gap-4 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Total:</span>
                 <span className="font-mono font-bold">{users.length}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Operadores:</span>
-                <span className="font-mono font-bold text-secondary">
+                <span className="font-mono font-bold text-meioPeriodo">
                   {users.filter(u => u.role === 'operador' && u.status === 'ativo').length}
                 </span>
               </div>
@@ -1412,9 +1423,79 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                   {users.filter(u => u.role === 'administrador' && u.status === 'ativo').length}
                 </span>
               </div>
+              {isSuperAdmin(currentUser) && (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Super Admin:</span>
+                  <span className="font-mono font-bold text-destructive">
+                    {users.filter(u => u.role === 'super_admin' && u.status === 'ativo').length}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </TabsContent>
+
+        {/* Backup Tab - Only for Super Admin */}
+        {isSuperAdmin(currentUser) && (
+          <TabsContent value="backup" className="space-y-4">
+            <div className="glass-card overflow-hidden">
+              <div className="p-6 border-b border-border/50">
+                <h3 className="font-semibold flex items-center gap-2 mb-3">
+                  <Download className="w-5 h-5 text-primary" />
+                  Backup Completo do Sistema
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Faça backup completo de todas as escalas, férias, trocas e usuários. Use para restaurar ou migrar dados entre ambientes.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border border-border/50 rounded-lg bg-background/50">
+                    <h4 className="font-medium flex items-center gap-2 mb-3">
+                      <Download className="w-4 h-4 text-success" />
+                      Download do Backup
+                    </h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Exporte todos os dados do sistema em um arquivo JSON completo.
+                    </p>
+                    <Button
+                      onClick={handleBackupDownload}
+                      className="w-full bg-success hover:bg-success/90"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Baixar Backup Completo
+                    </Button>
+                  </div>
+                  <div className="p-4 border border-border/50 rounded-lg bg-background/50">
+                    <h4 className="font-medium flex items-center gap-2 mb-3">
+                      <Upload className="w-4 h-4 text-warning" />
+                      Restauração do Backup
+                    </h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Restaure todos os dados a partir de um arquivo de backup anterior.
+                    </p>
+                    <div>
+                      <input
+                        ref={backupFileInputRef}
+                        type="file"
+                        accept=".json"
+                        onChange={handleBackupRestore}
+                        className="hidden"
+                        id="backup-upload"
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={() => document.getElementById('backup-upload')?.click()}
+                        className="w-full border-warning/50 text-warning hover:bg-warning/10"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Restaurar Backup
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
