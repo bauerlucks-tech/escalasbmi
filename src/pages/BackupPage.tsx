@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
+import { useNavigate } from 'react-router-dom';
 import { downloadCompleteBackup, restoreCompleteBackup, CompleteBackup } from '@/utils/backupUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Download, Upload, Clock, Database, Shield, Calendar, FileJson } from 'lucide-react';
+import { Download, Upload, Clock, Database, Shield, Calendar, FileJson, ArrowLeft, Plus, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface StoredBackup extends CompleteBackup {
@@ -13,11 +14,37 @@ interface StoredBackup extends CompleteBackup {
   createdAt: string;
 }
 
+interface BackupComparison {
+  schedules: {
+    current: number;
+    backup: number;
+    difference: number;
+  };
+  swapRequests: {
+    current: number;
+    backup: number;
+    difference: number;
+  };
+  users: {
+    current: number;
+    backup: number;
+    difference: number;
+  };
+  vacations: {
+    current: number;
+    backup: number;
+    difference: number;
+  };
+}
+
 const BackupPage: React.FC = () => {
   const { currentUser, isSuperAdmin } = useAuth();
   const { currentSchedules, swapRequests } = useSwap();
+  const navigate = useNavigate();
   const [storedBackups, setStoredBackups] = useState<StoredBackup[]>([]);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isCreatingBackup, setIsCreatingBackup] = useState(false);
+  const [backupComparison, setBackupComparison] = useState<BackupComparison | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Check if user is Super Admin
@@ -146,6 +173,70 @@ const BackupPage: React.FC = () => {
     downloadCompleteBackup();
   };
 
+  const handleCreateBackupNow = async () => {
+    setIsCreatingBackup(true);
+    try {
+      const backup = await createAutoBackup();
+      if (backup) {
+        toast.success('Backup criado com sucesso e armazenado no sistema!');
+      }
+    } catch (error) {
+      console.error('Manual backup failed:', error);
+      toast.error('Erro ao criar backup');
+    } finally {
+      setIsCreatingBackup(false);
+    }
+  };
+
+  const compareBackupWithCurrent = (backup: CompleteBackup): BackupComparison => {
+    // Get current data
+    const storedSchedules = localStorage.getItem('schedules');
+    const storedVacations = localStorage.getItem('vacations');
+    const storedSwapRequests = localStorage.getItem('swapRequests');
+    const storedUsers = localStorage.getItem('users');
+
+    const currentSchedules = storedSchedules ? JSON.parse(storedSchedules) : { current: [], archived: [] };
+    const currentVacations = storedVacations ? JSON.parse(storedVacations) : { requests: [] };
+    const currentSwapRequests = storedSwapRequests ? JSON.parse(storedSwapRequests) : [];
+    const currentUsers = storedUsers ? JSON.parse(storedUsers) : [];
+
+    // Calculate counts
+    const currentScheduleCount = currentSchedules.current.length + currentSchedules.archived.length;
+    const backupScheduleCount = backup.data.schedules.current.length + backup.data.schedules.archived.length;
+    
+    const currentSwapCount = currentSwapRequests.length;
+    const backupSwapCount = backup.data.swapRequests.length;
+    
+    const currentUserCount = currentUsers.length;
+    const backupUserCount = backup.data.users.length;
+    
+    const currentVacationCount = currentVacations.requests.length;
+    const backupVacationCount = backup.data.vacations.requests.length;
+
+    return {
+      schedules: {
+        current: currentScheduleCount,
+        backup: backupScheduleCount,
+        difference: currentScheduleCount - backupScheduleCount
+      },
+      swapRequests: {
+        current: currentSwapCount,
+        backup: backupSwapCount,
+        difference: currentSwapCount - backupSwapCount
+      },
+      users: {
+        current: currentUserCount,
+        backup: backupUserCount,
+        difference: currentUserCount - backupUserCount
+      },
+      vacations: {
+        current: currentVacationCount,
+        backup: backupVacationCount,
+        difference: currentVacationCount - backupVacationCount
+      }
+    };
+  };
+
   const handleRestoreBackup = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -158,14 +249,39 @@ const BackupPage: React.FC = () => {
     setIsRestoring(true);
     
     try {
-      await restoreCompleteBackup(file);
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      // Read and parse the backup file
+      const fileContent = await file.text();
+      const backup: CompleteBackup = JSON.parse(fileContent);
+      
+      // Compare with current data
+      const comparison = compareBackupWithCurrent(backup);
+      setBackupComparison(comparison);
+      
+      // Show comparison dialog
+      const shouldRestore = window.confirm(
+        `Comparação de dados:\n` +
+        `Escalas: ${comparison.schedules.backup} → ${comparison.schedules.current} (${comparison.schedules.difference > 0 ? '+' : ''}${comparison.schedules.difference})\n` +
+        `Trocas: ${comparison.swapRequests.backup} → ${comparison.swapRequests.current} (${comparison.swapRequests.difference > 0 ? '+' : ''}${comparison.swapRequests.difference})\n` +
+        `Usuários: ${comparison.users.backup} → ${comparison.users.current} (${comparison.users.difference > 0 ? '+' : ''}${comparison.users.difference})\n` +
+        `Férias: ${comparison.vacations.backup} → ${comparison.vacations.current} (${comparison.vacations.difference > 0 ? '+' : ''}${comparison.vacations.difference})\n\n` +
+        `Deseja continuar com a restauração?`
+      );
+      
+      if (shouldRestore) {
+        await restoreCompleteBackup(file);
+        toast.success('Backup restaurado com sucesso!');
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        toast.info('Restauração cancelada');
+      }
     } catch (error) {
       console.error('Restore failed:', error);
+      toast.error('Erro ao processar arquivo de backup');
     } finally {
       setIsRestoring(false);
+      setBackupComparison(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -221,25 +337,35 @@ const BackupPage: React.FC = () => {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center">
-            <Database className="w-6 h-6 text-destructive" />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center">
+              <Database className="w-6 h-6 text-destructive" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">Sistema de Backup</h1>
+              <p className="text-muted-foreground">
+                Gerenciamento completo de backups do sistema
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Sistema de Backup</h1>
-            <p className="text-muted-foreground">
-              Gerenciamento completo de backups do sistema
-            </p>
-          </div>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/')}
+            className="border-primary/50 text-primary hover:bg-primary/10"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar
+          </Button>
         </div>
 
         {/* Manual Backup Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Download className="w-5 h-5 text-success" />
-                Backup Manual
+                Download Manual
               </CardTitle>
               <CardDescription>
                 Baixe um backup completo do sistema agora mesmo
@@ -251,7 +377,29 @@ const BackupPage: React.FC = () => {
                 className="w-full bg-success hover:bg-success/90"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Baixar Backup Completo
+                Baixar Backup
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Plus className="w-5 h-5 text-primary" />
+                Criar Backup Agora
+              </CardTitle>
+              <CardDescription>
+                Crie um backup imediato e armazene no sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleCreateBackupNow}
+                disabled={isCreatingBackup}
+                className="w-full bg-primary hover:bg-primary/90"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                {isCreatingBackup ? 'Criando...' : 'Criar Backup'}
               </Button>
             </CardContent>
           </Card>
