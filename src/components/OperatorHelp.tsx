@@ -18,7 +18,13 @@ import {
   Users,
   Sun,
   Sunset,
-  Shield
+  Shield,
+  Settings,
+  Database,
+  TestTube,
+  Palette,
+  Upload,
+  Download
 } from 'lucide-react';
 
 interface HelpSection {
@@ -214,6 +220,150 @@ const OperatorHelp: React.FC = () => {
             'Não feche o navegador diretamente',
             'Proteja seus dados'
           ]
+        },
+        {
+          title: '4. Temas do Sistema',
+          description: 'Personalize a aparência do sistema',
+          tips: [
+            'Use o botão ☀️/🌙/🖥️ no header',
+            'Claro: Tema claro para o dia',
+            'Escuro: Tema escuro para conforto visual',
+            'Sistema: Segue preferência do seu dispositivo'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'admin',
+      title: 'Painel Administrativo',
+      icon: <Settings className="w-5 h-5" />,
+      description: 'Funções para administradores',
+      steps: [
+        {
+          title: '1. Gerenciar Usuários',
+          description: 'Controle de acesso e senhas',
+          tips: [
+            'Redefinir senhas de usuários',
+            'Alterar níveis de acesso',
+            'Arquivar usuários inativos',
+            'Criar novos usuários'
+          ]
+        },
+        {
+          title: '2. Importar Escalas',
+          description: 'Atualize as escalas mensais',
+          tips: [
+            'Use arquivos CSV no formato correto',
+            'Baixe o modelo de CSV disponível',
+            'Verifique dados antes de importar',
+            'Backup automático antes da importação'
+          ]
+        },
+        {
+          title: '3. Aprovar Trocas',
+          description: 'Gerencie solicitações de troca',
+          tips: [
+            'Veja trocas aguardando aprovação',
+            'Compare turnos originais e propostos',
+            'Aprovação final após aceite dos colegas',
+            'Histórico completo de alterações'
+          ]
+        },
+        {
+          title: '4. Gerenciar Férias',
+          description: 'Controle de solicitações de férias',
+          tips: [
+            'Aprovar ou rejeitar solicitações',
+            'Verificar disponibilidade de equipe',
+            'Calcular dias disponíveis',
+            'Comunicação automática com operadores'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'backup',
+      title: 'Sistema de Backup',
+      icon: <Database className="w-5 h-5" />,
+      description: 'Proteção de dados (Super Admin)',
+      steps: [
+        {
+          title: '1. Backup Automático',
+          description: 'Cópias diárias automáticas',
+          tips: [
+            'Backup automático diário às 00:00',
+            'Armazenado localmente no navegador',
+            'Mantém histórico de 7 dias',
+            'Recuperação rápida em caso de problemas'
+          ]
+        },
+        {
+          title: '2. Backup Manual',
+          description: 'Crie backups quando necessário',
+          tips: [
+            'Clique em "Criar Backup Agora"',
+            'Inclui todos os dados do sistema',
+            'Download automático do arquivo',
+            'Formato JSON para fácil restauração'
+          ]
+        },
+        {
+          title: '3. Restaurar Dados',
+          description: 'Recupere informações de backups',
+          tips: [
+            'Compare dados antes de restaurar',
+            'Visualize diferenças entre versões',
+            'Restauração seletiva possível',
+            'Confirmação obrigatória para segurança'
+          ]
+        },
+        {
+          title: '4. Exportar/Importar',
+          description: 'Mova dados entre sistemas',
+          tips: [
+            'Exporte dados completos do sistema',
+            'Importe de outros sistemas',
+            'Validação automática de dados',
+            'Log detalhado de operações'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'testing',
+      title: 'Sistema de Testes',
+      icon: <TestTube className="w-5 h-5" />,
+      description: 'Ferramentas de teste e validação',
+      steps: [
+        {
+          title: '1. Painel de Testes',
+          description: 'Acesso em ambiente de desenvolvimento',
+          tips: [
+            'Disponível apenas em ambiente de teste',
+            'Crie usuários e dados de teste',
+            'Teste todas as funcionalidades',
+            'Limpe dados quando necessário'
+          ]
+        },
+        {
+          title: '2. Usuários de Teste',
+          description: 'Contas pré-configuradas para testes',
+          tips: [
+            'TESTE_OPERADOR1/2: Teste como operador',
+            'TESTE_ADMIN: Teste como administrador',
+            'TESTE_SUPER: Teste como super admin',
+            'Senha padrão: 1234 para todos'
+          ]
+        },
+        {
+          title: '3. Dados de Teste',
+          description: 'Gere informações para validação',
+          tips: [
+            'Crie solicitações de férias teste',
+            'Gere solicitações de troca variadas',
+            'Diferentes status para testes completos',
+            'Exporte dados para análise'
+          ]
         }
       ]
     }
@@ -273,6 +423,13 @@ const OperatorHelp: React.FC = () => {
               <div>
                 <p className="font-medium">Mantenha seus dados seguros</p>
                 <p className="text-sm text-muted-foreground">Troque sua senha regularmente</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Palette className="w-5 h-5 text-primary mt-0.5" />
+              <div>
+                <p className="font-medium">Personalize sua experiência</p>
+                <p className="text-sm text-muted-foreground">Use temas claro/escuro conforme preferência</p>
               </div>
             </div>
           </div>
@@ -348,9 +505,17 @@ const OperatorHelp: React.FC = () => {
             <p className="text-sm">
               Fale com seu supervisor ou administrador do sistema
             </p>
-            <Badge variant="outline" className="mt-2">
-              Suporte disponível 24/7
-            </Badge>
+            <div className="flex flex-wrap gap-2 justify-center mt-2">
+              <Badge variant="outline">
+                Suporte disponível 24/7
+              </Badge>
+              <Badge variant="outline">
+                Versão 2.0 Completa
+              </Badge>
+              <Badge variant="outline">
+                Sistema de Backup Ativo
+              </Badge>
+            </div>
           </div>
         </CardContent>
       </Card>
