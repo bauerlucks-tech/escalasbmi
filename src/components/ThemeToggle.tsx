@@ -18,11 +18,11 @@ const ThemeToggle: React.FC = () => {
 
   const getIcon = () => {
     if (theme === 'system') {
-      return <Monitor className="w-5 h-5" />;
+      return <Monitor className="w-5 h-5 text-blue-500" />;
     } else if (resolvedTheme === 'dark') {
-      return <Moon className="w-5 h-5" />;
+      return <Moon className="w-5 h-5 text-blue-400" />;
     } else {
-      return <Sun className="w-5 h-5" />;
+      return <Sun className="w-5 h-5 text-amber-500" />;
     }
   };
 
@@ -37,7 +37,7 @@ const ThemeToggle: React.FC = () => {
       variant="ghost"
       size="sm"
       onClick={toggleTheme}
-      className="relative group"
+      className="relative group bg-white dark:bg-dark-700 shadow-lg dark:shadow-gray-900/50 rounded-full p-2 hover:shadow-xl transition-all duration-300 hover:scale-105"
       title={`Tema atual: ${getLabel()}`}
     >
       <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ const ThemeToggle: React.FC = () => {
       </div>
       
       {/* Tooltip */}
-      <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+      <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 dark:bg-gray-700 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
         Alternar tema
       </span>
     </Button>
