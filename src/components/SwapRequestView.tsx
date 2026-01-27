@@ -19,8 +19,11 @@ const SwapRequestView: React.FC = () => {
   const { currentUser, users } = useAuth();
   const { createSwapRequest, getMyRequests, currentSchedules, switchToSchedule } = useSwap();
   
-  // Step 0: Select month
+  // Step 0: Select month for original shift
   const [selectedMonth, setSelectedMonth] = useState<{month: number, year: number} | null>(null);
+  
+  // Step 0.5: Select month for target shift
+  const [selectedTargetMonth, setSelectedTargetMonth] = useState<{month: number, year: number} | null>(null);
   
   // Step 1: Select my day to give away
   const [selectedMyDay, setSelectedMyDay] = useState<string | null>(null);
@@ -61,12 +64,19 @@ const SwapRequestView: React.FC = () => {
     }));
   }, [currentSchedules]);
   
-  // Get schedule data for selected month
+  // Get schedule data for selected month (original)
   const currentScheduleData = useMemo(() => {
     if (!selectedMonth) return [];
     const schedule = currentSchedules.find(s => s.month === selectedMonth.month && s.year === selectedMonth.year);
     return schedule ? schedule.entries : [];
   }, [selectedMonth, currentSchedules]);
+
+  // Get schedule data for selected target month
+  const targetScheduleData = useMemo(() => {
+    if (!selectedTargetMonth) return [];
+    const schedule = currentSchedules.find(s => s.month === selectedTargetMonth.month && s.year === selectedTargetMonth.year);
+    return schedule ? schedule.entries : [];
+  }, [selectedTargetMonth, currentSchedules]);
 
   // Get available operators (other active users) - DEFINIR PRIMEIRO
   const availableOperators = useMemo(() => {
@@ -88,32 +98,33 @@ const SwapRequestView: React.FC = () => {
 
   // Get all available days (from today onwards) to select target day
   const availableDays = useMemo(() => {
-    return currentScheduleData.filter(entry => isDateTodayOrFuture(entry.date));
-  }, [currentScheduleData]);
+    return targetScheduleData.filter(entry => isDateTodayOrFuture(entry.date));
+  }, [targetScheduleData]);
 
   // Get operators available on the selected target day
   const operatorsOnTargetDay = useMemo(() => {
     if (!selectedTargetDay) return [];
-    const targetEntry = currentScheduleData.find(e => e.date === selectedTargetDay);
+    const targetEntry = targetScheduleData.find(e => e.date === selectedTargetDay);
     if (!targetEntry) return [];
     
     return availableOperators.filter(op => 
       op.name === targetEntry.meioPeriodo || 
       op.name === targetEntry.fechamento
     );
-  }, [selectedTargetDay, availableOperators, currentScheduleData]);
+  }, [selectedTargetDay, availableOperators, targetScheduleData]);
 
   // Get days where selected operator is scheduled (from today onwards)
   const operatorScheduledDays = useMemo(() => {
     if (!selectedOperator) return [];
-    return currentScheduleData.filter(entry => 
+    return targetScheduleData.filter(entry => 
       (entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator) &&
       isDateTodayOrFuture(entry.date)
     );
-  }, [currentScheduleData, selectedOperator]);
+  }, [targetScheduleData, selectedOperator]);
 
-  const getScheduleByDate = (dateStr: string): ScheduleEntry | undefined => {
-    return currentScheduleData.find(s => s.date === dateStr);
+  const getScheduleByDate = (dateStr: string, useTargetSchedule: boolean = false): ScheduleEntry | undefined => {
+    const scheduleData = useTargetSchedule ? targetScheduleData : currentScheduleData;
+    return scheduleData.find(s => s.date === dateStr);
   };
 
   const getMyShiftsForDay = (entry: ScheduleEntry): ShiftType[] => {
@@ -138,8 +149,8 @@ const SwapRequestView: React.FC = () => {
     return dateStr.split('/')[0];
   };
 
-  const selectedMyEntry = selectedMyDay ? getScheduleByDate(selectedMyDay) : null;
-  const selectedTargetEntry = selectedTargetDay ? getScheduleByDate(selectedTargetDay) : null;
+  const selectedMyEntry = selectedMyDay ? getScheduleByDate(selectedMyDay, false) : null;
+  const selectedTargetEntry = selectedTargetDay ? getScheduleByDate(selectedTargetDay, true) : null;
 
   const handleSubmit = () => {
     if (!selectedMyDay || !selectedMyShift || !selectedOperator || !selectedTargetDay || !selectedTargetShift) {
@@ -172,6 +183,7 @@ const SwapRequestView: React.FC = () => {
 
   const resetForm = () => {
     setSelectedMonth(null);
+    setSelectedTargetMonth(null);
     setSelectedMyDay(null);
     setSelectedMyShift(null);
     setSelectedOperator(null);
@@ -226,6 +238,7 @@ const SwapRequestView: React.FC = () => {
                 setSelectedOperator(null);
                 setSelectedTargetDay(null);
                 setSelectedTargetShift(null);
+                setSelectedTargetMonth(null);
               }}
             >
               <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
@@ -357,12 +370,63 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
 
-          {/* Step 2: Select target day */}
+          {/* Step 2: Select target month */}
           {selectedMyDay && selectedMyShift && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
-                {selectedMonth && <span className="text-muted-foreground">{getMonthName(selectedMonth.month)}/{selectedMonth.year} - </span>}
+                Selecione o mês para a troca
+              </label>
+              
+              <Select 
+                value={selectedTargetMonth ? `${selectedTargetMonth.month}/${selectedTargetMonth.year}` : ''} 
+                onValueChange={(v) => {
+                  const [month, year] = v.split('/').map(Number);
+                  setSelectedTargetMonth({ month, year });
+                  setSelectedTargetDay(null);
+                  setSelectedOperator(null);
+                  setSelectedTargetShift(null);
+                }}
+              >
+                <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                  <SelectValue placeholder="Selecione o mês da troca">
+                    {selectedTargetMonth && (
+                      <div className="flex items-center gap-2 text-left">
+                        <Calendar className="w-4 h-4 text-success" />
+                        <span className="font-medium">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year}</span>
+                      </div>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {availableMonths.map(month => (
+                    <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-success" />
+                        <span>{month.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Arrow Divider */}
+          {selectedTargetMonth && (
+            <div className="flex justify-center">
+              <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center animate-fade-in">
+                <ArrowRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Select target day */}
+          {selectedTargetMonth && (
+            <div className="space-y-3 animate-fade-in">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">3</div>
+                {selectedTargetMonth && <span className="text-muted-foreground">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year} - </span>}
                 Qual data você quer trocar?
               </label>
               
@@ -424,12 +488,12 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
 
-          {/* Step 3: Select operator and shift */}
+          {/* Step 4: Select operator and shift */}
           {selectedTargetDay && selectedTargetEntry && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">3</div>
-                {selectedMonth && <span className="text-muted-foreground">{getMonthName(selectedMonth.month)}/{selectedMonth.year} - </span>}
+                <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">4</div>
+                {selectedTargetMonth && <span className="text-muted-foreground">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year} - </span>}
                 Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}?
               </label>
               
@@ -537,7 +601,9 @@ const SwapRequestView: React.FC = () => {
             <div className="glass-card p-4 bg-muted/20 animate-fade-in">
               <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
                 <Check className="w-4 h-4 text-success" />
-                Resumo da Troca {selectedMonth && <span className="text-muted-foreground">- {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
+                Resumo da Troca
+                {selectedMonth && <span className="text-muted-foreground"> - Original: {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
+                {selectedTargetMonth && selectedTargetMonth.month !== selectedMonth?.month && <span className="text-muted-foreground"> | Troca: {getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year}</span>}
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
