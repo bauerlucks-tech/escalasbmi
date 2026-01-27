@@ -785,11 +785,11 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                 </Button>
                 <div className="flex items-center gap-4 text-xs">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-secondary" />
+                    <div className="w-3 h-3 rounded-full bg-meioPeriodo" />
                     <span className="text-muted-foreground">Meio Período</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-warning" />
+                    <div className="w-3 h-3 rounded-full bg-fechamento" />
                     <span className="text-muted-foreground">Fechamento</span>
                   </div>
                 </div>
@@ -853,7 +853,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                               value={editForm.meioPeriodo}
                               onValueChange={(v) => setEditForm(f => ({ ...f, meioPeriodo: v }))}
                             >
-                              <SelectTrigger className="h-6 text-[10px] bg-secondary/20 px-1">
+                              <SelectTrigger className="h-6 text-[10px] bg-meioPeriodo/20 px-1">
                                 <SelectValue placeholder="MP" />
                               </SelectTrigger>
                               <SelectContent>
@@ -868,7 +868,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                               value={editForm.fechamento}
                               onValueChange={(v) => setEditForm(f => ({ ...f, fechamento: v }))}
                             >
-                              <SelectTrigger className="h-6 text-[10px] bg-warning/20 px-1">
+                              <SelectTrigger className="h-6 text-[10px] bg-fechamento/20 px-1">
                                 <SelectValue placeholder="FE" />
                               </SelectTrigger>
                               <SelectContent>
@@ -900,10 +900,10 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                           </div>
                         ) : (
                           <div className="flex flex-col gap-0.5 flex-1">
-                            <div className="text-[10px] px-1 py-0.5 rounded truncate bg-secondary/20 text-secondary">
+                            <div className="text-[10px] px-1 py-0.5 rounded truncate bg-meioPeriodo/20 text-meioPeriodo">
                               {getFirstName(entry.meioPeriodo)}
                             </div>
-                            <div className="text-[10px] px-1 py-0.5 rounded truncate bg-warning/20 text-warning">
+                            <div className="text-[10px] px-1 py-0.5 rounded truncate bg-fechamento/20 text-fechamento">
                               {getFirstName(entry.fechamento)}
                             </div>
                           </div>
@@ -1232,7 +1232,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                             <span className={`px-2 py-0.5 rounded-full ${
                               user.role === 'administrador' 
                                 ? 'bg-primary/20 text-primary' 
-                                : 'bg-secondary/20 text-secondary'
+                                : 'bg-meioPeriodo/20 text-meioPeriodo'
                             }`}>
                               {user.role === 'administrador' ? 'Administrador' : 'Operador'}
                             </span>
