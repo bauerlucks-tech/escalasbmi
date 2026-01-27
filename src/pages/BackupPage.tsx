@@ -169,6 +169,59 @@ const BackupPage: React.FC = () => {
     });
   };
 
+  const createManualBackup = (): Promise<StoredBackup | null> => {
+    return new Promise((resolve) => {
+      try {
+        // Get all data from localStorage
+        const storedSchedules = localStorage.getItem('schedules');
+        const storedVacations = localStorage.getItem('vacations');
+        const storedSwapRequests = localStorage.getItem('swapRequests');
+        const storedUsers = localStorage.getItem('users');
+
+        const schedules = storedSchedules ? JSON.parse(storedSchedules) : { current: [], archived: [] };
+        const vacations = storedVacations ? JSON.parse(storedVacations) : { requests: [] };
+        const swapRequestsData = storedSwapRequests ? JSON.parse(storedSwapRequests) : [];
+        const usersData = storedUsers ? JSON.parse(storedUsers) : [];
+
+        const backup: CompleteBackup = {
+          version: '1.0.0',
+          timestamp: new Date().toISOString(),
+          data: {
+            schedules: schedules,
+            vacations: vacations,
+            swapRequests: swapRequestsData,
+            users: usersData
+          }
+        };
+
+        const storedBackup: StoredBackup = {
+          ...backup,
+          id: `manual_${Date.now()}`,
+          createdAt: new Date().toISOString()
+        };
+
+        // Store backup in localStorage
+        const existingBackups = JSON.parse(localStorage.getItem('system_backups') || '[]');
+        existingBackups.push(storedBackup);
+        
+        // Keep only last 30 backups to prevent storage overflow
+        if (existingBackups.length > 30) {
+          existingBackups.splice(0, existingBackups.length - 30);
+        }
+        
+        localStorage.setItem('system_backups', JSON.stringify(existingBackups));
+        setStoredBackups(existingBackups.sort((a: StoredBackup, b: StoredBackup) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ));
+
+        resolve(storedBackup);
+      } catch (error) {
+        console.error('Error creating manual backup:', error);
+        resolve(null);
+      }
+    });
+  };
+
   const handleManualBackup = () => {
     downloadCompleteBackup();
   };
@@ -176,13 +229,13 @@ const BackupPage: React.FC = () => {
   const handleCreateBackupNow = async () => {
     setIsCreatingBackup(true);
     try {
-      const backup = await createAutoBackup();
+      const backup = await createManualBackup();
       if (backup) {
-        toast.success('Backup criado com sucesso e armazenado no sistema!');
+        toast.success('Backup manual criado com sucesso e armazenado no sistema!');
       }
     } catch (error) {
       console.error('Manual backup failed:', error);
-      toast.error('Erro ao criar backup');
+      toast.error('Erro ao criar backup manual');
     } finally {
       setIsCreatingBackup(false);
     }
