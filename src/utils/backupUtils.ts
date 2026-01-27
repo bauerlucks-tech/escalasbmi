@@ -25,9 +25,6 @@ export interface CompleteBackup {
 }
 
 export const createCompleteBackup = (): CompleteBackup => {
-  const { scheduleData, currentSchedules, swapRequests } = useSwap();
-  const { users } = useAuth();
-  
   // Get all data from localStorage
   const storedSchedules = localStorage.getItem('schedules');
   const storedVacations = localStorage.getItem('vacations');
@@ -86,7 +83,7 @@ export const downloadCompleteBackup = () => {
     toast.success('Backup completo baixado com sucesso!');
   } catch (error) {
     console.error('Error creating backup:', error);
-    toast.error('Erro ao criar backup completo');
+    toast.error('Erro ao criar backup completo: ' + (error as Error).message);
   }
 };
 
