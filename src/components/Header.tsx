@@ -8,6 +8,7 @@ import { PartnerLogos } from '@/components/logos/CompanyLogos';
 import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database } from 'lucide-react';
 import UserSettings from '@/components/UserSettings';
 import OperatorHelp from '@/components/OperatorHelp';
+import ThemeToggle from '@/components/ThemeToggle';
 
 interface HeaderProps {
   activeTab: string;
@@ -82,6 +83,34 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               <PartnerLogos compact />
             </div>
             
+            {/* User Actions */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <UserSettings trigger={
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                  <Settings className="w-5 h-5" />
+                </Button>
+              } />
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowHelp(true)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={logout}
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
+            </div>
+            
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50">
               {isSuperAdmin(currentUser) && (
                 <Shield className="w-4 h-4 text-destructive" />
@@ -97,21 +126,9 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                   </AvatarFallback>
                 </Avatar>
               ) : (
-                <HelipadIcon className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium">{getInitials(currentUser.name)}</span>
               )}
-              <span className="text-sm font-medium">{currentUser?.name}</span>
             </div>
-            
-            <UserSettings />
-            
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={logout}
-              className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
           </div>
         </div>
 

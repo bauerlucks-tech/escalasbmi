@@ -101,9 +101,9 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
   };
 
   const themeOptions = [
-    { value: 'light', label: 'Claro', icon: Sun },
-    { value: 'dark', label: 'Escuro', icon: Moon },
-    { value: 'system', label: 'Sistema', icon: Monitor },
+    { value: 'light', label: 'Claro', icon: Sun, description: 'Tema claro durante o dia' },
+    { value: 'dark', label: 'Escuro', icon: Moon, description: 'Tema escuro para conforto visual' },
+    { value: 'system', label: 'Sistema', icon: Monitor, description: 'Segue preferência do sistema' },
   ] as const;
 
   return (
@@ -139,7 +139,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
                 <h3 className="text-lg font-semibold">Tema</h3>
               </div>
               
-              <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-3">
                 {themeOptions.map((option) => {
                   const Icon = option.icon;
                   const isSelected = theme === option.value;
@@ -149,20 +149,29 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
                       key={option.value}
                       onClick={() => setTheme(option.value as any)}
                       className={`
-                        flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all
+                        w-full flex items-center gap-4 p-4 rounded-lg border-2 transition-all
                         ${isSelected 
-                          ? 'border-primary bg-primary/10' 
-                          : 'border-border hover:border-primary/50'
+                          ? 'border-primary bg-primary/10 dark:bg-primary/20' 
+                          : 'border-border hover:border-primary/50 dark:hover:border-primary/70'
                         }
                       `}
                     >
-                      <Icon className={`w-6 h-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
-                      <span className={`text-xs font-medium ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}>
-                        {option.label}
-                      </span>
-                      {isSelected && (
-                        <Check className="w-4 h-4 text-primary" />
-                      )}
+                      <div className="relative">
+                        <Icon className={`w-6 h-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+                        {isSelected && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full flex items-center justify-center">
+                            <Check className="w-2 h-2 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className={`font-medium ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                          {option.label}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {option.description}
+                        </div>
+                      </div>
                     </button>
                   );
                 })}

@@ -80,6 +80,19 @@ export default {
         helipad: "hsl(var(--helipad-orange))",
         petrobras: "hsl(var(--petrobras-green))",
         seafoam: "hsl(var(--sea-foam))",
+        // Dark theme colors
+        dark: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -129,6 +142,10 @@ export default {
           },
           "95%": { opacity: "0.15" },
         },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -136,6 +153,8 @@ export default {
         shimmer: "shimmer 2s linear infinite",
         rotor: "rotor 0.5s linear infinite",
         fly: "fly 20s ease-in-out infinite",
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "fade-in": "fadeIn 0.5s ease-in-out",
       },
       backgroundImage: {
         "gradient-ocean": "var(--gradient-ocean)",
