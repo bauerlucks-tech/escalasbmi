@@ -294,12 +294,12 @@ const SwapRequestView: React.FC = () => {
                           <div className="font-medium">{entry.dayOfWeek}</div>
                           <div className="text-xs text-muted-foreground flex items-center gap-2">
                             {entry.meioPeriodo === currentUser.name && (
-                              <span className="flex items-center gap-1 text-secondary">
+                              <span className="flex items-center gap-1 text-meioPeriodo">
                                 <Sun className="w-3 h-3" /> Meio Período
                               </span>
                             )}
                             {entry.fechamento === currentUser.name && (
-                              <span className="flex items-center gap-1 text-warning">
+                              <span className="flex items-center gap-1 text-fechamento">
                                 <Sunset className="w-3 h-3" /> Fechamento
                               </span>
                             )}
@@ -322,8 +322,8 @@ const SwapRequestView: React.FC = () => {
                       {selectedMyShift && (
                         <div className="flex items-center gap-2 text-left">
                           {selectedMyShift === 'meioPeriodo' 
-                            ? <Sun className="w-4 h-4 text-secondary" />
-                            : <Sunset className="w-4 h-4 text-warning" />
+                            ? <Sun className="w-4 h-4 text-meioPeriodo" />
+                            : <Sunset className="w-4 h-4 text-fechamento" />
                           }
                           <span className="font-medium">{getShiftLabel(selectedMyShift)}</span>
                         </div>
@@ -335,8 +335,8 @@ const SwapRequestView: React.FC = () => {
                       <SelectItem key={shift} value={shift} className="py-3">
                         <div className="flex items-center gap-2">
                           {shift === 'meioPeriodo' 
-                            ? <Sun className="w-4 h-4 text-secondary" />
-                            : <Sunset className="w-4 h-4 text-warning" />
+                            ? <Sun className="w-4 h-4 text-meioPeriodo" />
+                            : <Sunset className="w-4 h-4 text-fechamento" />
                           }
                           <span>{getShiftLabel(shift)}</span>
                         </div>
@@ -396,12 +396,12 @@ const SwapRequestView: React.FC = () => {
                           <div className="font-medium">{entry.dayOfWeek}</div>
                           <div className="text-xs text-muted-foreground flex items-center gap-2">
                             {entry.meioPeriodo && (
-                              <span className="flex items-center gap-1 text-secondary">
+                              <span className="flex items-center gap-1 text-meioPeriodo">
                                 <Sun className="w-3 h-3" /> {entry.meioPeriodo}
                               </span>
                             )}
                             {entry.fechamento && (
-                              <span className="flex items-center gap-1 text-warning">
+                              <span className="flex items-center gap-1 text-fechamento">
                                 <Sunset className="w-3 h-3" /> {entry.fechamento}
                               </span>
                             )}
@@ -458,8 +458,8 @@ const SwapRequestView: React.FC = () => {
                           {selectedTargetShift === 'ambos' ? (
                             <span className="text-xs text-muted-foreground ml-1">
                               <span className="flex items-center gap-1">
-                                <Sun className="w-3 h-3 text-secondary" /> MP
-                                <Sunset className="w-3 h-3 text-warning" /> FE
+                                <Sun className="w-3 h-3 text-meioPeriodo" /> MP
+                                <Sunset className="w-3 h-3 text-fechamento" /> FE
                               </span>
                             </span>
                           ) : (
@@ -489,11 +489,11 @@ const SwapRequestView: React.FC = () => {
                                     <div className="font-medium">{operatorName}</div>
                                     <div className="text-xs text-muted-foreground flex items-center gap-1">
                                       {shift === 'meioPeriodo' ? (
-                                        <span className="flex items-center gap-1 text-secondary">
+                                        <span className="flex items-center gap-1 text-meioPeriodo">
                                           <Sun className="w-3 h-3" /> Meio Período
                                         </span>
                                       ) : (
-                                        <span className="flex items-center gap-1 text-warning">
+                                        <span className="flex items-center gap-1 text-fechamento">
                                           <Sunset className="w-3 h-3" /> Fechamento
                                         </span>
                                       )}

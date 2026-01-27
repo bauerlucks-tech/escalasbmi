@@ -308,11 +308,11 @@ const ScheduleView: React.FC = () => {
           </div>
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-secondary" />
+              <div className="w-3 h-3 rounded-full bg-meioPeriodo" />
               <span className="text-muted-foreground">Meio Período</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-warning" />
+              <div className="w-3 h-3 rounded-full bg-fechamento" />
               <span className="text-muted-foreground">Fechamento</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -375,8 +375,8 @@ const ScheduleView: React.FC = () => {
                       <div className={`
                         text-[10px] px-1 py-0.5 rounded truncate
                         ${entry.meioPeriodo === currentUser?.name 
-                          ? 'bg-secondary text-secondary-foreground font-bold' 
-                          : 'bg-secondary/20 text-secondary'
+                          ? 'bg-meioPeriodo text-meioPeriodo-foreground font-bold' 
+                          : 'bg-meioPeriodo/20 text-meioPeriodo'
                         }
                       `}>
                         {getFirstName(entry.meioPeriodo)}
@@ -384,8 +384,8 @@ const ScheduleView: React.FC = () => {
                       <div className={`
                         text-[10px] px-1 py-0.5 rounded truncate
                         ${entry.fechamento === currentUser?.name 
-                          ? 'bg-warning text-warning-foreground font-bold' 
-                          : 'bg-warning/20 text-warning'
+                          ? 'bg-fechamento text-fechamento-foreground font-bold' 
+                          : 'bg-fechamento/20 text-fechamento'
                         }
                       `}>
                         {getFirstName(entry.fechamento)}
@@ -422,11 +422,11 @@ const ScheduleView: React.FC = () => {
                     <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-secondary">{stat.meioPeriodo}</div>
+                    <div className="text-2xl font-bold text-meioPeriodo">{stat.meioPeriodo}</div>
                     <div className="text-xs text-muted-foreground mt-1">Meio Período</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-warning">{stat.fechamento}</div>
+                    <div className="text-2xl font-bold text-fechamento">{stat.fechamento}</div>
                     <div className="text-xs text-muted-foreground mt-1">Fechamento</div>
                   </div>
                 </div>
@@ -451,13 +451,13 @@ const ScheduleView: React.FC = () => {
           <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
         </div>
           <div className="glass-card p-4 text-center">
-            <div className="text-3xl font-bold text-secondary">
+            <div className="text-3xl font-bold text-meioPeriodo">
               {mySchedule.filter(s => s.meioPeriodo === currentUser.name).length}
             </div>
             <div className="text-xs text-muted-foreground mt-1">Meio Período</div>
           </div>
           <div className="glass-card p-4 text-center">
-            <div className="text-3xl font-bold text-warning">
+            <div className="text-3xl font-bold text-fechamento">
               {mySchedule.filter(s => s.fechamento === currentUser.name).length}
             </div>
             <div className="text-xs text-muted-foreground mt-1">Fechamento</div>

@@ -47,6 +47,14 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        meioPeriodo: {
+          DEFAULT: "hsl(var(--meio-periodo))",
+          foreground: "hsl(var(--meio-periodo-foreground))",
+        },
+        fechamento: {
+          DEFAULT: "hsl(var(--fechamento))",
+          foreground: "hsl(var(--fechamento-foreground))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",

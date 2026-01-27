@@ -37,6 +37,12 @@
     --warning: 38 92% 50%;
     --warning-foreground: 215 50% 8%;
 
+    --meio-periodo: 142 76% 36%;
+    --meio-periodo-foreground: 210 20% 95%;
+
+    --fechamento: 280 100% 65%;
+    --fechamento-foreground: 215 50% 8%;
+
     --border: 215 35% 22%;
     --input: 215 35% 18%;
     --ring: 210 100% 50%;
