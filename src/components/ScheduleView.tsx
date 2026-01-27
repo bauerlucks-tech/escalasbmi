@@ -129,10 +129,23 @@ const ScheduleView: React.FC = () => {
     let currentDate = parseDate(nextDayOff);
     let nextWorkDate = null;
     
+    // Get all available schedules to search across months
+    const allSchedules = currentSchedules || [];
+    
     // Count consecutive days off starting from next day off
     while (true) {
       const dateStr = format(currentDate, 'dd/MM/yyyy');
-      const hasWork = myDates.has(dateStr);
+      const month = getMonth(currentDate) + 1;
+      const year = getYear(currentDate);
+      
+      // Find schedule for current date across all available months
+      const scheduleForMonth = allSchedules.find(s => s.month === month && s.year === year);
+      let hasWork = false;
+      
+      if (scheduleForMonth) {
+        const entry = scheduleForMonth.entries.find(e => e.date === dateStr);
+        hasWork = entry && (entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name);
+      }
       
       if (hasWork) {
         nextWorkDate = currentDate;
@@ -142,8 +155,8 @@ const ScheduleView: React.FC = () => {
       consecutiveDaysOff++;
       currentDate = addDays(currentDate, 1);
       
-      // Safety limit to prevent infinite loop
-      if (consecutiveDaysOff > 30) break;
+      // Safety limit to prevent infinite loop (increased for cross-month search)
+      if (consecutiveDaysOff > 60) break;
     }
     
     return { count: consecutiveDaysOff, nextWorkDate };
