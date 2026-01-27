@@ -6,8 +6,6 @@ import {
   User, 
   MonthSchedule 
 } from '@/data/scheduleData';
-import { useSwap } from '@/contexts/SwapContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export interface CompleteBackup {
