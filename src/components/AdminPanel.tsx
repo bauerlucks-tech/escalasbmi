@@ -24,7 +24,7 @@ import { downloadCompleteBackup, restoreCompleteBackup } from '@/utils/backupUti
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActiveTab }) => {
-  const { currentUser, users, activeUsers, operators, isAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
+  const { currentUser, users, activeUsers, operators, isAdmin, isSuperAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
   const { 
     getPendingAdminApproval, 
     getApprovedSwaps, 
@@ -343,46 +343,48 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </div>
         </div>
 
-        {/* Backup Section */}
-        <div className="mt-4 p-4 border border-border/50 rounded-xl bg-background/50">
-          <h3 className="font-semibold flex items-center gap-2 mb-3">
-            <Download className="w-4 h-4 text-primary" />
-            Backup Completo do Sistema
-          </h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Faça backup completo de todas as escalas, férias, trocas e usuários. Use para restaurar ou migrar dados.
-          </p>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleBackupDownload}
-              className="border-primary/50 text-primary hover:bg-primary/10"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Baixar Backup Completo
-            </Button>
-            <div className="flex items-center gap-2">
-              <input
-                ref={backupFileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleBackupRestore}
-                className="hidden"
-                id="backup-upload"
-              />
+        {/* Backup Section - Only for Super Admin */}
+        {isSuperAdmin(currentUser) && (
+          <div className="mt-4 p-4 border border-border/50 rounded-xl bg-background/50">
+            <h3 className="font-semibold flex items-center gap-2 mb-3">
+              <Download className="w-4 h-4 text-primary" />
+              Backup Completo do Sistema
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Faça backup completo de todas as escalas, férias, trocas e usuários. Use para restaurar ou migrar dados.
+            </p>
+            <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => document.getElementById('backup-upload')?.click()}
-                className="border-warning/50 text-warning hover:bg-warning/10"
+                onClick={handleBackupDownload}
+                className="border-primary/50 text-primary hover:bg-primary/10"
               >
-                <Upload className="w-4 h-4 mr-2" />
-                Restaurar Backup
+                <Download className="w-4 h-4 mr-2" />
+                Baixar Backup Completo
               </Button>
+              <div className="flex items-center gap-2">
+                <input
+                  ref={backupFileInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleBackupRestore}
+                  className="hidden"
+                  id="backup-upload"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById('backup-upload')?.click()}
+                  className="border-warning/50 text-warning hover:bg-warning/10"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Restaurar Backup
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Tabs */}
@@ -1211,6 +1213,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               size="sm"
               onClick={() => setShowNewUserForm(!showNewUserForm)}
               className="bg-success hover:bg-success/90"
+              disabled={!isSuperAdmin(currentUser)}
             >
               <UserPlus className="w-4 h-4 mr-1" />
               Novo Usuário
@@ -1245,6 +1248,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                   <SelectContent>
                     <SelectItem value="operador">Operador</SelectItem>
                     <SelectItem value="administrador">Administrador</SelectItem>
+                    {isSuperAdmin(currentUser) && <SelectItem value="super_admin">Super Admin</SelectItem>}
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2">

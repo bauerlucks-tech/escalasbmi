@@ -15,6 +15,7 @@ interface AuthContextType {
   archiveUser: (userId: string) => void;
   isAuthenticated: boolean;
   isAdmin: (user: User | null) => boolean;
+  isSuperAdmin: (user: User | null) => boolean;
   updateUserPassword: (userId: string, currentPassword: string, newPassword: string) => boolean;
   updateUserProfile: (userId: string, profileImage: string) => void;
 }
@@ -94,7 +95,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [currentUser]);
 
   const isAdmin = (user: User | null): boolean => {
-    return user?.role === 'administrador';
+    return user?.role === 'administrador' || user?.role === 'super_admin';
+  };
+
+  const isSuperAdmin = (user: User | null): boolean => {
+    return user?.role === 'super_admin';
   };
 
   const login = (name: string, password: string): boolean => {
@@ -202,6 +207,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       archiveUser,
       isAuthenticated: !!currentUser,
       isAdmin,
+      isSuperAdmin,
       updateUserPassword,
       updateUserProfile,
     }}>
