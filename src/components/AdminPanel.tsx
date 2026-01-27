@@ -412,9 +412,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             Usuários
           </TabsTrigger>
           {isSuperAdmin(currentUser) && (
-            <TabsTrigger value="backup" className="flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Backup
+            <TabsTrigger value="superadmin" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              SuperAdmin
             </TabsTrigger>
           )}
         </TabsList>
@@ -1435,23 +1435,23 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </div>
         </TabsContent>
 
-        {/* Backup Tab - Only for Super Admin */}
+        {/* SuperAdmin Tab - Only for Super Admin */}
         {isSuperAdmin(currentUser) && (
-          <TabsContent value="backup" className="space-y-4">
+          <TabsContent value="superadmin" className="space-y-4">
             <div className="glass-card overflow-hidden">
               <div className="p-6 border-b border-border/50">
                 <h3 className="font-semibold flex items-center gap-2 mb-3">
-                  <Download className="w-5 h-5 text-primary" />
-                  Backup Completo do Sistema
+                  <Shield className="w-5 h-5 text-destructive" />
+                  Painel Super Admin
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Faça backup completo de todas as escalas, férias, trocas e usuários. Use para restaurar ou migrar dados entre ambientes.
+                  Funções exclusivas do Super Admin para gerenciamento completo do sistema.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 border border-border/50 rounded-lg bg-background/50">
                     <h4 className="font-medium flex items-center gap-2 mb-3">
                       <Download className="w-4 h-4 text-success" />
-                      Download do Backup
+                      Backup Completo do Sistema
                     </h4>
                     <p className="text-xs text-muted-foreground mb-3">
                       Exporte todos os dados do sistema em um arquivo JSON completo.
