@@ -616,30 +616,31 @@ const ScheduleView: React.FC = () => {
                     <span className="text-muted-foreground">Folga</span>
                   </div>
                 </div>
-              variant="ghost"
-              size="icon"
-              onClick={handleNextMonth}
-              disabled={!hasNextMonthData}
-              className={!hasNextMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-meioPeriodo" />
-              <span className="text-muted-foreground">Meio Período</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleNextMonth}
+                  disabled={!hasNextMonthData}
+                  className={!hasNextMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
+                >
+                  <span>▶️</span>
+                </Button>
+              </div>
+              <div className="flex items-center gap-4 text-xs">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-meioPeriodo" />
+                  <span className="text-muted-foreground">Meio Período</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-fechamento" />
+                  <span className="text-muted-foreground">Fechamento</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-muted" />
+                  <span className="text-muted-foreground">Folga</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-fechamento" />
-              <span className="text-muted-foreground">Fechamento</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-muted" />
-              <span className="text-muted-foreground">Folga</span>
-            </div>
-          </div>
-        </div>
 
         <div className="p-4">
           {/* Week days header */}
@@ -722,7 +723,7 @@ const ScheduleView: React.FC = () => {
       {isRicardo ? (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-primary" />
+            <span>📈</span>
             Estatísticas dos Operadores - {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
