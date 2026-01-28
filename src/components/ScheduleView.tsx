@@ -364,26 +364,45 @@ const ScheduleView: React.FC = () => {
                   <p className="font-bold text-lg">
                     {lastWorkedDay ? (
                       <>
-                        {parseDate(lastWorkedDay.date).getDate()}
-                        <span className="text-sm font-normal text-muted-foreground ml-1">
-                          {format(parseDate(lastWorkedDay.date), 'EEE MMM', { locale: ptBR })}
-                        </span>
-                        {(() => {
-                          const workDate = parseDate(lastWorkedDay.date);
-                          const currentMonth = getMonth(today) + 1;
-                          const workMonth = getMonth(workDate) + 1;
-                          const currentYear = getYear(today);
-                          const workYear = getYear(workDate);
-                          
-                          if (workMonth !== currentMonth || workYear !== currentYear) {
-                            return (
-                              <span className="text-xs text-muted-foreground ml-1">
-                                ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
-                              </span>
-                            );
-                          }
-                          return null;
-                        })()}
+                        <div>
+                          {parseDate(lastWorkedDay.date).getDate()}
+                          <span className="text-sm font-normal text-muted-foreground ml-1">
+                            {format(parseDate(lastWorkedDay.date), 'EEE MMM', { locale: ptBR })}
+                          </span>
+                          {(() => {
+                            const workDate = parseDate(lastWorkedDay.date);
+                            const currentMonth = getMonth(today) + 1;
+                            const workMonth = getMonth(workDate) + 1;
+                            const currentYear = getYear(today);
+                            const workYear = getYear(workDate);
+                            
+                            if (workMonth !== currentMonth || workYear !== currentYear) {
+                              return (
+                                <span className="text-xs text-muted-foreground ml-1">
+                                  ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          {lastWorkedDay.meioPeriodo === currentUser.name && (
+                            <div className="flex items-center gap-1 text-xs">
+                              <Sun className="w-3 h-3 text-meio-periodo" />
+                              <span>MP</span>
+                            </div>
+                          )}
+                          {lastWorkedDay.fechamento === currentUser.name && (
+                            <div className="flex items-center gap-1 text-xs">
+                              <Sunset className="w-3 h-3 text-fechamento" />
+                              <span>FE</span>
+                            </div>
+                          )}
+                          {lastWorkedDay.meioPeriodo === currentUser.name && lastWorkedDay.fechamento === currentUser.name && (
+                            <span className="text-xs text-muted-foreground">(2 turnos)</span>
+                          )}
+                        </div>
                       </>
                     ) : (
                       <span className="text-muted-foreground">-</span>
@@ -403,26 +422,45 @@ const ScheduleView: React.FC = () => {
                   <p className="font-bold text-lg">
                     {nextWorkDay ? (
                       <>
-                        {parseDate(nextWorkDay.date).getDate()}
-                        <span className="text-sm font-normal text-muted-foreground ml-1">
-                          {format(parseDate(nextWorkDay.date), 'EEE MMM', { locale: ptBR })}
-                        </span>
-                        {(() => {
-                          const workDate = parseDate(nextWorkDay.date);
-                          const currentMonth = getMonth(today) + 1;
-                          const workMonth = getMonth(workDate) + 1;
-                          const currentYear = getYear(today);
-                          const workYear = getYear(workDate);
-                          
-                          if (workMonth !== currentMonth || workYear !== currentYear) {
-                            return (
-                              <span className="text-xs text-muted-foreground ml-1">
-                                ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
-                              </span>
-                            );
-                          }
-                          return null;
-                        })()}
+                        <div>
+                          {parseDate(nextWorkDay.date).getDate()}
+                          <span className="text-sm font-normal text-muted-foreground ml-1">
+                            {format(parseDate(nextWorkDay.date), 'EEE MMM', { locale: ptBR })}
+                          </span>
+                          {(() => {
+                            const workDate = parseDate(nextWorkDay.date);
+                            const currentMonth = getMonth(today) + 1;
+                            const workMonth = getMonth(workDate) + 1;
+                            const currentYear = getYear(today);
+                            const workYear = getYear(workDate);
+                            
+                            if (workMonth !== currentMonth || workYear !== currentYear) {
+                              return (
+                                <span className="text-xs text-muted-foreground ml-1">
+                                  ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
+                                </span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          {nextWorkDay.meioPeriodo === currentUser.name && (
+                            <div className="flex items-center gap-1 text-xs">
+                              <Sun className="w-3 h-3 text-meio-periodo" />
+                              <span>MP</span>
+                            </div>
+                          )}
+                          {nextWorkDay.fechamento === currentUser.name && (
+                            <div className="flex items-center gap-1 text-xs">
+                              <Sunset className="w-3 h-3 text-fechamento" />
+                              <span>FE</span>
+                            </div>
+                          )}
+                          {nextWorkDay.meioPeriodo === currentUser.name && nextWorkDay.fechamento === currentUser.name && (
+                            <span className="text-xs text-muted-foreground">(2 turnos)</span>
+                          )}
+                        </div>
                       </>
                     ) : (
                       <span className="text-muted-foreground">-</span>
