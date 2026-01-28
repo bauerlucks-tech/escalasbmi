@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
 import { getEmployeeSchedule, ScheduleEntry, getCurrentSchedules } from '@/data/scheduleData';
-import { Calendar, Clock, Sun, Sunset, TrendingUp, Coffee, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import { format, parse, isToday, isBefore, isAfter, startOfDay, getDate, getDaysInMonth, startOfMonth, addMonths, subMonths, getMonth, getYear, subDays, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -271,7 +270,7 @@ const ScheduleView: React.FC = () => {
             <div className="glass-card-elevated p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-muted-foreground" />
+                  <span>🕐</span>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Quem trabalhou ontem</p>
@@ -279,11 +278,11 @@ const ScheduleView: React.FC = () => {
                     {yesterdayWorkers ? (
                       <div className="text-sm">
                         <div className="flex items-center gap-1">
-                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                          <span>☀️</span>
                           {yesterdayWorkers.meioPeriodo || '-'}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Sunset className="w-3 h-3 text-fechamento" />
+                          <span>🌅</span>
                           {yesterdayWorkers.fechamento || '-'}
                         </div>
                       </div>
@@ -299,7 +298,7 @@ const ScheduleView: React.FC = () => {
             <div className="glass-card-elevated p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-primary" />
+                  <span>📅</span>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Quem está hoje</p>
@@ -307,11 +306,11 @@ const ScheduleView: React.FC = () => {
                     {todayWorkers ? (
                       <div className="text-sm">
                         <div className="flex items-center gap-1">
-                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                          <span>☀️</span>
                           {todayWorkers.meioPeriodo || '-'}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Sunset className="w-3 h-3 text-fechamento" />
+                          <span>🌅</span>
                           {todayWorkers.fechamento || '-'}
                         </div>
                       </div>
@@ -327,7 +326,7 @@ const ScheduleView: React.FC = () => {
             <div className="glass-card-elevated p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-success" />
+                  <span>📈</span>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Quem estará amanhã</p>
@@ -335,11 +334,11 @@ const ScheduleView: React.FC = () => {
                     {tomorrowWorkers ? (
                       <div className="text-sm">
                         <div className="flex items-center gap-1">
-                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                          <span>☀️</span>
                           {tomorrowWorkers.meioPeriodo || '-'}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Sunset className="w-3 h-3 text-fechamento" />
+                          <span>🌅</span>
                           {tomorrowWorkers.fechamento || '-'}
                         </div>
                       </div>
@@ -357,7 +356,7 @@ const ScheduleView: React.FC = () => {
             <div className="glass-card-elevated p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-muted-foreground" />
+                  <span className="text-2xl">🕐</span>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Último dia trabalhado</p>
@@ -415,7 +414,7 @@ const ScheduleView: React.FC = () => {
             <div className="glass-card-elevated p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-primary" />
+                  <span className="text-2xl">📈</span>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Próximo trabalho</p>
@@ -473,7 +472,7 @@ const ScheduleView: React.FC = () => {
             <div className="glass-card-elevated p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                  <Coffee className="w-6 h-6 text-success" />
+                  <span className="text-2xl">☕</span>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Próxima folga</p>
@@ -490,8 +489,61 @@ const ScheduleView: React.FC = () => {
                           </div>
                         )}
                         {nextWorkDate && (
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Volta: {format(nextWorkDate, 'dd/MM', { locale: ptBR })}
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setViewingMonth(prevMonth)}
+                                disabled={!hasPrevMonthData}
+                                className="flex items-center gap-2"
+                              >
+                                <span>◀️</span>
+                                Anterior
+                              </Button>
+                              
+                              <div className="text-center">
+                                <h2 className="text-xl font-bold">
+                                  {format(viewingMonth, 'MMMM yyyy', { locale: ptBR })}
+                                </h2>
+                                <p className="text-sm text-muted-foreground">
+                                  {viewingMonthData.length} dias na escala
+                                </p>
+                              </div>
+                              
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setViewingMonth(nextMonth)}
+                                disabled={!hasNextMonthData}
+                                className="flex items-center gap-2"
+                              >
+                                Próximo
+                                <span>▶️</span>
+                              </Button>
+                            </div>
+                            
+                            <Select
+                              value={`${getMonth(viewingMonth) + 1}-${getYear(viewingMonth)}`}
+                              onValueChange={(value) => {
+                                const [month, year] = value.split('-').map(Number);
+                                setViewingMonth(new Date(year, month - 1));
+                              }}
+                            >
+                              <SelectTrigger className="w-[200px]">
+                                <SelectValue placeholder="Selecione o mês" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {availableMonths.map((month) => (
+                                  <SelectItem
+                                    key={`${month.month}-${month.year}`}
+                                    value={`${month.month}-${month.year}`}
+                                  >
+                                    {month.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
                         )}
                       </>
@@ -502,48 +554,68 @@ const ScheduleView: React.FC = () => {
                 </div>
               </div>
             </div>
-          </>
-        )}
-      </div>
 
-      {/* Calendar View */}
-      <div className="glass-card-elevated overflow-hidden">
-        <div className="p-4 border-b border-border/50 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handlePreviousMonth}
-              disabled={!hasPrevMonthData}
-              className={!hasPrevMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-primary" />
-              {availableMonths.length > 1 ? (
-                <Select
-                  value={`${getMonth(viewingMonth) + 1}/${getYear(viewingMonth)}`}
-                  onValueChange={handleMonthChange}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableMonths.map(month => (
-                      <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
-                        {month.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <h2 className="text-lg font-semibold">
-                  {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
-                </h2>
-              )}
-            </div>
-            <Button
+            {/* Calendar View */}
+            <div className="glass-card-elevated overflow-hidden">
+              <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handlePreviousMonth}
+                    disabled={!hasPrevMonthData}
+                    className={!hasPrevMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
+                  >
+                  <span>◀️</span>
+                  </Button>
+                  <div className="flex items-center gap-2">
+                  <span>📅</span>
+                    {availableMonths.length > 1 ? (
+                      <Select
+                        value={`${getMonth(viewingMonth) + 1}/${getYear(viewingMonth)}`}
+                        onValueChange={handleMonthChange}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableMonths.map(month => (
+                            <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <h2 className="text-lg font-semibold">
+                        {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
+                      </h2>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleNextMonth}
+                    disabled={!hasNextMonthData}
+                    className={!hasNextMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
+                  >
+                  <span>▶️</span>
+                  </Button>
+                </div>
+                <div className="flex items-center gap-4 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-meioPeriodo" />
+                    <span className="text-muted-foreground">Meio Período</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-fechamento" />
+                    <span className="text-muted-foreground">Fechamento</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-muted" />
+                    <span className="text-muted-foreground">Folga</span>
+                  </div>
+                </div>
               variant="ghost"
               size="icon"
               onClick={handleNextMonth}
