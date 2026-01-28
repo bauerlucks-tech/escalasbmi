@@ -108,11 +108,30 @@ const ScheduleView: React.FC = () => {
     parseDate(a.date).getTime() - parseDate(b.date).getTime()
   );
 
-  const lastWorkedDay = sortedSchedule
+  // Get all available schedule data across all months
+  const allScheduleData = useMemo(() => {
+    const allData: ScheduleEntry[] = [];
+    availableMonths.forEach(month => {
+      allData.push(...month.entries);
+    });
+    return allData;
+  }, [availableMonths]);
+
+  // Get user's schedule across all months
+  const myAllSchedule = allScheduleData.filter(
+    entry => entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
+  );
+
+  // Sort all schedule data
+  const sortedAllSchedule = [...myAllSchedule].sort((a, b) =>
+    parseDate(a.date).getTime() - parseDate(b.date).getTime()
+  );
+
+  const lastWorkedDay = sortedAllSchedule
     .filter(s => isBefore(parseDate(s.date), today) || isToday(parseDate(s.date)))
     .pop();
 
-  const nextWorkDay = sortedSchedule
+  const nextWorkDay = sortedAllSchedule
     .find(s => isAfter(parseDate(s.date), today));
 
   // Find days off (days not in schedule) and calculate consecutive days off
@@ -347,8 +366,24 @@ const ScheduleView: React.FC = () => {
                       <>
                         {parseDate(lastWorkedDay.date).getDate()}
                         <span className="text-sm font-normal text-muted-foreground ml-1">
-                          {format(parseDate(lastWorkedDay.date), 'EEEE', { locale: ptBR })}
+                          {format(parseDate(lastWorkedDay.date), 'EEE MMM', { locale: ptBR })}
                         </span>
+                        {(() => {
+                          const workDate = parseDate(lastWorkedDay.date);
+                          const currentMonth = getMonth(today) + 1;
+                          const workMonth = getMonth(workDate) + 1;
+                          const currentYear = getYear(today);
+                          const workYear = getYear(workDate);
+                          
+                          if (workMonth !== currentMonth || workYear !== currentYear) {
+                            return (
+                              <span className="text-xs text-muted-foreground ml-1">
+                                ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
                       </>
                     ) : (
                       <span className="text-muted-foreground">-</span>
@@ -370,8 +405,24 @@ const ScheduleView: React.FC = () => {
                       <>
                         {parseDate(nextWorkDay.date).getDate()}
                         <span className="text-sm font-normal text-muted-foreground ml-1">
-                          {format(parseDate(nextWorkDay.date), 'EEEE', { locale: ptBR })}
+                          {format(parseDate(nextWorkDay.date), 'EEE MMM', { locale: ptBR })}
                         </span>
+                        {(() => {
+                          const workDate = parseDate(nextWorkDay.date);
+                          const currentMonth = getMonth(today) + 1;
+                          const workMonth = getMonth(workDate) + 1;
+                          const currentYear = getYear(today);
+                          const workYear = getYear(workDate);
+                          
+                          if (workMonth !== currentMonth || workYear !== currentYear) {
+                            return (
+                              <span className="text-xs text-muted-foreground ml-1">
+                                ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
                       </>
                     ) : (
                       <span className="text-muted-foreground">-</span>
