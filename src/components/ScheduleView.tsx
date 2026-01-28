@@ -389,13 +389,13 @@ const ScheduleView: React.FC = () => {
                         <div className="flex items-center gap-1 mt-1">
                           {lastWorkedDay.meioPeriodo === currentUser.name && (
                             <div className="flex items-center gap-1 text-xs">
-                              <Sun className="w-3 h-3 text-meio-periodo" />
+                              <span>☀️</span>
                               <span>MP</span>
                             </div>
                           )}
                           {lastWorkedDay.fechamento === currentUser.name && (
                             <div className="flex items-center gap-1 text-xs">
-                              <Sunset className="w-3 h-3 text-fechamento" />
+                              <span>🌅</span>
                               <span>FE</span>
                             </div>
                           )}
@@ -447,13 +447,13 @@ const ScheduleView: React.FC = () => {
                         <div className="flex items-center gap-1 mt-1">
                           {nextWorkDay.meioPeriodo === currentUser.name && (
                             <div className="flex items-center gap-1 text-xs">
-                              <Sun className="w-3 h-3 text-meio-periodo" />
+                              <span>☀️</span>
                               <span>MP</span>
                             </div>
                           )}
                           {nextWorkDay.fechamento === currentUser.name && (
                             <div className="flex items-center gap-1 text-xs">
-                              <Sunset className="w-3 h-3 text-fechamento" />
+                              <span>🌅</span>
                               <span>FE</span>
                             </div>
                           )}
