@@ -448,6 +448,41 @@
   background: hsl(var(--success));
 }
 
+/* Custom dark theme colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --verde: #4CAF50;
+    --laranja: #FF9800;
+    --fundo: #121212;
+    --texto: #e0e0e0;
+  }
+
+  body {
+    background-color: var(--fundo);
+    color: var(--texto);
+  }
+
+  /* Aplicar cores a elementos específicos */
+  .elemento-verde {
+    color: var(--verde);
+  }
+
+  .elemento-laranja {
+    color: var(--laranja);
+  }
+
+  /* Se for fundo colorido */
+  .bg-verde {
+    background-color: var(--verde);
+    color: white;
+  }
+
+  .bg-laranja {
+    background-color: var(--laranja);
+    color: black;
+  }
+}
+
 .status-error::before {
   background: hsl(var(--destructive));
 }
