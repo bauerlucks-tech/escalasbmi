@@ -366,7 +366,7 @@ const ScheduleView: React.FC = () => {
                         <div>
                           {parseDate(lastWorkedDay.date).getDate()}
                           <span className="text-sm font-normal text-muted-foreground ml-1">
-                            {format(parseDate(lastWorkedDay.date), 'EEE MMM', { locale: ptBR })}
+                            {format(parseDate(lastWorkedDay.date), 'EEEE', { locale: ptBR })}
                           </span>
                           {(() => {
                             const workDate = parseDate(lastWorkedDay.date);
@@ -375,14 +375,11 @@ const ScheduleView: React.FC = () => {
                             const currentYear = getYear(today);
                             const workYear = getYear(workDate);
 
-                            if (workMonth !== currentMonth || workYear !== currentYear) {
-                              return (
-                                <span className="text-xs text-muted-foreground ml-1">
-                                  ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
-                                </span>
-                              );
-                            }
-                            return null;
+                            return (
+                              <span className="text-xs text-muted-foreground ml-1">
+                                ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
+                              </span>
+                            );
                           })()}
                         </div>
                         <div className="flex items-center gap-1 mt-1">

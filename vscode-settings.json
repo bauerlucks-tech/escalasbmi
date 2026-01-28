@@ -1,0 +1,30 @@
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript"
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  "terminal.integrated.env.windows": {
+    "NODE_PATH": "C:\\Users\\ricardo.gomes\\nodejs\\node-v20.18.0-win-x64",
+    "PATH": "${env:PATH};C:\\Users\\ricardo.gomes\\nodejs\\node-v20.18.0-win-x64;C:\\Users\\ricardo.gomes\\nodejs\\node-v20.18.0-win-x64\\node_modules\\.bin",
+    "PROJECT_ROOT": "C:\\Users\\ricardo.gomes\\CascadeProjects\\escalasbmi",
+    "VITE_PROJECT_ROOT": "C:\\Users\\ricardo.gomes\\CascadeProjects\\escalasbmi"
+  },
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "workbench.colorTheme": "Default Dark+",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js, ${capture}.d.ts, ${capture}.js.map",
+    "*.tsx": "${capture}.js, ${capture}.d.ts, ${capture}.js.map",
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml"
+  }
+}
