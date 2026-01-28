@@ -469,7 +469,7 @@ const ScheduleView: React.FC = () => {
             <div className="glass-card-elevated p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                  <span className="text-2xl">☕</span>
+                  <span className="text-2xl">🛏️</span>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Próxima folga</p>
@@ -601,6 +601,7 @@ const ScheduleView: React.FC = () => {
                       : 'bg-muted/30 border border-border/30'
                     }
                     ${isWeekend && !hasWork ? 'bg-muted/50' : ''}
+                    ${isToday(parseDate(entry?.date || '')) ? 'ring-2 ring-success ring-offset-2 ring-offset-background' : ''}
                   `}
                 >
                   <span className={`

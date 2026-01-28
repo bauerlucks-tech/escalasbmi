@@ -344,7 +344,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
         </div>
 
         {/* Backup Section - Only for Super Admin */}
-        {isSuperAdmin(currentUser) && (
+        {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
           <div className="mt-4 p-4 border border-border/50 rounded-xl bg-background/50">
             <h3 className="font-semibold flex items-center gap-2 mb-3">
               <Download className="w-4 h-4 text-primary" />
@@ -389,7 +389,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
       {/* Tabs */}
       <Tabs defaultValue="swaps" className="space-y-4">
-        <TabsList className={`grid ${isSuperAdmin(currentUser) ? 'grid-cols-5' : 'grid-cols-4'} w-full`}>
+        <TabsList className={`grid ${isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' ? 'grid-cols-5' : 'grid-cols-4'} w-full`}>
           <TabsTrigger value="swaps" className="flex items-center gap-2">
             <ArrowLeftRight className="w-4 h-4" />
             Trocas
@@ -1213,7 +1213,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               size="sm"
               onClick={() => setShowNewUserForm(!showNewUserForm)}
               className="bg-success hover:bg-success/90"
-              disabled={!isSuperAdmin(currentUser)}
+              disabled={!isSuperAdmin(currentUser) || currentUser.name === 'RICARDO'}
             >
               <UserPlus className="w-4 h-4 mr-1" />
               Novo Usuário
@@ -1248,7 +1248,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                   <SelectContent>
                     <SelectItem value="operador">Operador</SelectItem>
                     <SelectItem value="administrador">Administrador</SelectItem>
-                    {isSuperAdmin(currentUser) && <SelectItem value="super_admin">Super Admin</SelectItem>}
+                    {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && <SelectItem value="super_admin">Super Admin</SelectItem>}
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2">
@@ -1334,7 +1334,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                             <SelectContent>
                               <SelectItem value="operador">Operador</SelectItem>
                               <SelectItem value="administrador">Administrador</SelectItem>
-                              {isSuperAdmin(currentUser) && <SelectItem value="super_admin">Super Admin</SelectItem>}
+                              {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && <SelectItem value="super_admin">Super Admin</SelectItem>}
                             </SelectContent>
                           </Select>
                         )}
@@ -1417,7 +1417,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                   {users.filter(u => u.role === 'administrador' && u.status === 'ativo').length}
                 </span>
               </div>
-              {isSuperAdmin(currentUser) && (
+              {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Super Admin:</span>
                   <span className="font-mono font-bold text-destructive">
