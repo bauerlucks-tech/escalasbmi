@@ -89,13 +89,51 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     console.log('🚀 useEffect de montagem - Forçando Janeiro...');
     try {
-      const januarySchedule = getScheduleByMonth(1, 2026);
+      let januarySchedule = getScheduleByMonth(1, 2026);
       console.log('📅 Janeiro no useEffect:', januarySchedule);
+      
+      // Se Janeiro não existe ou está vazio, recriá-lo
+      if (!januarySchedule || januarySchedule.entries.length === 0) {
+        console.log('🔄 Janeiro não encontrado ou vazio, recriando...');
+        
+        // Importar dados padrão de Janeiro
+        const { scheduleData: defaultJanuaryData } = require('@/data/scheduleData');
+        console.log('📦 Dados padrão de Janeiro:', defaultJanuaryData.length);
+        
+        // Criar nova entrada de Janeiro
+        const newJanuarySchedule = {
+          month: 1,
+          year: 2026,
+          entries: defaultJanuaryData,
+          importedAt: new Date().toISOString(),
+          importedBy: 'system_restore',
+          isActive: true
+        };
+        
+        // Adicionar ao storage
+        const storage = require('@/data/scheduleData').createScheduleStorage();
+        const existingJanuaryIndex = storage.current.findIndex(s => s.month === 1 && s.year === 2026);
+        
+        if (existingJanuaryIndex >= 0) {
+          storage.current[existingJanuaryIndex] = newJanuarySchedule;
+        } else {
+          storage.current.push(newJanuarySchedule);
+        }
+        
+        // Salvar no localStorage
+        require('@/data/scheduleData').saveScheduleStorage(storage);
+        console.log('💾 Janeiro recriado e salvo no localStorage');
+        
+        // Recarregar schedule
+        januarySchedule = getScheduleByMonth(1, 2026);
+        console.log('🔄 Janeiro após recriação:', januarySchedule);
+      }
+      
       if (januarySchedule && januarySchedule.entries.length > 0) {
         console.log('✅ Setando Janeiro no useEffect:', januarySchedule.entries.length);
         setScheduleData(januarySchedule.entries);
       } else {
-        console.log('❌ Janeiro não encontrado no useEffect');
+        console.log('❌ Janeiro ainda não encontrado após tentativas');
       }
     } catch (error) {
       console.error('❌ Erro no useEffect:', error);
