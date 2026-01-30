@@ -6,7 +6,7 @@ import { downloadCompleteBackup, restoreCompleteBackup, CompleteBackup } from '@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Download, Upload, Clock, Database, Shield, Calendar, FileJson, ArrowLeft, Plus, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Download, Upload, Clock, Database, Shield, Calendar, FileJson, ArrowLeft, Plus, AlertTriangle, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface StoredBackup extends CompleteBackup {
@@ -45,6 +45,7 @@ const BackupPage: React.FC = () => {
   const [isRestoring, setIsRestoring] = useState(false);
   const [isCreatingBackup, setIsCreatingBackup] = useState(false);
   const [backupComparison, setBackupComparison] = useState<BackupComparison | null>(null);
+  const [isClearingSchedules, setIsClearingSchedules] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Check if user is Super Admin
@@ -241,6 +242,38 @@ const BackupPage: React.FC = () => {
     }
   };
 
+  const handleClearSchedules = async () => {
+    setIsClearingSchedules(true);
+    try {
+      // Fazer backup antes de limpar
+      const backup = await createManualBackup();
+      
+      // Limpar todas as escalas
+      localStorage.setItem('escala_scheduleData', JSON.stringify([]));
+      localStorage.setItem('escala_currentSchedules', JSON.stringify([]));
+      localStorage.setItem('escala_archivedSchedules', JSON.stringify([]));
+      
+      // Limpar logs de auditoria
+      localStorage.setItem('escala_auditLogs', JSON.stringify({
+        logs: [],
+        lastCleanup: new Date().toISOString()
+      }));
+      
+      toast.success('Escalas limpas com sucesso! Backup criado automaticamente.');
+      
+      // Recarregar página após 2 segundos
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error clearing schedules:', error);
+      toast.error('Erro ao limpar escalas');
+    } finally {
+      setIsClearingSchedules(false);
+    }
+  };
+
   const compareBackupWithCurrent = (backup: CompleteBackup): BackupComparison => {
     // Get current data
     const storedSchedules = localStorage.getItem('schedules');
@@ -413,7 +446,7 @@ const BackupPage: React.FC = () => {
         </div>
 
         {/* Manual Backup Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -484,6 +517,29 @@ const BackupPage: React.FC = () => {
               >
                 <Upload className="w-4 h-4 mr-2" />
                 {isRestoring ? 'Restaurando...' : 'Restaurar Backup'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trash2 className="w-5 h-5 text-destructive" />
+                Limpar Escalas
+              </CardTitle>
+              <CardDescription>
+                Remove todas as escalas e cria backup automático
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleClearSchedules}
+                disabled={isClearingSchedules}
+                variant="destructive"
+                className="w-full"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {isClearingSchedules ? 'Limpando...' : 'Limpar Escalas'}
               </Button>
             </CardContent>
           </Card>
