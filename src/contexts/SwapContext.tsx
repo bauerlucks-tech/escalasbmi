@@ -85,58 +85,67 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
   }, [scheduleData]);
 
-  // Forçar Janeiro como escala ativa na montagem
+  // Forçar restauração imediata de Janeiro para operadores
   useEffect(() => {
-    console.log('🚀 useEffect de montagem - Forçando Janeiro...');
+    console.log('🚀 RESTAURAÇÃO IMEDIATA DE JANEIRO PARA OPERADORES...');
     try {
-      let januarySchedule = getScheduleByMonth(1, 2026);
-      console.log('📅 Janeiro no useEffect:', januarySchedule);
+      // IMPORTANTE: Forçar restauração completa independentemente do estado atual
+      console.log('🔄 Forçando restauração completa de Janeiro...');
       
-      // Se Janeiro não existe ou está vazio, recriá-lo
-      if (!januarySchedule || januarySchedule.entries.length === 0) {
-        console.log('🔄 Janeiro não encontrado ou vazio, recriando...');
-        
-        // Importar dados padrão de Janeiro
-        const { scheduleData: defaultJanuaryData } = require('@/data/scheduleData');
-        console.log('📦 Dados padrão de Janeiro:', defaultJanuaryData.length);
-        
-        // Criar nova entrada de Janeiro
-        const newJanuarySchedule = {
-          month: 1,
-          year: 2026,
-          entries: defaultJanuaryData,
-          importedAt: new Date().toISOString(),
-          importedBy: 'system_restore',
-          isActive: true
-        };
-        
-        // Adicionar ao storage
-        const storage = require('@/data/scheduleData').createScheduleStorage();
-        const existingJanuaryIndex = storage.current.findIndex(s => s.month === 1 && s.year === 2026);
-        
-        if (existingJanuaryIndex >= 0) {
-          storage.current[existingJanuaryIndex] = newJanuarySchedule;
-        } else {
-          storage.current.push(newJanuarySchedule);
-        }
-        
-        // Salvar no localStorage
-        require('@/data/scheduleData').saveScheduleStorage(storage);
-        console.log('💾 Janeiro recriado e salvo no localStorage');
-        
-        // Recarregar schedule
-        januarySchedule = getScheduleByMonth(1, 2026);
-        console.log('🔄 Janeiro após recriação:', januarySchedule);
-      }
+      // Importar dados completos de Janeiro
+      const { scheduleData: completeJanuaryData } = require('@/data/scheduleData');
+      console.log('📦 Dados completos de Janeiro:', completeJanuaryData.length);
       
-      if (januarySchedule && januarySchedule.entries.length > 0) {
-        console.log('✅ Setando Janeiro no useEffect:', januarySchedule.entries.length);
-        setScheduleData(januarySchedule.entries);
+      // Criar entrada completa de Janeiro
+      const completeJanuarySchedule = {
+        month: 1,
+        year: 2026,
+        entries: completeJanuaryData,
+        importedAt: new Date().toISOString(),
+        importedBy: 'immediate_restore_for_operators',
+        isActive: true
+      };
+      
+      // Forçar atualização do storage
+      const storage = require('@/data/scheduleData').createScheduleStorage();
+      const existingJanuaryIndex = storage.current.findIndex(s => s.month === 1 && s.year === 2026);
+      
+      if (existingJanuaryIndex >= 0) {
+        console.log('🔄 Atualizando Janeiro existente...');
+        storage.current[existingJanuaryIndex] = completeJanuarySchedule;
       } else {
-        console.log('❌ Janeiro ainda não encontrado após tentativas');
+        console.log('➕ Adicionando novo Janeiro...');
+        storage.current.push(completeJanuarySchedule);
       }
+      
+      // Salvar imediatamente no localStorage
+      require('@/data/scheduleData').saveScheduleStorage(storage);
+      console.log('💾 Janeiro salvo no localStorage para operadores');
+      
+      // Forçar atualização imediata do estado
+      console.log('✅ Aplicando Janeiro como escala ativa imediatamente');
+      setScheduleData(completeJanuaryData);
+      
+      // Forçar refresh dos schedules
+      setTimeout(() => {
+        refreshSchedules();
+        console.log('🔄 Refresh forçado concluído');
+      }, 100);
+      
+      console.log('🎉 JANEIRO RESTAURADO E APLICADO PARA OPERADORES!');
+      console.log('📊 Total de dias:', completeJanuaryData.length);
+      console.log('👥 Operadores visíveis:', [...new Set(completeJanuaryData.map(d => d.meioPeriodo).concat(completeJanuaryData.map(d => d.fechamento)))].filter(n => n && n !== '').join(', '));
+      
     } catch (error) {
-      console.error('❌ Erro no useEffect:', error);
+      console.error('❌ Erro na restauração imediata:', error);
+      // Fallback: usar dados diretamente
+      try {
+        const { scheduleData: fallbackData } = require('@/data/scheduleData');
+        setScheduleData(fallbackData);
+        console.log('🛡️ Fallback aplicado:', fallbackData.length, 'dias');
+      } catch (fallbackError) {
+        console.error('❌ Erro no fallback:', fallbackError);
+      }
     }
   }, []);
 
