@@ -88,7 +88,10 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const originalEntry = scheduleData.find(e => e.date === request.originalDate);
     const targetEntry = scheduleData.find(e => e.date === request.targetDate);
     
-    if (!originalEntry || !targetEntry) return;
+    if (!originalEntry || !targetEntry) {
+      console.warn('❌ Entradas não encontradas para as datas:', request.originalDate, request.targetDate);
+      return;
+    }
 
     // Determine which shift the requester has on their original date
     const requesterShift = originalEntry.meioPeriodo === request.requesterName 
@@ -103,7 +106,10 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ? 'meioPeriodo' 
         : 'fechamento');
 
-    if (!requesterShift) return;
+    if (!requesterShift) {
+      console.warn('❌ Turno do solicitante não encontrado:', request.requesterName);
+      return;
+    }
 
     // Update the schedule - swap the agents
     const updatedSchedule = scheduleData.map(entry => {
@@ -124,7 +130,27 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return entry;
     });
 
+    // Update local state
     setScheduleData(updatedSchedule);
+    
+    // CRITICAL: Also update the month schedule in storage
+    const originalDate = new Date(request.originalDate);
+    const month = originalDate.getMonth() + 1; // JavaScript months are 0-based
+    const year = originalDate.getFullYear();
+    
+    console.log('🔄 Atualizando escala mensal:', month, year);
+    console.log('📅 Troca:', request.requesterName, '⇄', request.targetName);
+    console.log('🔄 Datas:', request.originalDate, '⇄', request.targetDate);
+    
+    const success = updateMonthScheduleFunc(month, year, updatedSchedule);
+    
+    if (success) {
+      console.log('✅ Escala mensal atualizada com sucesso!');
+      // Also refresh schedules to ensure consistency
+      refreshSchedules();
+    } else {
+      console.error('❌ Falha ao atualizar escala mensal');
+    }
   };
 
   const createSwapRequest = (request: Omit<SwapRequest, 'id' | 'createdAt'>) => {
