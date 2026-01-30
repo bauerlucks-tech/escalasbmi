@@ -140,7 +140,7 @@ const OperatorHelp: React.FC = () => {
           description: 'Cada status significa algo diferente',
           tips: [
             '🟡 Pendente: Aguardando colega aceitar',
-            '🟠 Aguardando Admin: Colega aceitou, espera aprovação',
+            '🟠 Aguardando aprovação: Colega aceitou, espera aprovação',
             '🟢 Aprovada: Troca confirmada e aplicada',
             '🔴 Recusada: Troca negada'
           ]

@@ -196,7 +196,7 @@ const SwapRequestView: React.FC = () => {
       case 'pending':
         return <span className="badge-pending">Aguardando colega</span>;
       case 'accepted':
-        return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-warning/20 text-warning">Aguardando admin</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-warning/20 text-warning">Aguardando aprovação</span>;
       case 'approved':
         return <span className="badge-accepted">Aprovada</span>;
       case 'rejected':
