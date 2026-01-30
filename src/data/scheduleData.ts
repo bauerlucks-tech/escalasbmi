@@ -236,10 +236,10 @@ export const addNewMonthSchedule = (
     };
   }
   
-  // Archive old schedules if needed (keep last 6 months instead of 3)
+  // Archive old schedules if needed (keep last 12 months to prevent data loss)
   const archived: ArchivedSchedule[] = [];
   const cutoffDate = new Date(year, month - 1, 1);
-  cutoffDate.setMonth(cutoffDate.getMonth() - 6); // Keep last 6 months
+  cutoffDate.setMonth(cutoffDate.getMonth() - 12); // Keep last 12 months
   
   const toArchive = storage.current.filter(schedule => {
     const scheduleDate = new Date(schedule.year, schedule.month - 1);
