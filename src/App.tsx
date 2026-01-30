@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SwapProvider } from "@/contexts/SwapContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import BackupPage from "./pages/BackupPage";
 import NotFound from "./pages/NotFound";
@@ -31,6 +32,7 @@ const App = () => (
         </SwapProvider>
       </AuthProvider>
     </QueryClientProvider>
+    <Analytics />
   </ThemeProvider>
 );
 
