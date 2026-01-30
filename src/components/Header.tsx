@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
 import { PartnerLogos } from '@/components/logos/CompanyLogos';
-import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database, TestTube } from 'lucide-react';
+import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database, TestTube, FileText } from 'lucide-react';
 import UserSettings from '@/components/UserSettings';
 import OperatorHelp from '@/components/OperatorHelp';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -49,6 +49,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   // Adicionar aba de Backup apenas para Super Admin
   if (isSuperAdmin(currentUser)) {
     tabs.push({ id: 'backup', label: 'Backup', icon: Database });
+    tabs.push({ id: 'audit', label: 'Auditoria', icon: FileText });
   }
 
   // Adicionar aba de Testes apenas no branch de teste

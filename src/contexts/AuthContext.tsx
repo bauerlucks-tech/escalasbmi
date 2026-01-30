@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole, UserStatus, initialUsers } from '@/data/scheduleData';
+import { logLogin, logLogout, logPasswordChange, logUserManagement, logAdminLogin } from '@/data/auditLogs';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -108,24 +109,58 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
            u.password === password && 
            u.status === 'ativo'
     );
+    
     if (user) {
       setCurrentUser(user);
+      
+      // Log de auditoria - Login bem-sucedido
+      if (user.role === 'administrador' || user.role === 'super_admin') {
+        logAdminLogin(user.id, user.name);
+      } else {
+        logLogin(user.id, user.name, true);
+      }
+      
       return true;
+    } else {
+      // Log de auditoria - Login falhou
+      const attemptedUser = users.find(u => u.name.toUpperCase() === name.toUpperCase());
+      if (attemptedUser) {
+        if (attemptedUser.status !== 'ativo') {
+          logLogin(attemptedUser.id, attemptedUser.name, false, 'Usuário inativo');
+        } else {
+          logLogin(attemptedUser.id, attemptedUser.name, false, 'Senha incorreta');
+        }
+      } else {
+        logLogin('unknown', name, false, 'Usuário não encontrado');
+      }
+      
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
+    if (currentUser) {
+      // Log de auditoria - Logout
+      logLogout(currentUser.id, currentUser.name);
+    }
     setCurrentUser(null);
   };
 
   const resetPassword = (userId: string, newPassword: string) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      logPasswordChange(user.id, user.name, true);
+    }
     setUsers(prev => prev.map(u => 
       u.id === userId ? { ...u, password: newPassword } : u
     ));
   };
 
   const updateUserRole = (userId: string, role: UserRole) => {
+    const user = users.find(u => u.id === userId);
+    if (user && currentUser) {
+      logUserManagement(currentUser.id, currentUser.name, 'USER_UPDATE', `Função do usuário ${user.name} alterada para ${role}`);
+    }
     setUsers(prev => prev.map(u => 
       u.id === userId ? { ...u, role } : u
     ));
@@ -155,6 +190,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       status: 'ativo',
     };
 
+    if (currentUser) {
+      logUserManagement(currentUser.id, currentUser.name, 'USER_CREATE', `Novo usuário criado: ${newUser.name} (${role})`);
+    }
+
     setUsers(prev => [...prev, newUser]);
     return newUser;
   };
@@ -166,12 +205,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateUserPassword = (userId: string, currentPassword: string, newPassword: string): boolean => {
     const user = users.find(u => u.id === userId);
     if (!user || user.password !== currentPassword) {
+      if (user) {
+        logPasswordChange(user.id, user.name, false, 'Senha atual incorreta');
+      }
       return false;
     }
 
     setUsers(prev => prev.map(u => 
       u.id === userId ? { ...u, password: newPassword } : u
     ));
+    
+    logPasswordChange(user.id, user.name, true);
     
     // Update current user if it's the same user
     if (currentUser?.id === userId) {

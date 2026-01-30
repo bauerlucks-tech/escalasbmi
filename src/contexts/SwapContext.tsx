@@ -14,6 +14,7 @@ import {
   MonthSchedule,
   ArchivedSchedule
 } from '@/data/scheduleData';
+import { logSwapRequest, logSwapResponse, logSwapApproval, logScheduleImport } from '@/data/auditLogs';
 
 interface SwapContextType {
   swapRequests: SwapRequest[];
@@ -276,10 +277,20 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
     };
+    
+    // Log de auditoria - Solicitação de troca
+    logSwapRequest(
+      request.requesterId, 
+      request.requesterName, 
+      `Solicitação de troca: ${request.originalDate} (${request.originalShift}) ⇄ ${request.targetDate} (${request.targetShift}) com ${request.targetName}`
+    );
+    
     setSwapRequests(prev => [...prev, newRequest]);
   };
 
   const respondToSwap = (requestId: string, accept: boolean) => {
+    const request = swapRequests.find(req => req.id === requestId);
+    
     setSwapRequests(prev => prev.map(req =>
       req.id === requestId
         ? { 
@@ -290,6 +301,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }
         : req
     ));
+    
+    // Log de auditoria - Resposta à troca
+    if (request) {
+      logSwapResponse(
+        request.targetId, 
+        request.targetName, 
+        `Resposta à solicitação de troca: ${accept ? 'ACEITA' : 'REJEITADA'} - ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName}`
+      );
+    }
   };
 
   const adminApproveSwap = (requestId: string, adminName: string) => {
@@ -306,6 +326,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }
         : req
     ));
+
+    // Log de auditoria - Aprovação admin
+    if (request) {
+      logSwapApproval(
+        'admin', // ID do admin (genérico)
+        adminName, 
+        `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
+      );
+    }
 
     // Apply the swap to the schedule when approved
     if (request) {
@@ -341,6 +370,14 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const importNewSchedule = (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate = true) => {
     const result = addNewMonthSchedule(month, year, entries, importedBy, activate);
+    
+    // Log de auditoria - Importação de escala
+    logScheduleImport(
+      'admin', // ID do admin (genérico)
+      importedBy, 
+      `Importação de escala: ${month}/${year} com ${entries.length} dias`
+    );
+    
     if (result.success) {
       refreshSchedules();
       // Switch to the newly imported schedule

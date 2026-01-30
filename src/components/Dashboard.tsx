@@ -9,6 +9,7 @@ import AdminPanel from '@/components/AdminPanel';
 import VacationRequestView from '@/components/VacationRequestView';
 import VacationAdminView from '@/components/VacationAdminView';
 import OperatorHelp from '@/components/OperatorHelp';
+import AuditLogsView from '@/components/AuditLogsView';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('schedule');
@@ -43,6 +44,8 @@ const Dashboard: React.FC = () => {
         return <AdminPanel setActiveTab={setActiveTab} />;
       case 'vacations':
         return currentUser?.role === 'administrador' ? <VacationAdminView /> : <VacationRequestView />;
+      case 'audit':
+        return <AuditLogsView />;
       case 'test':
         return (
           <div className="text-center py-12">
