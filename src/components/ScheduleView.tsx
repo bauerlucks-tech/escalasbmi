@@ -11,7 +11,7 @@ const ScheduleView: React.FC = () => {
   const { currentUser, operators } = useAuth();
   const { scheduleData, currentSchedules, switchToSchedule } = useSwap();
 
-  // State for viewing different months
+  // State for viewing different months - sempre começa com o mês atual
   const [viewingMonth, setViewingMonth] = useState(() => startOfMonth(new Date()));
 
   // Get available months from current schedules
@@ -26,23 +26,8 @@ const ScheduleView: React.FC = () => {
 
   // Update viewing month when schedules change
   React.useEffect(() => {
-    if (availableMonths.length > 0) {
-      const currentMonthYear = { month: getMonth(viewingMonth) + 1, year: getYear(viewingMonth) };
-      const exists = availableMonths.some(m => m.month === currentMonthYear.month && m.year === currentMonthYear.year);
-
-      if (!exists) {
-        // Switch to the most recent schedule
-        const mostRecent = availableMonths.sort((a, b) => {
-          const dateA = new Date(a.year, a.month - 1);
-          const dateB = new Date(b.year, b.month - 1);
-          return dateB.getTime() - dateA.getTime();
-        })[0];
-
-        if (mostRecent) {
-          setViewingMonth(new Date(mostRecent.year, mostRecent.month - 1));
-        }
-      }
-    }
+    // Sempre manter o mês atual, mesmo que não tenha dados
+    // O usuário pode escolher outro mês através do select
   }, [availableMonths, viewingMonth]);
 
   // Check if we're in the last week of the month
