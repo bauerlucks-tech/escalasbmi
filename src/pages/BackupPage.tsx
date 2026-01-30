@@ -6,7 +6,7 @@ import { downloadCompleteBackup, restoreCompleteBackup, CompleteBackup } from '@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Download, Upload, Clock, Database, Shield, Calendar, FileJson, ArrowLeft, Plus, AlertTriangle, CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { Download, Upload, Clock, Database, Shield, Calendar, FileJson, ArrowLeft, Plus, AlertTriangle, CheckCircle, XCircle, Trash2, Package } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface StoredBackup extends CompleteBackup {
@@ -46,7 +46,9 @@ const BackupPage: React.FC = () => {
   const [isCreatingBackup, setIsCreatingBackup] = useState(false);
   const [backupComparison, setBackupComparison] = useState<BackupComparison | null>(null);
   const [isClearingSchedules, setIsClearingSchedules] = useState(false);
+  const [isImportingYear, setIsImportingYear] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const yearImportInputRef = React.useRef<HTMLInputElement>(null);
 
   // Check if user is Super Admin
   if (!isSuperAdmin(currentUser)) {
@@ -274,6 +276,37 @@ const BackupPage: React.FC = () => {
     }
   };
 
+  const handleImportYear = async () => {
+    setIsImportingYear(true);
+    try {
+      // Fazer backup antes de importar
+      const backup = await createManualBackup();
+      
+      // Limpar escalas existentes
+      localStorage.setItem('escala_scheduleData', JSON.stringify([]));
+      localStorage.setItem('escala_currentSchedules', JSON.stringify([]));
+      localStorage.setItem('escala_archivedSchedules', JSON.stringify([]));
+      
+      toast.info('Escalas limpas. Agora importe os arquivos CSV manualmente na ordem correta.');
+      
+      // Mostrar instruções
+      setTimeout(() => {
+        toast.success('Instruções: Importe os CSVs em ordem: Janeiro → Fevereiro → Março → ... → Dezembro');
+      }, 1000);
+      
+      // Redirecionar para administração após 2 segundos
+      setTimeout(() => {
+        navigate('/?tab=admin');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Error preparing for year import:', error);
+      toast.error('Erro ao preparar importação do ano');
+    } finally {
+      setIsImportingYear(false);
+    }
+  };
+
   const compareBackupWithCurrent = (backup: CompleteBackup): BackupComparison => {
     // Get current data
     const storedSchedules = localStorage.getItem('schedules');
@@ -446,7 +479,7 @@ const BackupPage: React.FC = () => {
         </div>
 
         {/* Manual Backup Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -520,6 +553,31 @@ const BackupPage: React.FC = () => {
               </Button>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Schedule Management Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="w-5 h-5 text-blue-600" />
+                Importar Ano Todo
+              </CardTitle>
+              <CardDescription>
+                Importe todas as escalas de 2026 com backup automático
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={handleImportYear}
+                disabled={isImportingYear}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Package className="w-4 h-4 mr-2" />
+                {isImportingYear ? 'Preparando...' : 'Importar Ano Todo'}
+              </Button>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
@@ -541,6 +599,34 @@ const BackupPage: React.FC = () => {
                 <Trash2 className="w-4 h-4 mr-2" />
                 {isClearingSchedules ? 'Limpando...' : 'Limpar Escalas'}
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-purple-600" />
+                Status das Escalas
+              </CardTitle>
+              <CardDescription>
+                Verifique o status atual das escalas importadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Escala Atual:</span>
+                  <span className="font-medium">{JSON.parse(localStorage.getItem('escala_scheduleData') || '[]').length} dias</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Meses Importados:</span>
+                  <span className="font-medium">{JSON.parse(localStorage.getItem('escala_currentSchedules') || '[]').length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Arquivadas:</span>
+                  <span className="font-medium">{JSON.parse(localStorage.getItem('escala_archivedSchedules') || '[]').length}</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
