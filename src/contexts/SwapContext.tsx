@@ -47,6 +47,11 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
 
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
+    // Forçar Janeiro como escala inicial para garantir visibilidade
+    const januarySchedule = getScheduleByMonth(1, 2026);
+    if (januarySchedule) {
+      return januarySchedule.entries;
+    }
     return getCurrentSchedule();
   });
 
@@ -65,6 +70,14 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
   }, [scheduleData]);
+
+  // Forçar Janeiro como escala ativa na montagem
+  useEffect(() => {
+    const januarySchedule = getScheduleByMonth(1, 2026);
+    if (januarySchedule) {
+      setScheduleData(januarySchedule.entries);
+    }
+  }, []);
 
   const updateSchedule = (newSchedule: ScheduleEntry[]) => {
     setScheduleData(newSchedule);
