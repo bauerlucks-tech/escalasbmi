@@ -20,14 +20,20 @@ function recuperarEscalasPerdidas() {
     console.log(`${index + 1}. ${escala.month}/${escala.year} - ${getMonthName(escala.month)} - Arquivada em: ${new Date(escala.archivedAt).toLocaleString()}`);
   });
   
-  // 3. Recuperar escalas específicas (Janeiro a Junho)
+  // 3. Recuperar todos os meses do ano 2026
   const mesesParaRecuperar = [
     { month: 1, year: 2026, nome: 'Janeiro' },
     { month: 2, year: 2026, nome: 'Fevereiro' },
     { month: 3, year: 2026, nome: 'Março' },
     { month: 4, year: 2026, nome: 'Abril' },
     { month: 5, year: 2026, nome: 'Maio' },
-    { month: 6, year: 2026, nome: 'Junho' }
+    { month: 6, year: 2026, nome: 'Junho' },
+    { month: 7, year: 2026, nome: 'Julho' },
+    { month: 8, year: 2026, nome: 'Agosto' },
+    { month: 9, year: 2026, nome: 'Setembro' },
+    { month: 10, year: 2026, nome: 'Outubro' },
+    { month: 11, year: 2026, nome: 'Novembro' },
+    { month: 12, year: 2026, nome: 'Dezembro' }
   ];
   
   const escalasAtuais = JSON.parse(localStorage.getItem('escala_currentSchedules') || '[]');
