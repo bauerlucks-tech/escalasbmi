@@ -273,7 +273,13 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const refreshSchedules = () => {
     setCurrentSchedules(getCurrentSchedules());
     setArchivedSchedules(getArchivedSchedules());
-    setScheduleData(getCurrentSchedule());
+    // Forçar Janeiro como escala ativa para garantir visibilidade
+    const januarySchedule = getScheduleByMonth(1, 2026);
+    if (januarySchedule) {
+      setScheduleData(januarySchedule.entries);
+    } else {
+      setScheduleData(getCurrentSchedule());
+    }
   };
 
   return (
