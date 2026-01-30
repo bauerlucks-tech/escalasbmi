@@ -20,8 +20,6 @@ import {
   Sunset,
   Shield,
   Settings,
-  Database,
-  TestTube,
   Palette,
   Upload,
   Download
@@ -277,92 +275,6 @@ const OperatorHelp: React.FC = () => {
             'Verificar disponibilidade de equipe',
             'Calcular dias disponíveis',
             'Comunicação automática com operadores'
-          ]
-        }
-      ]
-    },
-    {
-      id: 'backup',
-      title: 'Sistema de Backup',
-      icon: <Database className="w-5 h-5" />,
-      description: 'Proteção de dados (Super Admin)',
-      steps: [
-        {
-          title: '1. Backup Automático',
-          description: 'Cópias diárias automáticas',
-          tips: [
-            'Backup automático diário às 00:00',
-            'Armazenado localmente no navegador',
-            'Mantém histórico de 7 dias',
-            'Recuperação rápida em caso de problemas'
-          ]
-        },
-        {
-          title: '2. Backup Manual',
-          description: 'Crie backups quando necessário',
-          tips: [
-            'Clique em "Criar Backup Agora"',
-            'Inclui todos os dados do sistema',
-            'Download automático do arquivo',
-            'Formato JSON para fácil restauração'
-          ]
-        },
-        {
-          title: '3. Restaurar Dados',
-          description: 'Recupere informações de backups',
-          tips: [
-            'Compare dados antes de restaurar',
-            'Visualize diferenças entre versões',
-            'Restauração seletiva possível',
-            'Confirmação obrigatória para segurança'
-          ]
-        },
-        {
-          title: '4. Exportar/Importar',
-          description: 'Mova dados entre sistemas',
-          tips: [
-            'Exporte dados completos do sistema',
-            'Importe de outros sistemas',
-            'Validação automática de dados',
-            'Log detalhado de operações'
-          ]
-        }
-      ]
-    },
-    {
-      id: 'testing',
-      title: 'Sistema de Testes',
-      icon: <TestTube className="w-5 h-5" />,
-      description: 'Ferramentas de teste e validação',
-      steps: [
-        {
-          title: '1. Painel de Testes',
-          description: 'Acesso em ambiente de desenvolvimento',
-          tips: [
-            'Disponível apenas em ambiente de teste',
-            'Crie usuários e dados de teste',
-            'Teste todas as funcionalidades',
-            'Limpe dados quando necessário'
-          ]
-        },
-        {
-          title: '2. Usuários de Teste',
-          description: 'Contas pré-configuradas para testes',
-          tips: [
-            'TESTE_OPERADOR1/2: Teste como operador',
-            'TESTE_ADMIN: Teste como administrador',
-            'TESTE_SUPER: Teste como super admin',
-            'Senha padrão: 1234 para todos'
-          ]
-        },
-        {
-          title: '3. Dados de Teste',
-          description: 'Gere informações para validação',
-          tips: [
-            'Crie solicitações de férias teste',
-            'Gere solicitações de troca variadas',
-            'Diferentes status para testes completos',
-            'Exporte dados para análise'
           ]
         }
       ]
