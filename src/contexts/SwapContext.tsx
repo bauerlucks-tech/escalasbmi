@@ -146,8 +146,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     if (success) {
       console.log('✅ Escala mensal atualizada com sucesso!');
-      // Also refresh schedules to ensure consistency
-      refreshSchedules();
+      // refreshSchedules() já é chamado dentro de updateMonthScheduleFunc
     } else {
       console.error('❌ Falha ao atualizar escala mensal');
     }
