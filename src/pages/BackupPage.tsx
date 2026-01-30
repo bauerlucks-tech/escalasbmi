@@ -123,10 +123,10 @@ const BackupPage: React.FC = () => {
     return new Promise((resolve) => {
       try {
         // Get all data from localStorage
-        const storedSchedules = localStorage.getItem('schedules');
-        const storedVacations = localStorage.getItem('vacations');
-        const storedSwapRequests = localStorage.getItem('swapRequests');
-        const storedUsers = localStorage.getItem('users');
+        const storedSchedules = localStorage.getItem('escala_scheduleStorage');
+        const storedVacations = localStorage.getItem('escala_vacations');
+        const storedSwapRequests = localStorage.getItem('escala_swapRequests');
+        const storedUsers = localStorage.getItem('escala_users');
 
         const schedules = storedSchedules ? JSON.parse(storedSchedules) : { current: [], archived: [] };
         const vacations = storedVacations ? JSON.parse(storedVacations) : { requests: [] };
@@ -176,10 +176,10 @@ const BackupPage: React.FC = () => {
     return new Promise((resolve) => {
       try {
         // Get all data from localStorage
-        const storedSchedules = localStorage.getItem('schedules');
-        const storedVacations = localStorage.getItem('vacations');
-        const storedSwapRequests = localStorage.getItem('swapRequests');
-        const storedUsers = localStorage.getItem('users');
+        const storedSchedules = localStorage.getItem('escala_scheduleStorage');
+        const storedVacations = localStorage.getItem('escala_vacations');
+        const storedSwapRequests = localStorage.getItem('escala_swapRequests');
+        const storedUsers = localStorage.getItem('escala_users');
 
         const schedules = storedSchedules ? JSON.parse(storedSchedules) : { current: [], archived: [] };
         const vacations = storedVacations ? JSON.parse(storedVacations) : { requests: [] };
@@ -309,10 +309,10 @@ const BackupPage: React.FC = () => {
 
   const compareBackupWithCurrent = (backup: CompleteBackup): BackupComparison => {
     // Get current data
-    const storedSchedules = localStorage.getItem('schedules');
-    const storedVacations = localStorage.getItem('vacations');
-    const storedSwapRequests = localStorage.getItem('swapRequests');
-    const storedUsers = localStorage.getItem('users');
+    const storedSchedules = localStorage.getItem('escala_scheduleStorage');
+    const storedVacations = localStorage.getItem('escala_vacations');
+    const storedSwapRequests = localStorage.getItem('escala_swapRequests');
+    const storedUsers = localStorage.getItem('escala_users');
 
     const currentSchedules = storedSchedules ? JSON.parse(storedSchedules) : { current: [], archived: [] };
     const currentVacations = storedVacations ? JSON.parse(storedVacations) : { requests: [] };
