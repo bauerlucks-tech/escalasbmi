@@ -48,11 +48,25 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
     // Forçar Janeiro como escala inicial para garantir visibilidade
-    const januarySchedule = getScheduleByMonth(1, 2026);
-    if (januarySchedule) {
-      return januarySchedule.entries;
+    console.log('🔍 Inicializando scheduleData...');
+    try {
+      const januarySchedule = getScheduleByMonth(1, 2026);
+      console.log('📅 Janeiro schedule encontrado:', januarySchedule);
+      if (januarySchedule && januarySchedule.entries.length > 0) {
+        console.log('✅ Usando Janeiro entries:', januarySchedule.entries.length);
+        return januarySchedule.entries;
+      }
+      console.log('❌ Janeiro não encontrado ou vazio, usando getCurrentSchedule()');
+      const fallback = getCurrentSchedule();
+      console.log('🔄 Fallback entries:', fallback.length);
+      return fallback;
+    } catch (error) {
+      console.error('❌ Erro na inicialização:', error);
+      // Importar scheduleData padrão como último recurso
+      const { scheduleData: defaultSchedule } = require('@/data/scheduleData');
+      console.log('🛡️ Usando scheduleData padrão:', defaultSchedule.length);
+      return defaultSchedule;
     }
-    return getCurrentSchedule();
   });
 
   const [currentSchedules, setCurrentSchedules] = useState<MonthSchedule[]>(() => {
@@ -73,9 +87,18 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Forçar Janeiro como escala ativa na montagem
   useEffect(() => {
-    const januarySchedule = getScheduleByMonth(1, 2026);
-    if (januarySchedule) {
-      setScheduleData(januarySchedule.entries);
+    console.log('🚀 useEffect de montagem - Forçando Janeiro...');
+    try {
+      const januarySchedule = getScheduleByMonth(1, 2026);
+      console.log('📅 Janeiro no useEffect:', januarySchedule);
+      if (januarySchedule && januarySchedule.entries.length > 0) {
+        console.log('✅ Setando Janeiro no useEffect:', januarySchedule.entries.length);
+        setScheduleData(januarySchedule.entries);
+      } else {
+        console.log('❌ Janeiro não encontrado no useEffect');
+      }
+    } catch (error) {
+      console.error('❌ Erro no useEffect:', error);
     }
   }, []);
 
