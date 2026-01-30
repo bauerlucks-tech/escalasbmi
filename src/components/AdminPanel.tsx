@@ -436,16 +436,32 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               <div className="divide-y divide-border/30">
                 {pendingApproval.map(request => (
                   <div key={request.id} className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium">
-                          <span className="text-primary">{request.requesterName}</span>
-                          <span className="text-muted-foreground mx-2">⇄</span>
-                          <span className="text-secondary">{request.targetName}</span>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium text-sm mb-2">
+                          {request.requesterName} ⇄ {request.targetName}
                         </div>
-                        <div className="text-sm text-muted-foreground mt-1">
-                          Data: {request.originalDate}
+                        
+                        {/* Seção DE (origem) */}
+                        <div className="bg-muted/30 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-primary mb-1">📍 DE (Origem):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.originalDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.originalShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.requesterName}</div>
+                          </div>
                         </div>
+                        
+                        {/* Seção PARA (destino) */}
+                        <div className="bg-muted/30 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-secondary mb-1">🎯 PARA (Destino):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.targetDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.targetShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.targetName}</div>
+                          </div>
+                        </div>
+                        
                         <div className="text-xs text-success mt-1">
                           ✓ Aceito pelo colega
                         </div>
@@ -453,7 +469,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                       <Button
                         size="sm"
                         onClick={() => handleApproveSwap(request.id)}
-                        className="bg-success hover:bg-success/90"
+                        className="bg-success hover:bg-success/90 ml-4"
                       >
                         <Check className="w-4 h-4 mr-1" />
                         Aprovar
