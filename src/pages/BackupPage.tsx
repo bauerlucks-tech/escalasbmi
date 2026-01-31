@@ -272,10 +272,8 @@ const BackupPage: React.FC = () => {
       
       toast.success('Escalas limpas com sucesso! Backup criado automaticamente.');
       
-      // Recarregar página após 2 segundos
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
+      // Não recarregar automaticamente para evitar erro 404
+      console.log('✅ Escalas limpas com sucesso! Página não recarregada para evitar erros.');
       
     } catch (error) {
       console.error('Error clearing schedules:', error);
@@ -304,10 +302,8 @@ const BackupPage: React.FC = () => {
         toast.success('Instruções: Importe os CSVs em ordem: Janeiro → Fevereiro → Março → ... → Dezembro');
       }, 1000);
       
-      // Redirecionar para administração após 2 segundos
-      setTimeout(() => {
-        window.location.href = '/?tab=admin';
-      }, 2000);
+      // Não redirecionar automaticamente para evitar erro 404
+      console.log('✅ Sistema preparado para importação! Vá para aba Admin manualmente.');
       
     } catch (error) {
       console.error('Error preparing for year import:', error);
