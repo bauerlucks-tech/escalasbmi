@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSwap } from '@/contexts/SwapContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Upload, FileSpreadsheet, AlertTriangle, CheckCircle, XCircle, Calendar, Users, Edit3, Save, X } from 'lucide-react';
+import { Upload, FileSpreadsheet, AlertTriangle, CheckCircle, XCircle, Calendar, Users, Edit3, Save, X, Download } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CSVParsedData {
@@ -33,9 +34,11 @@ interface DaySchedule {
 
 const CSVImportContent: React.FC = () => {
   const { currentUser } = useAuth();
+  const { importNewSchedule } = useSwap();
   const [csvData, setCsvData] = useState<CSVParsedData[]>([]);
   const [parsedMonths, setParsedMonths] = useState<MonthPreview[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const [editingErrors, setEditingErrors] = useState<CSVParsedData[]>([]);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -236,6 +239,111 @@ const CSVImportContent: React.FC = () => {
     reader.readAsText(file);
   };
 
+  const handleImportMonth = async (month: MonthPreview) => {
+    if (month.errors.length > 0) {
+      toast.error('Corrija os erros antes de importar este mês');
+      return;
+    }
+
+    if (!currentUser) {
+      toast.error('Usuário não autenticado');
+      return;
+    }
+
+    setIsImporting(true);
+
+    try {
+      // Converter para o formato esperado pelo sistema
+      const scheduleData = month.days.map(day => ({
+        date: day.date,
+        dayOfWeek: day.dayOfWeek,
+        meioPeriodo: day.meioPeriodo,
+        fechamento: day.fechamento
+      }));
+
+      // Importar usando a função existente do sistema
+      const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true);
+      
+      if (result.success) {
+        toast.success(`✅ ${month.monthName} ${month.year} importado com sucesso!`);
+        toast.success('📅 A escala já está disponível para todos os operadores e administradores.');
+        
+        // Remover mês da lista após importação bem-sucedida
+        setParsedMonths(prev => prev.filter(m => !(m.month === month.month && m.year === month.year)));
+      } else {
+        toast.error(`❌ Erro ao importar ${month.monthName}: ${(result as any).message || 'Erro desconhecido'}`);
+      }
+    } catch (error) {
+      console.error('Error importing month:', error);
+      toast.error(`❌ Erro ao importar ${month.monthName}: ${error}`);
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleImportAllMonths = async () => {
+    const monthsWithErrors = parsedMonths.filter(month => month.errors.length > 0);
+    
+    if (monthsWithErrors.length > 0) {
+      toast.error(`Corrija os erros antes de importar. Meses com erros: ${monthsWithErrors.map(m => m.monthName).join(', ')}`);
+      return;
+    }
+
+    if (!currentUser) {
+      toast.error('Usuário não autenticado');
+      return;
+    }
+
+    setIsImporting(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      for (const month of parsedMonths) {
+        try {
+          // Converter para o formato esperado pelo sistema
+          const scheduleData = month.days.map(day => ({
+            date: day.date,
+            dayOfWeek: day.dayOfWeek,
+            meioPeriodo: day.meioPeriodo,
+            fechamento: day.fechamento
+          }));
+
+          // Importar usando a função existente do sistema
+          const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true);
+          
+          if (result.success) {
+            successCount++;
+            console.log(`✅ ${month.monthName} ${month.year} importado`);
+          } else {
+            errorCount++;
+            console.error(`❌ Erro ao importar ${month.monthName}: ${(result as any).message}`);
+          }
+        } catch (error) {
+          errorCount++;
+          console.error(`❌ Erro ao importar ${month.monthName}:`, error);
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(`🎉 Importação concluída! ${successCount} mês(es) importado(s) com sucesso!`);
+        toast.success('📅 Todas as escalas já estão disponíveis para operadores e administradores.');
+        
+        // Limpar lista após importação bem-sucedida
+        setParsedMonths([]);
+      }
+
+      if (errorCount > 0) {
+        toast.error(`❌ ${errorCount} mês(es) falharam na importação. Verifique o console para detalhes.`);
+      }
+    } catch (error) {
+      console.error('Error in batch import:', error);
+      toast.error('❌ Erro durante importação em lote');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
   const renderCalendar = (month: MonthPreview) => {
     const firstDay = new Date(month.year, month.month - 1, 1);
     const lastDay = new Date(month.year, month.month, 0);
@@ -338,10 +446,46 @@ const CSVImportContent: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Import Actions */}
+      {parsedMonths.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Download className="w-5 h-5" />
+              Ações de Importação
+            </CardTitle>
+            <CardDescription>
+              Importe as escalas validadas para o banco de dados
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <Button
+                onClick={handleImportAllMonths}
+                disabled={isImporting || parsedMonths.some(m => m.errors.length > 0)}
+                className="flex-1 bg-success hover:bg-success/90"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                {isImporting ? 'Importando...' : `Importar Todos (${parsedMonths.length} meses)`}
+              </Button>
+            </div>
+            <div className="mt-3 text-xs text-muted-foreground">
+              <p>⚠️ Após importar, as escalas ficarão disponíveis para todos os operadores e administradores.</p>
+              <p>📅 Os operadores poderão visualizar e solicitar trocas das escalas importadas.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Months Preview */}
       {parsedMonths.length > 0 && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Prévia dos Meses</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Prévia dos Meses</h2>
+            <div className="text-sm text-muted-foreground">
+              {parsedMonths.filter(m => m.errors.length === 0).length} de {parsedMonths.length} meses prontos para importar
+            </div>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {parsedMonths.map((month) => (
               <Card key={`${month.month}-${month.year}`}>
@@ -355,7 +499,7 @@ const CSVImportContent: React.FC = () => {
                       {month.errors.length === 0 ? (
                         <div className="flex items-center gap-1 text-success">
                           <CheckCircle className="w-4 h-4" />
-                          <span className="text-sm">Sem erros</span>
+                          <span className="text-sm">Pronto para importar</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1 text-destructive">
@@ -371,6 +515,17 @@ const CSVImportContent: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    {/* Import Button */}
+                    <Button
+                      onClick={() => handleImportMonth(month)}
+                      disabled={isImporting || month.errors.length > 0}
+                      className="w-full"
+                      variant={month.errors.length === 0 ? "default" : "outline"}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {isImporting ? 'Importando...' : `Importar ${month.monthName}`}
+                    </Button>
+
                     {/* Errors */}
                     {month.errors.length > 0 && (
                       <div className="space-y-2">
