@@ -45,6 +45,7 @@ import {
 import { validateAndParseCSV, downloadCSVTemplate, downloadScheduleCSV, CSVValidationResult } from '@/utils/csvParser';
 import { downloadCompleteBackup, restoreCompleteBackup } from '@/utils/backupUtils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import CSVImportContent from '@/components/CSVImportContent';
 
 const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActiveTab }) => {
   const { currentUser, users, activeUsers, operators, isAdmin, isSuperAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();
@@ -732,9 +733,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             <Calendar className="w-4 h-4" />
             Escala
           </TabsTrigger>
-          <TabsTrigger value="months" className="flex items-center gap-2">
+          <TabsTrigger value="months" disabled className="flex items-center gap-2 opacity-50 cursor-not-allowed">
             <Archive className="w-4 h-4" />
-            Meses
+            Meses (Desativado)
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
@@ -1849,66 +1850,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
         {/* CSV Import Tab */}
         {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
           <TabsContent value="csv-import" className="space-y-4">
-            <div className="glass-card p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <FileSpreadsheet className="w-4 h-4 text-primary" />
-                    Importação de Escalas via CSV
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Sistema avançado de importação com preview e correção de erros
-                  </p>
-                </div>
-                <Button
-                  onClick={() => window.location.href = '/csv-import'}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Abrir Sistema de Importação
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-muted/30 rounded-lg p-3 text-xs">
-                  <p className="font-medium mb-1 text-primary">📋 Formato do Arquivo</p>
-                  <p className="text-muted-foreground mb-2">
-                    O CSV deve seguir o formato padrão:
-                  </p>
-                  <code className="bg-background/50 px-2 py-1 rounded block">
-                    data,posto,colaborador
-                  </code>
-                  <p className="text-muted-foreground mt-2">
-                    <strong>Exemplo:</strong> 01/01/2026,meio_periodo,CARLOS
-                  </p>
-                </div>
-                
-                <div className="bg-primary/10 rounded-lg p-3 text-xs border border-primary/20">
-                  <p className="font-medium mb-1 text-primary">🔧 Recursos Avançados</p>
-                  <p className="text-muted-foreground mb-2">
-                    Sistema completo de validação:
-                  </p>
-                  <ul className="text-muted-foreground space-y-1">
-                    <li>• Validação automática de datas</li>
-                    <li>• Verificação de colaboradores</li>
-                    <li>• Preview do calendário</li>
-                    <li>• Correção de erros online</li>
-                    <li>• Importação mês a mês</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <AlertCircle className="w-4 h-4 text-yellow-600" />
-                  <span className="font-medium text-yellow-800 text-sm">⚠️ Importante</span>
-                </div>
-                <p className="text-xs text-yellow-700">
-                  Antes de importar, certifique-se de que os meses Janeiro 2026 e Fevereiro 2026 foram removidos do sistema.
-                  O novo sistema permitirá visualizar e corrigir qualquer erro antes da importação final.
-                </p>
-              </div>
-            </div>
+            <CSVImportContent />
           </TabsContent>
         )}
       </Tabs>
