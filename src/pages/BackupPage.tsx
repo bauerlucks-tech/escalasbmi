@@ -251,6 +251,7 @@ const BackupPage: React.FC = () => {
       const backup = await createManualBackup();
       
       // Limpar todas as escalas
+      localStorage.setItem('escala_scheduleStorage', JSON.stringify({current: [], archived: []}));
       localStorage.setItem('escala_scheduleData', JSON.stringify([]));
       localStorage.setItem('escala_currentSchedules', JSON.stringify([]));
       localStorage.setItem('escala_archivedSchedules', JSON.stringify([]));
@@ -283,6 +284,7 @@ const BackupPage: React.FC = () => {
       const backup = await createManualBackup();
       
       // Limpar escalas existentes
+      localStorage.setItem('escala_scheduleStorage', JSON.stringify({current: [], archived: []}));
       localStorage.setItem('escala_scheduleData', JSON.stringify([]));
       localStorage.setItem('escala_currentSchedules', JSON.stringify([]));
       localStorage.setItem('escala_archivedSchedules', JSON.stringify([]));
@@ -296,7 +298,7 @@ const BackupPage: React.FC = () => {
       
       // Redirecionar para administração após 2 segundos
       setTimeout(() => {
-        navigate('/?tab=admin');
+        window.location.href = '/?tab=admin';
       }, 2000);
       
     } catch (error) {
@@ -470,7 +472,7 @@ const BackupPage: React.FC = () => {
           </div>
           <Button
             variant="outline"
-            onClick={() => navigate('/')}
+            onClick={() => window.location.href = '/'}
             className="border-primary/50 text-primary hover:bg-primary/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
