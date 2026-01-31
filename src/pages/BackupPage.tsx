@@ -289,26 +289,176 @@ const BackupPage: React.FC = () => {
       // Fazer backup antes de importar
       const backup = await createManualBackup();
       
-      // Limpar escalas existentes
-      localStorage.setItem('escala_scheduleStorage', JSON.stringify({current: [], archived: []}));
-      localStorage.setItem('escala_scheduleData', JSON.stringify([]));
-      localStorage.setItem('escala_currentSchedules', JSON.stringify([]));
-      localStorage.setItem('escala_archivedSchedules', JSON.stringify([]));
+      toast.info('Iniciando importação completa do ano 2026...');
       
-      toast.info('Escalas limpas. Agora importe os arquivos CSV manualmente na ordem correta.');
+      // Função para ler CSV de um input file
+      const readCSVFile = (file) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = reject;
+          reader.readAsText(file);
+        });
+      };
       
-      // Mostrar instruções
-      setTimeout(() => {
-        toast.success('Instruções: Importe os CSVs em ordem: Janeiro → Fevereiro → Março → ... → Dezembro');
-      }, 1000);
+      // Função para processar CSV
+      const parseCSV = (csvText) => {
+        const lines = csvText.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(',');
+        
+        return lines.slice(1).map(line => {
+          const values = line.split(',');
+          return {
+            data: values[0],
+            posto: values[1],
+            colaborador: values[2]
+          };
+        });
+      };
       
-      // Não redirecionar automaticamente para evitar erro 404
-      console.log('✅ Sistema preparado para importação! Vá para aba Admin manualmente.');
+      // Função para converter CSV para formato de escala
+      const csvToSchedule = (csvData) => {
+        const scheduleMap = new Map();
+        
+        csvData.forEach(entry => {
+          if (!scheduleMap.has(entry.data)) {
+            scheduleMap.set(entry.data, {
+              date: entry.data,
+              dayOfWeek: getDayOfWeek(entry.data),
+              meioPeriodo: '',
+              fechamento: ''
+            });
+          }
+          
+          const dayEntry = scheduleMap.get(entry.data);
+          if (entry.posto === 'meio_periodo') {
+            dayEntry.meioPeriodo = entry.colaborador;
+          } else if (entry.posto === 'fechamento') {
+            dayEntry.fechamento = entry.colaborador;
+          }
+        });
+        
+        return Array.from(scheduleMap.values()).sort((a, b) => {
+          const dateA = new Date(a.date.split('/').reverse().join('-'));
+          const dateB = new Date(b.date.split('/').reverse().join('-'));
+          return dateA.getTime() - dateB.getTime();
+        });
+      };
+      
+      // Função para obter dia da semana
+      const getDayOfWeek = (dateStr) => {
+        const days = ['DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'];
+        const [day, month, year] = dateStr.split('/').map(Number);
+        const date = new Date(year, month - 1, day);
+        return days[date.getDay()];
+      };
+      
+      // Criar input para seleção múltipla de arquivos
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.multiple = true;
+      input.accept = '.csv';
+      
+      input.onchange = async (e) => {
+        const target = e.target as HTMLInputElement;
+        const files = target.files ? Array.from(target.files) : [];
+        
+        if (files.length === 0) {
+          toast.error('Nenhum arquivo selecionado');
+          setIsImportingYear(false);
+          return;
+        }
+        
+        // Limpar escalas existentes
+        localStorage.setItem('escala_scheduleStorage', JSON.stringify({current: [], archived: []}));
+        localStorage.setItem('escala_scheduleData', JSON.stringify([]));
+        localStorage.setItem('escala_currentSchedules', JSON.stringify([]));
+        localStorage.setItem('escala_archivedSchedules', JSON.stringify([]));
+        
+        toast.info(`Processando ${files.length} arquivos CSV...`);
+        
+        let successCount = 0;
+        let errorCount = 0;
+        
+        for (const file of files) {
+          try {
+            const csvContent = await readCSVFile(file);
+            const csvData = parseCSV(csvContent);
+            const scheduleData = csvToSchedule(csvData);
+            
+            // Extrair mês e ano do nome do arquivo
+            const fileName = file.name.toLowerCase();
+            let month = 1;
+            
+            if (fileName.includes('janeiro')) month = 1;
+            else if (fileName.includes('fevereiro')) month = 2;
+            else if (fileName.includes('marco')) month = 3;
+            else if (fileName.includes('abril')) month = 4;
+            else if (fileName.includes('maio')) month = 5;
+            else if (fileName.includes('junho')) month = 6;
+            else if (fileName.includes('julho')) month = 7;
+            else if (fileName.includes('agosto')) month = 8;
+            else if (fileName.includes('setembro')) month = 9;
+            else if (fileName.includes('outubro')) month = 10;
+            else if (fileName.includes('novembro')) month = 11;
+            else if (fileName.includes('dezembro')) month = 12;
+            
+            // Salvar no formato esperado pelo sistema
+            const monthSchedule = {
+              month: month,
+              year: 2026,
+              entries: scheduleData,
+              isActive: true,
+              createdAt: new Date().toISOString(),
+              createdBy: 'Super Admin'
+            };
+            
+            // Salvar no localStorage
+            const currentSchedules = JSON.parse(localStorage.getItem('escala_currentSchedules') || '[]');
+            const filteredSchedules = currentSchedules.filter(s => !(s.month === month && s.year === 2026));
+            filteredSchedules.push(monthSchedule);
+            localStorage.setItem('escala_currentSchedules', JSON.stringify(filteredSchedules));
+            
+            // Atualizar escala atual se for a mais recente
+            const latestSchedule = filteredSchedules.reduce((latest, current) => {
+              const latestDate = new Date(latest.year, latest.month - 1);
+              const currentDate = new Date(current.year, current.month - 1);
+              return currentDate > latestDate ? current : latest;
+            });
+            
+            if (latestSchedule.month === month && latestSchedule.year === 2026) {
+              localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
+            }
+            
+            successCount++;
+            console.log(`✅ ${file.name}: ${scheduleData.length} dias importados`);
+            
+          } catch (error) {
+            errorCount++;
+            console.error(`❌ Erro ao importar ${file.name}:`, error);
+          }
+        }
+        
+        // Resumo final
+        if (successCount > 0) {
+          toast.success(`${successCount} meses importados com sucesso! ${errorCount > 0 ? `${errorCount} com erros.` : ''}`);
+          
+          // Recarregar após 3 segundos
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        } else {
+          toast.error('Nenhum mês foi importado com sucesso');
+        }
+        
+        setIsImportingYear(false);
+      };
+      
+      input.click();
       
     } catch (error) {
-      console.error('Error preparing for year import:', error);
-      toast.error('Erro ao preparar importação do ano');
-    } finally {
+      console.error('Error importing year:', error);
+      toast.error('Erro ao importar ano: ' + error.message);
       setIsImportingYear(false);
     }
   };
@@ -567,10 +717,10 @@ const BackupPage: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="w-5 h-5 text-blue-600" />
-                Importar Ano Todo
+                Importar Ano Completo
               </CardTitle>
               <CardDescription>
-                Importe todas as escalas de 2026 com backup automático
+                Selecione todos os CSVs para importar o ano 2026 automaticamente
               </CardDescription>
             </CardHeader>
             <CardContent>
