@@ -5,11 +5,31 @@ import { scheduleData as initialScheduleData, ScheduleEntry, MonthSchedule, calc
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Shield, Key, User, Check, AlertTriangle, Calendar, Upload, 
-  FileSpreadsheet, ArrowLeftRight, CheckCircle, XCircle, Clock,
-  Edit3, Save, X, Plus, Users, Archive, UserPlus, BarChart3,
-  Download, FileWarning, Loader2, Power, PowerOff, Package
+import {
+  ArrowLeftRight,
+  Calendar,
+  Users,
+  Archive,
+  Download,
+  Upload,
+  FileSpreadsheet,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  AlertCircle,
+  Clock,
+  Power,
+  PowerOff,
+  BarChart3,
+  FileWarning,
+  Plus,
+  Trash2,
+  UserPlus,
+  Edit3,
+  X,
+  Save,
+  Package,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -695,7 +715,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
       {/* Tabs */}
       <Tabs defaultValue="swaps" className="space-y-4">
-        <TabsList className={`grid ${isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' ? 'grid-cols-5' : 'grid-cols-4'} w-full`}>
+        <TabsList className={`grid ${isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' ? 'grid-cols-6' : 'grid-cols-5'} w-full`}>
           <TabsTrigger value="swaps" className="flex items-center gap-2">
             <ArrowLeftRight className="w-4 h-4" />
             Trocas
@@ -717,6 +737,12 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             <Users className="w-4 h-4" />
             Usuários
           </TabsTrigger>
+          {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
+            <TabsTrigger value="csv-import" className="flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4" />
+              Importar CSV
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Swaps Tab */}
@@ -1816,6 +1842,72 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             </div>
           </div>
         </TabsContent>
+
+        {/* CSV Import Tab */}
+        {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
+          <TabsContent value="csv-import" className="space-y-4">
+            <div className="glass-card p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <FileSpreadsheet className="w-4 h-4 text-primary" />
+                    Importação de Escalas via CSV
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Sistema avançado de importação com preview e correção de erros
+                  </p>
+                </div>
+                <Button
+                  onClick={() => window.location.href = '/csv-import'}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Abrir Sistema de Importação
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-muted/30 rounded-lg p-3 text-xs">
+                  <p className="font-medium mb-1 text-primary">📋 Formato do Arquivo</p>
+                  <p className="text-muted-foreground mb-2">
+                    O CSV deve seguir o formato padrão:
+                  </p>
+                  <code className="bg-background/50 px-2 py-1 rounded block">
+                    data,posto,colaborador
+                  </code>
+                  <p className="text-muted-foreground mt-2">
+                    <strong>Exemplo:</strong> 01/01/2026,meio_periodo,CARLOS
+                  </p>
+                </div>
+                
+                <div className="bg-primary/10 rounded-lg p-3 text-xs border border-primary/20">
+                  <p className="font-medium mb-1 text-primary">🔧 Recursos Avançados</p>
+                  <p className="text-muted-foreground mb-2">
+                    Sistema completo de validação:
+                  </p>
+                  <ul className="text-muted-foreground space-y-1">
+                    <li>• Validação automática de datas</li>
+                    <li>• Verificação de colaboradores</li>
+                    <li>• Preview do calendário</li>
+                    <li>• Correção de erros online</li>
+                    <li>• Importação mês a mês</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="w-4 h-4 text-yellow-600" />
+                  <span className="font-medium text-yellow-800 text-sm">⚠️ Importante</span>
+                </div>
+                <p className="text-xs text-yellow-700">
+                  Antes de importar, certifique-se de que os meses Janeiro 2026 e Fevereiro 2026 foram removidos do sistema.
+                  O novo sistema permitirá visualizar e corrigir qualquer erro antes da importação final.
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

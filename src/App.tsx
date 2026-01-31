@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Analytics } from "@vercel/analytics/react";
 import Index from "./pages/Index";
 import BackupPage from "./pages/BackupPage";
+import CSVImportPage from "./pages/CSVImportPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/backup" element={<BackupPage />} />
+                <Route path="/csv-import" element={<CSVImportPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
