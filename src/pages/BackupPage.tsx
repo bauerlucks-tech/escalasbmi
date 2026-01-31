@@ -86,17 +86,20 @@ const BackupPage: React.FC = () => {
     loadStoredBackups();
   }, []);
 
-  // Auto backup at 00:00
+  // Auto backup at 00:00 with improved reliability
   useEffect(() => {
     const checkAndRunAutoBackup = () => {
       const now = new Date();
       const lastBackup = localStorage.getItem('last_auto_backup');
       
-      // Check if it's 00:00 and backup hasn't run today
-      if (now.getHours() === 0 && now.getMinutes() === 0) {
-        const today = now.toDateString();
-        
+      // Check if it's between 00:00 and 00:05 and backup hasn't run today
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const today = now.toDateString();
+      
+      if (hour === 0 && minute >= 0 && minute <= 5) {
         if (!lastBackup || lastBackup !== today) {
+          console.log('🤖 Iniciando backup automático programado...');
           runAutoBackup();
           localStorage.setItem('last_auto_backup', today);
         }
@@ -110,12 +113,17 @@ const BackupPage: React.FC = () => {
 
   const runAutoBackup = async () => {
     try {
+      console.log('🔄 Criando backup automático...');
       const backup = await createAutoBackup();
       if (backup) {
+        console.log('✅ Backup automático criado:', backup.id);
         toast.success('Backup automático realizado com sucesso!');
+      } else {
+        console.error('❌ Falha ao criar backup automático');
       }
     } catch (error) {
-      console.error('Auto backup failed:', error);
+      console.error('❌ Erro no backup automático:', error);
+      toast.error('Erro no backup automático');
     }
   };
 
