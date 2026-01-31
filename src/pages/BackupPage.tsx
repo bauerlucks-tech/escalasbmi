@@ -443,10 +443,16 @@ const BackupPage: React.FC = () => {
         if (successCount > 0) {
           toast.success(`${successCount} meses importados com sucesso! ${errorCount > 0 ? `${errorCount} com erros.` : ''}`);
           
-          // Recarregar após 3 segundos
+          // Não recarregar automaticamente para evitar erro 404
+          console.log('✅ Importação concluída! Vá para aba Escalas para visualizar.');
+          
+          // Atualizar interface via eventos
           setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+            window.dispatchEvent(new StorageEvent('storage', {
+              key: 'escala_currentSchedules',
+              newValue: localStorage.getItem('escala_currentSchedules')
+            }));
+          }, 1000);
         } else {
           toast.error('Nenhum mês foi importado com sucesso');
         }
