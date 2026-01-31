@@ -108,7 +108,7 @@ const LoginScreen: React.FC = () => {
           </div>
           <div className="text-center">
             <p className="text-xs text-muted-foreground">
-              Versão: <span className="text-primary font-mono">1.3.131953</span> <span className="text-muted-foreground">(ccfa781)</span>
+              Versão: <span className="text-primary font-mono">1.3.132007</span> <span className="text-muted-foreground">(a3a7ae8)</span>
             </p>
           </div>
         </div>

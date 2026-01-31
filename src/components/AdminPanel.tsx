@@ -905,7 +905,29 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                 </div>
               </div>
 
-              {/* Import Options */}
+              {/* Import System Disabled Notice */}
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="w-5 h-5 text-yellow-600" />
+                  <span className="font-medium text-yellow-800">Sistema de Importação CSV Desativado</span>
+                </div>
+                <p className="text-sm text-yellow-700 mb-3">
+                  O sistema de importação por CSV está temporariamente desativado para manutenção.
+                </p>
+                <div className="text-xs text-yellow-600 space-y-1">
+                  <p><strong>Alternativa:</strong> Use o script <code>inserir-escalas-csv.js</code></p>
+                  <p><strong>Como usar:</strong></p>
+                  <ol className="list-decimal list-inside ml-2 space-y-1">
+                    <li>Faça login como administrador</li>
+                    <li>Abra o console do navegador (F12)</li>
+                    <li>Cole e execute o conteúdo do script</li>
+                    <li>Execute <code>inserirEscalasDoCSV()</code></li>
+                  </ol>
+                </div>
+              </div>
+
+              {/* Hidden Import Options (commented out) */}
+              {/* 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-muted/30 rounded-lg p-3 text-xs">
                   <p className="font-medium mb-1">Importação Individual</p>
@@ -937,7 +959,6 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                 </div>
               </div>
 
-              {/* Month Selection */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Mês da Escala</label>
