@@ -29,7 +29,10 @@ import {
   X,
   Save,
   Package,
-  Loader2
+  Loader2,
+  Shield,
+  Check,
+  Key
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -89,11 +92,6 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const [newUserRole, setNewUserRole] = useState<UserRole>('operador');
   const [showArchivedUsers, setShowArchivedUsers] = useState(false);
 
-  // Debug para verificar permissões
-  console.log('AdminPanel - currentUser:', currentUser);
-  console.log('AdminPanel - isAdmin(currentUser):', isAdmin(currentUser));
-  console.log('AdminPanel - isSuperAdmin(currentUser):', isSuperAdmin(currentUser));
-
   if (!isAdmin(currentUser)) {
     return (
       <div className="glass-card p-12 text-center animate-fade-in">
@@ -102,11 +100,6 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
         <p className="text-sm text-muted-foreground">
           Apenas administradores podem acessar este painel.
         </p>
-        <div className="mt-4 text-xs text-muted-foreground">
-          <p>Usuário atual: {currentUser?.name || 'N/A'}</p>
-          <p>Role: {currentUser?.role || 'N/A'}</p>
-          <p>Status: {currentUser?.status || 'N/A'}</p>
-        </div>
       </div>
     );
   }
@@ -541,14 +534,14 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             try {
               // Importar usando a função existente do sistema
               if (currentUser) {
-                const result = importNewSchedule(Number(month), 2026, monthData, currentUser.name, activateOnImport);
+                const result = importNewSchedule(Number(month), 2026, monthData as any, currentUser.name, activateOnImport);
                 
                 if (result.success) {
                   successCount++;
-                  console.log(`✅ Mês ${month}: ${monthData.length} dias importados`);
+                  console.log(`✅ Mês ${month}: ${(monthData as any).length} dias importados`);
                 } else {
                   errorCount++;
-                  console.error(`❌ Erro ao importar mês ${month}: ${result.message}`);
+                  console.error(`❌ Erro ao importar mês ${month}: ${(result as any).message}`);
                 }
               }
             } catch (error) {
@@ -1708,7 +1701,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
             {displayUsers.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
-                <User className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                <Users className="w-10 h-10 mx-auto mb-3 opacity-50" />
                 <p>{showArchivedUsers ? 'Nenhum usuário arquivado' : 'Nenhum usuário ativo'}</p>
               </div>
             ) : (
@@ -1726,7 +1719,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                           ) : user.role === 'administrador' ? (
                             <Shield className="w-5 h-5 text-primary" />
                           ) : (
-                            <User className="w-5 h-5 text-muted-foreground" />
+                            <UserPlus className="w-5 h-5 text-muted-foreground" />
                           )}
                         </div>
                         <div>
