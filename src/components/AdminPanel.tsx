@@ -245,7 +245,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     toast.success('Template CSV baixado!');
   };
 
-  const handleImportYearComplete = async () => {
+  const handleImportYearMultiple = async () => {
     setIsProcessingCSV(true);
     
     try {
@@ -388,6 +388,164 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
       
     } catch (error) {
       console.error('Error importing year:', error);
+      toast.error('Erro ao importar ano: ' + error.message);
+      setIsProcessingCSV(false);
+    }
+  };
+
+  const handleImportYearSingle = async () => {
+    setIsProcessingCSV(true);
+    
+    try {
+      // Função para ler CSV de um input file
+      const readCSVFile = (file) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = reject;
+          reader.readAsText(file);
+        });
+      };
+      
+      // Função para processar CSV
+      const parseCSV = (csvText) => {
+        const lines = csvText.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(',');
+        
+        return lines.slice(1).map(line => {
+          const values = line.split(',');
+          return {
+            data: values[0],
+            posto: values[1],
+            colaborador: values[2]
+          };
+        });
+      };
+      
+      // Função para converter CSV para formato de escala
+      const csvToSchedule = (csvData) => {
+        const scheduleMap = new Map();
+        
+        csvData.forEach(entry => {
+          if (!scheduleMap.has(entry.data)) {
+            scheduleMap.set(entry.data, {
+              date: entry.data,
+              dayOfWeek: getDayOfWeek(entry.data),
+              meioPeriodo: '',
+              fechamento: ''
+            });
+          }
+          
+          const dayEntry = scheduleMap.get(entry.data);
+          if (entry.posto === 'meio_periodo') {
+            dayEntry.meioPeriodo = entry.colaborador;
+          } else if (entry.posto === 'fechamento') {
+            dayEntry.fechamento = entry.colaborador;
+          }
+        });
+        
+        return Array.from(scheduleMap.values()).sort((a, b) => {
+          const dateA = new Date(a.date.split('/').reverse().join('-'));
+          const dateB = new Date(b.date.split('/').reverse().join('-'));
+          return dateA.getTime() - dateB.getTime();
+        });
+      };
+      
+      // Função para obter dia da semana
+      const getDayOfWeek = (dateStr) => {
+        const days = ['DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'];
+        const [day, month, year] = dateStr.split('/').map(Number);
+        const date = new Date(year, month - 1, day);
+        return days[date.getDay()];
+      };
+      
+      // Função para agrupar dados por mês
+      const groupByMonth = (scheduleData) => {
+        const monthlyData = {};
+        
+        scheduleData.forEach(entry => {
+          const [day, month, year] = entry.data.split('/').map(Number);
+          const monthKey = month;
+          
+          if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = [];
+          }
+          
+          monthlyData[monthKey].push(entry);
+        });
+        
+        return monthlyData;
+      };
+      
+      // Criar input para seleção de único arquivo
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.multiple = false;
+      input.accept = '.csv';
+      
+      input.onchange = async (e) => {
+        const target = e.target as HTMLInputElement;
+        const file = target.files?.[0];
+        
+        if (!file) {
+          toast.error('Nenhum arquivo selecionado');
+          setIsProcessingCSV(false);
+          return;
+        }
+        
+        try {
+          toast.info(`Processando arquivo CSV do ano todo...`);
+          
+          const csvContent = await readCSVFile(file);
+          const csvData = parseCSV(csvContent);
+          const scheduleData = csvToSchedule(csvData);
+          
+          // Agrupar dados por mês
+          const monthlyData = groupByMonth(scheduleData);
+          
+          let successCount = 0;
+          let errorCount = 0;
+          
+          // Importar cada mês
+          for (const [month, monthData] of Object.entries(monthlyData)) {
+            try {
+              // Importar usando a função existente do sistema
+              if (currentUser) {
+                const result = importNewSchedule(Number(month), 2026, monthData, currentUser.name, activateOnImport);
+                
+                if (result.success) {
+                  successCount++;
+                  console.log(`✅ Mês ${month}: ${monthData.length} dias importados`);
+                } else {
+                  errorCount++;
+                  console.error(`❌ Erro ao importar mês ${month}: ${result.message}`);
+                }
+              }
+            } catch (error) {
+              errorCount++;
+              console.error(`❌ Erro ao importar mês ${month}:`, error);
+            }
+          }
+          
+          // Resumo final
+          if (successCount > 0) {
+            toast.success(`${successCount} meses importados com sucesso! ${errorCount > 0 ? `${errorCount} com erros.` : ''}`);
+          } else {
+            toast.error('Nenhum mês foi importado com sucesso');
+          }
+          
+        } catch (error) {
+          console.error('Error processing single CSV:', error);
+          toast.error('Erro ao processar arquivo: ' + error.message);
+        }
+        
+        setIsProcessingCSV(false);
+      };
+      
+      input.click();
+      
+    } catch (error) {
+      console.error('Error importing single CSV year:', error);
       toast.error('Erro ao importar ano: ' + error.message);
       setIsProcessingCSV(false);
     }
@@ -765,13 +923,16 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                 <div className="bg-primary/10 rounded-lg p-3 text-xs border border-primary/20">
                   <p className="font-medium mb-1 text-primary">Importação Completa</p>
                   <p className="text-muted-foreground mb-2">
-                    Importe todos os 12 meses de uma vez
+                    Importe o ano todo de uma vez
+                  </p>
+                  <p className="text-muted-foreground">
+                    <strong>Opção 1:</strong> 12 CSVs (um por mês)
+                  </p>
+                  <p className="text-muted-foreground">
+                    <strong>Opção 2:</strong> 1 CSV (ano todo)
                   </p>
                   <p className="text-muted-foreground">
                     <strong>Vantagens:</strong> Mais rápido, sem erros
-                  </p>
-                  <p className="text-muted-foreground">
-                    <strong>Requisito:</strong> 12 arquivos CSV
                   </p>
                 </div>
               </div>
@@ -837,7 +998,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                 </div>
                 <div className="flex items-end">
                   <Button
-                    onClick={handleImportYearComplete}
+                    onClick={handleImportYearMultiple}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     disabled={isProcessingCSV}
                   >
@@ -846,7 +1007,21 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                     ) : (
                       <Package className="w-4 h-4 mr-2" />
                     )}
-                    Importar Ano Completo
+                    12 CSVs
+                  </Button>
+                </div>
+                <div className="flex items-end">
+                  <Button
+                    onClick={handleImportYearSingle}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    disabled={isProcessingCSV}
+                  >
+                    {isProcessingCSV ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    )}
+                    1 CSV Ano Todo
                   </Button>
                 </div>
               </div>
