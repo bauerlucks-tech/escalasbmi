@@ -406,6 +406,11 @@ const CSVImportContent: React.FC = () => {
     );
   };
 
+  // Debug para verificar estado
+  console.log('CSVImportContent - parsedMonths:', parsedMonths);
+  console.log('CSVImportContent - csvData:', csvData);
+  console.log('CSVImportContent - isProcessing:', isProcessing);
+
   return (
     <div className="space-y-6">
       {/* Header */}
