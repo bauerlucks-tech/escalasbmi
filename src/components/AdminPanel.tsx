@@ -89,6 +89,11 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const [newUserRole, setNewUserRole] = useState<UserRole>('operador');
   const [showArchivedUsers, setShowArchivedUsers] = useState(false);
 
+  // Debug para verificar permissões
+  console.log('AdminPanel - currentUser:', currentUser);
+  console.log('AdminPanel - isAdmin(currentUser):', isAdmin(currentUser));
+  console.log('AdminPanel - isSuperAdmin(currentUser):', isSuperAdmin(currentUser));
+
   if (!isAdmin(currentUser)) {
     return (
       <div className="glass-card p-12 text-center animate-fade-in">
@@ -97,6 +102,11 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
         <p className="text-sm text-muted-foreground">
           Apenas administradores podem acessar este painel.
         </p>
+        <div className="mt-4 text-xs text-muted-foreground">
+          <p>Usuário atual: {currentUser?.name || 'N/A'}</p>
+          <p>Role: {currentUser?.role || 'N/A'}</p>
+          <p>Status: {currentUser?.status || 'N/A'}</p>
+        </div>
       </div>
     );
   }
