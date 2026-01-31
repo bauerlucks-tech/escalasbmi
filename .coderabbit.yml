@@ -1,0 +1,204 @@
+# CodeRabbit Configuration
+
+# Review settings
+review:
+  # Enable automated reviews
+  enabled: true
+  
+  # Review types to perform
+  types:
+    - security
+    - performance
+    - code_quality
+    - documentation
+  
+  # File patterns to include/exclude
+  include_patterns:
+    - "src/**/*.{ts,tsx,js,jsx}"
+    - "scripts/**/*.{js,ts}"
+    - "package.json"
+    - "README.md"
+  
+  exclude_patterns:
+    - "node_modules/**/*"
+    - "dist/**/*"
+    - "build/**/*"
+    - "*.log"
+    - "*.tmp"
+  
+  # Language-specific settings
+  language_settings:
+    typescript:
+      # Enable TypeScript-specific checks
+      type_checking: true
+      # Check for unused imports
+      unused_imports: true
+      # Check for console.log statements
+      console_statements: true
+    
+    javascript:
+      # Enable JavaScript-specific checks
+      es6_features: true
+      # Check for potential issues
+      best_practices: true
+
+# PR settings
+pull_request:
+  # Auto-merge settings
+  auto_merge:
+    enabled: false  # Keep manual control for now
+  
+  # Required checks before merge
+  required_checks:
+    - "build"
+    - "test"
+    - "lint"
+  
+  # Review assignment
+  auto_assign:
+    enabled: false  # Manual assignment for now
+
+# Integration settings
+integrations:
+  # GitHub integration
+  github:
+    enabled: true
+    # Post comments on PR
+    comment_on_pr: true
+    # Create status checks
+    status_checks: true
+  
+  # Slack integration (if needed)
+  slack:
+    enabled: false
+    webhook_url: ""
+
+# Custom rules for this project
+rules:
+  # Security rules
+  security:
+    - no_eval: true
+    - no_innerhtml: true
+    - check_xss: true
+  
+  # Performance rules
+  performance:
+    - bundle_size_check: true
+    - image_optimization: true
+    - lazy_loading: true
+  
+  # Code quality rules
+  code_quality:
+    - consistent_naming: true
+    - proper_error_handling: true
+    - documentation_coverage: 0.8
+  
+  # React-specific rules
+  react:
+    - hooks_usage: true
+    - prop_types: true
+    - component_structure: true
+
+# Notification settings
+notifications:
+  # Email notifications
+  email:
+    enabled: false
+    recipients: []
+  
+  # Slack notifications
+  slack:
+    enabled: false
+    channels: []
+
+# Custom messages
+messages:
+  # Welcome message for new PRs
+  welcome: |
+    🐰 Welcome! CodeRabbit is reviewing your changes.
+    
+    This PR will be automatically checked for:
+    - Security vulnerabilities
+    - Performance improvements
+    - Code quality issues
+    - Documentation completeness
+    
+    Review will complete in a few moments...
+  
+  # Success message
+  success: |
+    ✅ All checks passed! Your code looks great.
+    
+    📊 Summary:
+    - Security: ✅ No issues found
+    - Performance: ✅ Optimized
+    - Code Quality: ✅ Clean code
+    - Documentation: ✅ Well documented
+  
+  # Error message
+  error: |
+    ❌ Some issues were found. Please review the comments above.
+    
+    🔧 Common fixes:
+    - Add missing error handling
+    - Optimize bundle size
+    - Add missing documentation
+    - Fix security issues
+
+# Exclusions
+exclude:
+  # Files to exclude from review
+  files:
+    - "src/assets/**/*"
+    - "public/**/*"
+    - "*.ico"
+    - "*.png"
+    - "*.jpg"
+    - "*.svg"
+  
+  # Rules to exclude for specific files
+  rules:
+    - file: "src/test/**/*"
+      rules: ["documentation_coverage"]
+    - file: "scripts/**/*"
+      rules: ["console_statements"]
+
+# Custom scripts
+scripts:
+  # Pre-review script
+  pre_review: |
+    echo "🐰 Running pre-review checks..."
+    npm run lint
+    npm run build
+  
+  # Post-review script
+  post_review: |
+    echo "🐰 Review completed!"
+    echo "📊 Generating summary report..."
+
+# Quality thresholds
+quality_thresholds:
+  # Maximum bundle size increase (percentage)
+  bundle_size_increase: 10
+  
+  # Minimum test coverage (percentage)
+  test_coverage: 80
+  
+  # Maximum complexity score
+  complexity_score: 10
+  
+  # Minimum documentation coverage (percentage)
+  documentation_coverage: 70
+
+# Custom hooks
+hooks:
+  # Pre-commit hook
+  pre_commit: |
+    echo "🐰 Running pre-commit checks..."
+    npm run lint
+  
+  # Pre-push hook
+  pre_push: |
+    echo "🐰 Running pre-push checks..."
+    npm run build
+    npm test
