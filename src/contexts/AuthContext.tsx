@@ -67,6 +67,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    // Verificar se há usuário do login externo PRIMEIRO
+    const externalUser = localStorage.getItem('reactCurrentUser');
+    if (externalUser) {
+      try {
+        const parsed = JSON.parse(externalUser);
+        console.log('🔄 Carregando usuário externo no AuthContext:', parsed.name);
+        return parsed;
+      } catch (error) {
+        console.error('❌ Erro ao carregar usuário externo:', error);
+      }
+    }
+    
+    // Verificar usuário salvo normalmente
     const saved = localStorage.getItem('escala_currentUser');
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -78,6 +91,47 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     return null;
   });
+
+  // Verificar usuário externo periodicamente
+  useEffect(() => {
+    const checkExternalUser = () => {
+      const externalUser = localStorage.getItem('reactCurrentUser');
+      if (externalUser && !currentUser) {
+        try {
+          const parsed = JSON.parse(externalUser);
+          console.log('🔄 Detectado usuário externo, atualizando AuthContext:', parsed.name);
+          
+          // Encontrar usuário correspondente na lista
+          const matchedUser = users.find(u => u.name === parsed.name);
+          
+          if (matchedUser) {
+            const userWithExternalData = {
+              ...matchedUser,
+              ...parsed
+            };
+            
+            setCurrentUser(userWithExternalData);
+            localStorage.setItem('escala_currentUser', JSON.stringify(userWithExternalData));
+            console.log('✅ Usuário externo sincronizado com AuthContext:', userWithExternalData.name);
+          }
+        } catch (error) {
+          console.error('❌ Erro ao processar usuário externo:', error);
+        }
+      }
+    };
+
+    // Verificar imediatamente
+    checkExternalUser();
+    
+    // Verificar a cada 500ms por 5 segundos
+    const interval = setInterval(checkExternalUser, 500);
+    const timeout = setTimeout(() => clearInterval(interval), 5000);
+    
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [currentUser, users]);
 
   // Computed lists
   const activeUsers = users.filter(u => u.status === 'ativo');
