@@ -34,7 +34,7 @@ interface DaySchedule {
 
 const CSVImportContent: React.FC = () => {
   const { currentUser } = useAuth();
-  const { importNewSchedule } = useSwap();
+  const { importNewSchedule, currentSchedules } = useSwap();
   const [csvData, setCsvData] = useState<CSVParsedData[]>([]);
   const [parsedMonths, setParsedMonths] = useState<MonthPreview[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -250,6 +250,29 @@ const CSVImportContent: React.FC = () => {
       return;
     }
 
+    // Verificar se o mês já existe no sistema
+    const existingMonth = currentSchedules.find(s => s.month === month.month && s.year === month.year);
+    
+    if (existingMonth) {
+      // Confirmar substituição do mês existente
+      const confirmReplace = window.confirm(
+        `⚠️ ATENÇÃO: ${month.monthName} ${month.year} já existe no sistema!\n\n` +
+        `Dados existentes:\n` +
+        `- ${existingMonth.entries.length} dias\n` +
+        `- Importado em: ${new Date(existingMonth.importedAt).toLocaleDateString('pt-BR')}\n` +
+        `- Por: ${existingMonth.importedBy}\n\n` +
+        `Deseja SUBSTITUIR completamente os dados existentes?\n\n` +
+        `Clique em "OK" para substituir ou "Cancelar" para abortar.`
+      );
+      
+      if (!confirmReplace) {
+        toast.info('❌ Importação cancelada pelo usuário');
+        return;
+      }
+      
+      toast.warning(`🔄 Substituindo ${month.monthName} ${month.year} existente...`);
+    }
+
     setIsImporting(true);
 
     try {
@@ -265,7 +288,8 @@ const CSVImportContent: React.FC = () => {
       const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true);
       
       if (result.success) {
-        toast.success(`✅ ${month.monthName} ${month.year} importado com sucesso!`);
+        const action = existingMonth ? 'substituído' : 'importado';
+        toast.success(`✅ ${month.monthName} ${month.year} ${action} com sucesso!`);
         toast.success('📅 A escala já está disponível para todos os operadores e administradores.');
         
         // Remover mês da lista após importação bem-sucedida
