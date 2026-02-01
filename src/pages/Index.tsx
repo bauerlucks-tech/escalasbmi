@@ -1,12 +1,9 @@
 import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import LoginScreen from '@/components/LoginScreen';
 import Dashboard from '@/components/Dashboard';
 
 const Index: React.FC = () => {
-  const { isAuthenticated } = useAuth();
-
-  return isAuthenticated ? <Dashboard /> : <LoginScreen />;
+  // Sempre mostrar Dashboard - nosso sistema de login externo controla o acesso
+  return <Dashboard />;
 };
 
 export default Index;

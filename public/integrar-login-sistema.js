@@ -140,11 +140,7 @@ class SystemAuthIntegration {
     // Mostrar conteúdo principal
     this.showMainContent();
     
-    // Adicionar informações do usuário
-    this.addUserInfo(user);
-    
-    // Adicionar botão de logout
-    this.addLogoutButton();
+    // NÃO adicionar header ou barra - apenas mostrar sistema
   }
 
   // Criar tela de login
