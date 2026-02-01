@@ -173,83 +173,83 @@ class SystemAuthIntegration {
     `;
     
     loginScreen.innerHTML = `
-      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-        <div style="width: 100%; max-width: 400px; padding: 2rem; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div style="width: 100%; max-width: 480px; padding: 3rem; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
           <!-- Header -->
-          <div style="text-align: center; margin-bottom: 2rem;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; width: 4rem; height: 4rem; border-radius: 1rem; background: rgba(59, 130, 246, 0.1); margin-bottom: 1rem;">
-              <span style="font-size: 2.5rem;">🚁</span>
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 5rem; height: 5rem; border-radius: 1.25rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%); margin-bottom: 1.5rem; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.25);">
+              <span style="font-size: 3rem;">🚁</span>
             </div>
-            <h1 style="margin: 0; color: #fff; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Operações Aéreas Offshore</h1>
-            <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 0.875rem;">
+            <h1 style="margin: 0; color: #fff; font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.025em;">Operações Aéreas Offshore</h1>
+            <p style="margin: 0; color: rgba(255, 255, 255, 0.65); font-size: 1rem; line-height: 1.5;">
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
           </div>
 
           <!-- Login Form -->
-          <form id="auth-login-form" style="margin-bottom: 1rem;">
-            <div style="margin-bottom: 1.25rem;">
-              <label for="auth-username" style="display: block; margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8); font-size: 0.875rem;">
+          <form id="auth-login-form" style="margin-bottom: 1.5rem;">
+            <div style="margin-bottom: 1.75rem;">
+              <label for="auth-username" style="display: block; margin-bottom: 0.75rem; color: rgba(255, 255, 255, 0.85); font-size: 0.95rem; font-weight: 500;">
                 Nome do Operador
               </label>
               <div style="position: relative;">
-                <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 1rem; height: 1rem; color: rgba(255, 255, 255, 0.6);">👤</span>
+                <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.25rem; height: 1.25rem; color: rgba(255, 255, 255, 0.55); font-size: 1.1rem;">👤</span>
                 <input
                   id="auth-username"
                   type="text"
-                  placeholder="Seu nome"
+                  placeholder="Digite seu nome de usuário"
                   required
-                  style="width: 100%; padding-left: 2.5rem; padding-right: 0.75rem; padding-top: 0.75rem; padding-bottom: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; color: #fff; font-size: 0.875rem; transition: all 0.3s ease;"
+                  style="width: 100%; padding-left: 3rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 0.75rem; color: #fff; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;"
                 />
               </div>
             </div>
 
-            <div style="margin-bottom: 1.25rem;">
-              <label for="auth-password" style="display: block; margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8); font-size: 0.875rem;">
+            <div style="margin-bottom: 2rem;">
+              <label for="auth-password" style="display: block; margin-bottom: 0.75rem; color: rgba(255, 255, 255, 0.85); font-size: 0.95rem; font-weight: 500;">
                 Senha
               </label>
               <div style="position: relative;">
-                <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 1rem; height: 1rem; color: rgba(255, 255, 255, 0.6);">🔒</span>
+                <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.25rem; height: 1.25rem; color: rgba(255, 255, 255, 0.55); font-size: 1.1rem;">🔒</span>
                 <input
                   id="auth-password"
                   type="password"
-                  placeholder="••••"
+                  placeholder="Digite sua senha"
                   required
-                  style="width: 100%; padding-left: 2.5rem; padding-right: 0.75rem; padding-top: 0.75rem; padding-bottom: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; color: #fff; font-size: 0.875rem; transition: all 0.3s ease;"
+                  style="width: 100%; padding-left: 3rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 0.75rem; color: #fff; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;"
                 />
               </div>
             </div>
 
-            <div id="auth-login-message" style="display: none; align-items: center; gap: 0.5rem; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; margin-bottom: 1.25rem;">
-              <span style="width: 1rem; height: 1rem;">⚠️</span>
+            <div id="auth-login-message" style="display: none; align-items: center; gap: 0.75rem; padding: 1rem; border-radius: 0.75rem; font-size: 0.95rem; margin-bottom: 2rem;">
+              <span style="width: 1.25rem; height: 1.25rem; font-size: 1.1rem;">⚠️</span>
               <span id="auth-login-message-text"></span>
             </div>
 
             <button 
               type="submit" 
-              style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; border: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);"
+              style="width: 100%; padding: 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; border: none; border-radius: 0.75rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.35); outline: none; letter-spacing: 0.025em;"
             >
               Acessar Sistema
             </button>
           </form>
 
           <!-- User hints -->
-          <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-            <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.75rem; text-align: center;">
-              Credenciais: <span style="font-family: monospace; color: #3b82f6;">ADMIN/admin123</span>
+          <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+            <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem; text-align: center; line-height: 1.4;">
+              Credenciais de teste: <span style="font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">ADMIN / admin123</span>
             </p>
           </div>
 
           <!-- Footer info -->
-          <div style="margin-top: 1rem; space-y: 0.5rem;">
+          <div style="margin-top: 1.5rem; space-y: 0.75rem;">
             <div style="text-align: center;">
-              <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.75rem;">
-                Criado por: <span style="color: #3b82f6; font-weight: 500;">Lucas Pott</span>
+              <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem;">
+                Criado por: <span style="color: #60a5fa; font-weight: 600;">Lucas Pott</span>
               </p>
             </div>
             <div style="text-align: center;">
-              <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.75rem;">
-                Versão: <span style="color: #3b82f6; font-family: monospace;">1.3.100433</span> <span style="color: rgba(255, 255, 255, 0.4);">(e0de1d3)</span>
+              <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem;">
+                Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">1.3.100433</span> <span style="color: rgba(255, 255, 255, 0.35);">(c872c5f)</span>
               </p>
             </div>
           </div>
@@ -310,30 +310,47 @@ class SystemAuthIntegration {
       }
     });
     
-    // Adicionar efeitos de hover e focus nos inputs
+    // Adicionar efeitos de hover e focus nos inputs (desktop优先)
     const inputs = form.querySelectorAll('input');
     inputs.forEach(input => {
       input.addEventListener('focus', () => {
-        input.style.borderColor = 'rgba(59, 130, 246, 0.5)';
-        input.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+        input.style.borderColor = 'rgba(59, 130, 246, 0.6)';
+        input.style.background = 'rgba(255, 255, 255, 0.08)';
+        input.style.boxShadow = '0 0 0 4px rgba(59, 130, 246, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+        input.style.transform = 'translateY(-1px)';
       });
       
       input.addEventListener('blur', () => {
-        input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        input.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        input.style.background = 'rgba(255, 255, 255, 0.04)';
         input.style.boxShadow = 'none';
+        input.style.transform = 'translateY(0)';
       });
     });
     
-    // Adicionar efeito no botão
+    // Adicionar efeito no botão (desktop优先)
     const button = form.querySelector('button');
     button.addEventListener('mouseenter', () => {
-      button.style.transform = 'translateY(-2px)';
-      button.style.boxShadow = '0 8px 12px rgba(59, 130, 246, 0.3)';
+      button.style.transform = 'translateY(-2px) scale(1.02)';
+      button.style.boxShadow = '0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+      button.style.background = 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)';
     });
     
     button.addEventListener('mouseleave', () => {
-      button.style.transform = 'translateY(0)';
-      button.style.boxShadow = '0 4px 6px rgba(59, 130, 246, 0.25)';
+      button.style.transform = 'translateY(0) scale(1)';
+      button.style.boxShadow = '0 10px 25px -5px rgba(59, 130, 246, 0.35)';
+      button.style.background = 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)';
+    });
+    
+    // Adicionar efeito de clique no botão
+    button.addEventListener('mousedown', () => {
+      button.style.transform = 'translateY(0) scale(0.98)';
+      button.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+    });
+    
+    button.addEventListener('mouseup', () => {
+      button.style.transform = 'translateY(-2px) scale(1.02)';
+      button.style.boxShadow = '0 20px 25px -5px rgba(59, 130, 246, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
     });
   }
 
