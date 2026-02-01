@@ -86,18 +86,18 @@ const BackupPage: React.FC = () => {
     loadStoredBackups();
   }, []);
 
-  // Auto backup at 00:00 with improved reliability
+  // Auto backup at 01:00 with improved reliability
   useEffect(() => {
     const checkAndRunAutoBackup = () => {
       const now = new Date();
       const lastBackup = localStorage.getItem('last_auto_backup');
       
-      // Check if it's between 00:00 and 00:05 and backup hasn't run today
+      // Check if it's between 01:00 and 01:05 and backup hasn't run today
       const hour = now.getHours();
       const minute = now.getMinutes();
       const today = now.toDateString();
       
-      if (hour === 0 && minute >= 0 && minute <= 5) {
+      if (hour === 1 && minute >= 0 && minute <= 5) {
         if (!lastBackup || lastBackup !== today) {
           console.log('🤖 Iniciando backup automático programado...');
           runAutoBackup();
@@ -726,13 +726,13 @@ const BackupPage: React.FC = () => {
               Backup Automático
             </CardTitle>
             <CardDescription>
-              O sistema realiza backup automaticamente todos os dias às 00:00
+              O sistema realiza backup automaticamente todos os dias às 01:00
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="w-4 h-4" />
-              <span>Próximo backup: Hoje às 00:00</span>
+              <span>Próximo backup: Hoje às 01:00</span>
             </div>
           </CardContent>
         </Card>
@@ -753,7 +753,7 @@ const BackupPage: React.FC = () => {
               <div className="text-center py-8 text-muted-foreground">
                 <Database className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Nenhum backup armazenado ainda</p>
-                <p className="text-sm">O primeiro backup automático será criado às 00:00</p>
+                <p className="text-sm">O primeiro backup automático será criado às 01:00</p>
               </div>
             ) : (
               <ScrollArea className="h-96">
