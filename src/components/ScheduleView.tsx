@@ -79,8 +79,18 @@ const ScheduleView: React.FC = () => {
 
   const getWorkersForDate = (date: Date) => {
     const dateStr = format(date, 'dd/MM/yyyy');
-    const entry = viewingMonthData.find(s => s.date === dateStr);
-    return entry ? { meioPeriodo: entry.meioPeriodo, fechamento: entry.fechamento } : null;
+    const month = getMonth(date) + 1;
+    const year = getYear(date);
+    
+    // Find schedule for this specific month
+    const scheduleForMonth = currentSchedules.find(s => s.month === month && s.year === year);
+    
+    if (scheduleForMonth) {
+      const entry = scheduleForMonth.entries.find(s => s.date === dateStr);
+      return entry ? { meioPeriodo: entry.meioPeriodo, fechamento: entry.fechamento } : null;
+    }
+    
+    return null;
   };
 
   const yesterdayWorkers = getWorkersForDate(yesterday);
@@ -118,10 +128,18 @@ const ScheduleView: React.FC = () => {
   const nextWorkDay = sortedAllSchedule
     .find(s => isAfter(parseDate(s.date), today));
 
-  // Find days off (days not in schedule) and calculate consecutive days off
-  const allDates = viewingMonthData.map(s => s.date);
-  const myDates = new Set(mySchedule.map(s => s.date));
-  const daysOff = allDates.filter(d => !myDates.has(d) && isAfter(parseDate(d), today));
+  // Find days off (days not in schedule) across all available months
+  const getAllDatesAcrossMonths = () => {
+    const allDates: string[] = [];
+    currentSchedules.forEach(schedule => {
+      allDates.push(...schedule.entries.map(s => s.date));
+    });
+    return allDates;
+  };
+  
+  const allDates = getAllDatesAcrossMonths();
+  const myAllDates = new Set(myAllSchedule.map(s => s.date));
+  const daysOff = allDates.filter(d => !myAllDates.has(d) && isAfter(parseDate(d), today));
   const nextDayOff = daysOff.length > 0 ? daysOff[0] : null;
 
   // Calculate consecutive days off until next work day
