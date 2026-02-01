@@ -318,6 +318,28 @@ const CSVImportContent: React.FC = () => {
       return;
     }
 
+    // Verificar meses existentes e pedir confirmação
+    const existingMonths = parsedMonths.filter(month => 
+      currentSchedules.some(s => s.month === month.month && s.year === month.year)
+    );
+
+    if (existingMonths.length > 0) {
+      const existingMonthsList = existingMonths.map(m => `${m.monthName} ${m.year}`).join(', ');
+      const confirmReplace = window.confirm(
+        `⚠️ ATENÇÃO: Os seguintes meses já existem no sistema:\n\n` +
+        `${existingMonthsList}\n\n` +
+        `Deseja SUBSTITUIR todos os meses existentes?\n\n` +
+        `Clique em "OK" para substituir todos ou "Cancelar" para abortar.`
+      );
+      
+      if (!confirmReplace) {
+        toast.info('❌ Importação em lote cancelada pelo usuário');
+        return;
+      }
+      
+      toast.warning(`🔄 Substituindo ${existingMonths.length} meses existentes...`);
+    }
+
     setIsImporting(true);
     let successCount = 0;
     let errorCount = 0;
@@ -333,36 +355,39 @@ const CSVImportContent: React.FC = () => {
             fechamento: day.fechamento
           }));
 
+          // Verificar se este mês existe para mensagem correta
+          const isExisting = currentSchedules.some(s => s.month === month.month && s.year === month.year);
+          
           // Importar usando a função existente do sistema
           const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true);
           
           if (result.success) {
             successCount++;
-            console.log(`✅ ${month.monthName} ${month.year} importado`);
+            const action = isExisting ? 'substituído' : 'importado';
+            toast.success(`✅ ${month.monthName} ${month.year} ${action} com sucesso!`);
           } else {
             errorCount++;
-            console.error(`❌ Erro ao importar ${month.monthName}: ${(result as any).message}`);
+            toast.error(`❌ Erro ao importar ${month.monthName}: ${(result as any).message || 'Erro desconhecido'}`);
           }
         } catch (error) {
           errorCount++;
-          console.error(`❌ Erro ao importar ${month.monthName}:`, error);
+          console.error('Error importing month:', error);
+          toast.error(`❌ Erro ao importar ${month.monthName}: ${error}`);
         }
       }
 
       if (successCount > 0) {
-        toast.success(`🎉 Importação concluída! ${successCount} mês(es) importado(s) com sucesso!`);
-        toast.success('📅 Todas as escalas já estão disponíveis para operadores e administradores.');
-        
-        // Limpar lista após importação bem-sucedida
+        toast.success(`🎉 Importação concluída! ${successCount} meses processados com sucesso.`);
+        toast.success('📅 As escalas já estão disponíveis para todos os operadores e administradores.');
         setParsedMonths([]);
       }
-
+      
       if (errorCount > 0) {
-        toast.error(`❌ ${errorCount} mês(es) falharam na importação. Verifique o console para detalhes.`);
+        toast.error(`❌ ${errorCount} meses falharam na importação.`);
       }
     } catch (error) {
       console.error('Error in batch import:', error);
-      toast.error('❌ Erro durante importação em lote');
+      toast.error('❌ Erro geral na importação em lote');
     } finally {
       setIsImporting(false);
     }
