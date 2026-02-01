@@ -164,7 +164,7 @@ class SystemAuthIntegration {
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #f8f9fa;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -173,41 +173,37 @@ class SystemAuthIntegration {
     `;
     
     loginScreen.innerHTML = `
-      <div style="background: white; padding: 3rem; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); max-width: 400px; width: 90%;">
-        <div style="text-align: center; margin-bottom: 2rem;">
-          <h1 style="margin: 0; color: #333; font-size: 2rem; font-weight: 600;">🔐 Sistema de Escalas</h1>
-          <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 1rem;">Acesso ao Sistema de Gerenciamento de Escalas</p>
+      <div style="background: white; padding: 2rem; border: 1px solid #dee2e6; border-radius: 8px; max-width: 400px; width: 90%;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h1 style="margin: 0; color: #212529; font-size: 1.5rem; font-weight: 500;">Sistema de Escalas</h1>
+          <p style="margin: 0.5rem 0 0 0; color: #6c757d; font-size: 0.9rem;">Acesso ao Sistema</p>
         </div>
         
-        <form id="auth-login-form" style="margin-bottom: 1.5rem;">
-          <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Nome de Usuário</label>
-            <input type="text" id="auth-username" required style="width: 100%; padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+        <form id="auth-login-form" style="margin-bottom: 1rem;">
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #495057; font-weight: 400;">Nome de Usuário</label>
+            <input type="text" id="auth-username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9rem;">
           </div>
           
-          <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500;">Senha</label>
-            <input type="password" id="auth-password" required style="width: 100%; padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s;">
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #495057; font-weight: 400;">Senha</label>
+            <input type="password" id="auth-password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9rem;">
           </div>
           
-          <button type="submit" style="width: 100%; padding: 0.75rem; background: #4f46e5; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background-color 0.3s;">
-            Entrar no Sistema
+          <button type="submit" style="width: 100%; padding: 0.5rem; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
+            Entrar
           </button>
         </form>
         
-        <div id="auth-login-message" style="padding: 0.75rem; border-radius: 8px; text-align: center; font-size: 0.9rem; display: none;"></div>
+        <div id="auth-login-message" style="padding: 0.5rem; border-radius: 4px; text-align: center; font-size: 0.85rem; display: none;"></div>
         
-        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; font-size: 0.85rem; color: #64748b;">
-          <p style="margin: 0 0 0.5rem 0; font-weight: 500;">📋 Credenciais de Exemplo:</p>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; color: #6c757d; border: 1px solid #e9ecef;">
+          <p style="margin: 0 0 0.5rem 0; font-weight: 500;">Credenciais:</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem;">
             <div><strong>ADMIN</strong></div>
             <div>admin123</div>
             <div><strong>LUCAS</strong></div>
             <div>lucas123</div>
-            <div><strong>CARLOS</strong></div>
-            <div>carlos123</div>
-            <div><strong>RICARDO</strong></div>
-            <div>ricardo123</div>
           </div>
         </div>
       </div>
@@ -257,15 +253,15 @@ class SystemAuthIntegration {
       }
     });
     
-    // Adicionar efeito de foco nos inputs
+    // Remover efeitos de foco customizados para manter design simples
     const inputs = form.querySelectorAll('input');
     inputs.forEach(input => {
       input.addEventListener('focus', () => {
-        input.style.borderColor = '#4f46e5';
+        input.style.borderColor = '#80bdff';
       });
       
       input.addEventListener('blur', () => {
-        input.style.borderColor = '#e1e5e9';
+        input.style.borderColor = '#ced4da';
       });
     });
   }
@@ -288,28 +284,28 @@ class SystemAuthIntegration {
 
   // Adicionar informações do usuário
   addUserInfo(user) {
-    // Criar header de usuário
+    // Criar header de usuário discreto
     const userHeader = document.createElement('div');
     userHeader.id = 'auth-user-header';
     userHeader.style.cssText = `
-      background: #f8fafc;
-      padding: 1rem;
-      border-bottom: 1px solid #e2e8f0;
+      background: #f8f9fa;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #dee2e6;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     `;
     
     userHeader.innerHTML = `
       <div>
-        <span style="color: #64748b;">Bem-vindo,</span>
-        <span style="color: #1e293b; font-weight: 600; margin-left: 0.5rem;">${user.name}</span>
-        <span style="color: #64748b; margin-left: 0.5rem;">(${user.role})</span>
+        <span style="color: #6c757d;">Bem-vindo,</span>
+        <span style="color: #212529; font-weight: 500; margin-left: 0.5rem;">${user.name}</span>
+        <span style="color: #6c757d; margin-left: 0.5rem;">(${user.role})</span>
       </div>
-      <div id="auth-logout-btn" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+      <button id="auth-logout-btn" style="background: #dc3545; color: white; padding: 0.25rem 0.75rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
         Sair
-      </div>
+      </button>
     `;
     
     // Inserir no topo da página
@@ -330,23 +326,22 @@ class SystemAuthIntegration {
       return;
     }
     
-    // Criar botão flutuante
+    // Criar botão flutuante discreto
     const logoutBtn = document.createElement('button');
     logoutBtn.id = 'auth-logout-float';
-    logoutBtn.innerHTML = '🚪 Sair';
+    logoutBtn.innerHTML = 'Sair';
     logoutBtn.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
-      background: #ef4444;
+      background: #dc3545;
       color: white;
-      padding: 0.75rem 1rem;
+      padding: 0.5rem 1rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       z-index: 1000;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     `;
     
     document.body.appendChild(logoutBtn);
