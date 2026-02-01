@@ -206,27 +206,24 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (originalSuccess && targetSuccess) {
       console.log('✅ Ambas as escalas mensais atualizadas com sucesso!');
       
-      // Update local scheduleData if these are the active schedules
-      const activeOriginalSchedule = currentSchedules.find(s => s.month === originalMonth && s.year === originalYear && s.isActive !== false);
-      const activeTargetSchedule = currentSchedules.find(s => s.month === targetMonth && s.year === targetYear && s.isActive !== false);
+      // Forçar refresh dos schedules para pegar os dados atualizados
+      refreshSchedules();
       
-      if (activeOriginalSchedule) {
-        console.log('🔄 Atualizando scheduleData ativo (original):', originalMonth, originalYear);
-        setScheduleData(updatedOriginalSchedule);
-      }
-      
-      if (activeTargetSchedule && (originalMonth !== targetMonth || originalYear !== targetYear)) {
-        console.log('🔄 Atualizando scheduleData ativo (target):', targetMonth, targetYear);
-        setScheduleData(updatedTargetSchedule);
-      }
-      
-      // Forçar atualização do localStorage para todos os usuários
+      // Atualizar scheduleData após refresh para garantir dados atualizados
       setTimeout(() => {
+        // Buscar o schedule atualizado do mês correto
+        const updatedSchedule = getScheduleByMonth(originalMonth, originalYear);
+        if (updatedSchedule && updatedSchedule.entries) {
+          console.log('🔄 Atualizando scheduleData com dados mais recentes:', updatedSchedule.month, updatedSchedule.year);
+          setScheduleData(updatedSchedule.entries);
+        }
+        
+        // Forçar atualização do localStorage para todos os usuários
         window.dispatchEvent(new StorageEvent('storage', {
           key: 'escala_scheduleStorage',
           newValue: localStorage.getItem('escala_scheduleStorage')
         }));
-      }, 100);
+      }, 200);
       
     } else {
       console.error('❌ Falha ao atualizar escalas mensais');
@@ -391,13 +388,8 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const refreshSchedules = () => {
     setCurrentSchedules(getCurrentSchedules());
     setArchivedSchedules(getArchivedSchedules());
-    // Forçar Janeiro como escala ativa para garantir visibilidade
-    const januarySchedule = getScheduleByMonth(1, 2026);
-    if (januarySchedule) {
-      setScheduleData(januarySchedule.entries);
-    } else {
-      setScheduleData(getCurrentSchedule());
-    }
+    // Manter o scheduleData atual, não forçar Janeiro
+    // Isso permite que as trocas sejam mantidas
   };
 
   return (
