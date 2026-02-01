@@ -173,83 +173,83 @@ class SystemAuthIntegration {
     `;
     
     loginScreen.innerHTML = `
-      <div class="min-h-screen flex items-center justify-center p-4 bg-background">
-        <div class="glass-card-elevated w-full max-w-md p-8">
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div style="width: 100%; max-width: 400px; padding: 2rem; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
           <!-- Header -->
-          <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
-              🚁
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 4rem; height: 4rem; border-radius: 1rem; background: rgba(59, 130, 246, 0.1); margin-bottom: 1rem;">
+              <span style="font-size: 2.5rem;">🚁</span>
             </div>
-            <h1 class="text-2xl font-bold text-gradient mb-2">Operações Aéreas Offshore</h1>
-            <p class="text-muted-foreground text-sm">
+            <h1 style="margin: 0; color: #fff; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Operações Aéreas Offshore</h1>
+            <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 0.875rem;">
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
           </div>
 
           <!-- Login Form -->
-          <form id="auth-login-form" class="space-y-5">
-            <div class="space-y-2">
-              <label for="auth-username" class="text-sm text-muted-foreground">
+          <form id="auth-login-form" style="margin-bottom: 1rem;">
+            <div style="margin-bottom: 1.25rem;">
+              <label for="auth-username" style="display: block; margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8); font-size: 0.875rem;">
                 Nome do Operador
               </label>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground">👤</span>
+              <div style="position: relative;">
+                <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 1rem; height: 1rem; color: rgba(255, 255, 255, 0.6);">👤</span>
                 <input
                   id="auth-username"
                   type="text"
                   placeholder="Seu nome"
                   required
-                  class="w-full pl-10 bg-muted/50 border-border/50 focus:border-primary transition-colors p-3 border rounded-md"
+                  style="width: 100%; padding-left: 2.5rem; padding-right: 0.75rem; padding-top: 0.75rem; padding-bottom: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; color: #fff; font-size: 0.875rem; transition: all 0.3s ease;"
                 />
               </div>
             </div>
 
-            <div class="space-y-2">
-              <label for="auth-password" class="text-sm text-muted-foreground">
+            <div style="margin-bottom: 1.25rem;">
+              <label for="auth-password" style="display: block; margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.8); font-size: 0.875rem;">
                 Senha
               </label>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground">🔒</span>
+              <div style="position: relative;">
+                <span style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); width: 1rem; height: 1rem; color: rgba(255, 255, 255, 0.6);">🔒</span>
                 <input
                   id="auth-password"
                   type="password"
                   placeholder="••••"
                   required
-                  class="w-full pl-10 bg-muted/50 border-border/50 focus:border-primary transition-colors p-3 border rounded-md"
+                  style="width: 100%; padding-left: 2.5rem; padding-right: 0.75rem; padding-top: 0.75rem; padding-bottom: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; color: #fff; font-size: 0.875rem; transition: all 0.3s ease;"
                 />
               </div>
             </div>
 
-            <div id="auth-login-message" class="flex items-center gap-2 text-destructive text-sm bg-destructive/10 p-3 rounded-lg" style="display: none;">
-              <span class="w-4 h-4">⚠️</span>
+            <div id="auth-login-message" style="display: none; align-items: center; gap: 0.5rem; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.875rem; margin-bottom: 1.25rem;">
+              <span style="width: 1rem; height: 1rem;">⚠️</span>
               <span id="auth-login-message-text"></span>
             </div>
 
             <button 
               type="submit" 
-              class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-5 glow-primary transition-all p-3 border rounded-md"
+              style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; border: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.25);"
             >
               Acessar Sistema
             </button>
           </form>
 
           <!-- User hints -->
-          <div class="mt-6 pt-6 border-t border-border/50">
-            <p class="text-xs text-muted-foreground text-center">
-              Credenciais: <span class="font-mono text-primary">ADMIN/admin123</span>
+          <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+            <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.75rem; text-align: center;">
+              Credenciais: <span style="font-family: monospace; color: #3b82f6;">ADMIN/admin123</span>
             </p>
           </div>
 
           <!-- Footer info -->
-          <div class="mt-4 space-y-2">
-            <div class="text-center">
-              <p class="text-xs text-muted-foreground">
-                Criado por: <span class="text-primary font-medium">Lucas Pott</span>
+          <div style="margin-top: 1rem; space-y: 0.5rem;">
+            <div style="text-align: center;">
+              <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.75rem;">
+                Criado por: <span style="color: #3b82f6; font-weight: 500;">Lucas Pott</span>
               </p>
             </div>
-            <div class="text-center">
-              <p class="text-xs text-muted-foreground">
-                Versão: <span class="text-primary font-mono">1.3.100433</span> <span class="text-muted-foreground">(27f2ff7)</span>
+            <div style="text-align: center;">
+              <p style="margin: 0; color: rgba(255, 255, 255, 0.6); font-size: 0.75rem;">
+                Versão: <span style="color: #3b82f6; font-family: monospace;">1.3.100433</span> <span style="color: rgba(255, 255, 255, 0.4);">(e0de1d3)</span>
               </p>
             </div>
           </div>
@@ -278,27 +278,62 @@ class SystemAuthIntegration {
       if (!username || !password) {
         messageText.textContent = 'Preencha todos os campos';
         messageDiv.style.display = 'flex';
+        messageDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+        messageDiv.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+        messageDiv.style.color = '#ef4444';
         return;
       }
       
       // Mostrar loading
       messageText.textContent = 'Autenticando...';
-      messageDiv.className = 'flex items-center gap-2 text-primary text-sm bg-primary/10 p-3 rounded-lg';
       messageDiv.style.display = 'flex';
+      messageDiv.style.background = 'rgba(59, 130, 246, 0.1)';
+      messageDiv.style.border = '1px solid rgba(59, 130, 246, 0.2)';
+      messageDiv.style.color = '#3b82f6';
       
       const result = await this.authManager.login(username, password);
       
       if (result.success) {
         messageText.textContent = 'Login realizado! Redirecionando...';
-        messageDiv.className = 'flex items-center gap-2 text-primary text-sm bg-primary/10 p-3 rounded-lg';
+        messageDiv.style.background = 'rgba(34, 197, 94, 0.1)';
+        messageDiv.style.border = '1px solid rgba(34, 197, 94, 0.2)';
+        messageDiv.style.color = '#22c55e';
         
         setTimeout(() => {
           this.showSystemInterface(result.user);
         }, 1000);
       } else {
         messageText.textContent = result.error;
-        messageDiv.className = 'flex items-center gap-2 text-destructive text-sm bg-destructive/10 p-3 rounded-lg';
+        messageDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+        messageDiv.style.border = '1px solid rgba(239, 68, 68, 0.2)';
+        messageDiv.style.color = '#ef4444';
       }
+    });
+    
+    // Adicionar efeitos de hover e focus nos inputs
+    const inputs = form.querySelectorAll('input');
+    inputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        input.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+        input.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+      });
+      
+      input.addEventListener('blur', () => {
+        input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+        input.style.boxShadow = 'none';
+      });
+    });
+    
+    // Adicionar efeito no botão
+    const button = form.querySelector('button');
+    button.addEventListener('mouseenter', () => {
+      button.style.transform = 'translateY(-2px)';
+      button.style.boxShadow = '0 8px 12px rgba(59, 130, 246, 0.3)';
+    });
+    
+    button.addEventListener('mouseleave', () => {
+      button.style.transform = 'translateY(0)';
+      button.style.boxShadow = '0 4px 6px rgba(59, 130, 246, 0.25)';
     });
   }
 
