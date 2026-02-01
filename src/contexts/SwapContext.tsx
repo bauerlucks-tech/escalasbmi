@@ -203,9 +203,26 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const applySwapToSchedule = (request: SwapRequest) => {
-    // Find the entries for both dates
-    const originalEntry = scheduleData.find(e => e.date === request.originalDate);
-    const targetEntry = scheduleData.find(e => e.date === request.targetDate);
+    // Get the month and year for both dates
+    const originalDate = new Date(request.originalDate);
+    const targetDate = new Date(request.targetDate);
+    const originalMonth = originalDate.getMonth() + 1;
+    const originalYear = originalDate.getFullYear();
+    const targetMonth = targetDate.getMonth() + 1;
+    const targetYear = targetDate.getFullYear();
+    
+    // Find the correct month schedules
+    const originalMonthSchedule = currentSchedules.find(s => s.month === originalMonth && s.year === originalYear);
+    const targetMonthSchedule = currentSchedules.find(s => s.month === targetMonth && s.year === targetYear);
+    
+    if (!originalMonthSchedule || !targetMonthSchedule) {
+      console.warn('❌ Escalas mensais não encontradas para:', request.originalDate, request.targetDate);
+      return;
+    }
+
+    // Find the entries for both dates in their respective month schedules
+    const originalEntry = originalMonthSchedule.entries.find(e => e.date === request.originalDate);
+    const targetEntry = targetMonthSchedule.entries.find(e => e.date === request.targetDate);
     
     if (!originalEntry || !targetEntry) {
       console.warn('❌ Entradas não encontradas para as datas:', request.originalDate, request.targetDate);
@@ -230,17 +247,33 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return;
     }
 
-    // Update the schedule - swap the agents
-    const updatedSchedule = scheduleData.map(entry => {
+    console.log('🔄 Aplicando troca:', {
+      originalDate: request.originalDate,
+      targetDate: request.targetDate,
+      requesterName: request.requesterName,
+      targetName: request.targetName,
+      requesterShift,
+      targetShift
+    });
+
+    // Update both month schedules
+    let updatedOriginalSchedule = [...originalMonthSchedule.entries];
+    let updatedTargetSchedule = [...targetMonthSchedule.entries];
+    
+    // Update original date - replace requester with target
+    updatedOriginalSchedule = updatedOriginalSchedule.map(entry => {
       if (entry.date === request.originalDate) {
-        // On the original date, replace requester with target
         return {
           ...entry,
           [requesterShift]: request.targetName
         };
       }
+      return entry;
+    });
+    
+    // Update target date - replace target with requester
+    updatedTargetSchedule = updatedTargetSchedule.map(entry => {
       if (entry.date === request.targetDate) {
-        // On the target date, replace target with requester
         return {
           ...entry,
           [targetShift]: request.requesterName
@@ -249,30 +282,25 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return entry;
     });
 
-    // Update local state
-    setScheduleData(updatedSchedule);
+    // Update both months in storage
+    const originalSuccess = updateMonthScheduleFunc(originalMonth, originalYear, updatedOriginalSchedule);
+    const targetSuccess = updateMonthScheduleFunc(targetMonth, targetYear, updatedTargetSchedule);
     
-    // CRITICAL: Also update the month schedule in storage
-    const originalDate = new Date(request.originalDate);
-    const month = originalDate.getMonth() + 1; // JavaScript months are 0-based
-    const year = originalDate.getFullYear();
-    
-    console.log('🔄 Atualizando escala mensal:', month, year);
-    console.log('📅 Troca:', request.requesterName, '⇄', request.targetName);
-    console.log('🔄 Datas:', request.originalDate, '⇄', request.targetDate);
-    
-    const success = updateMonthScheduleFunc(month, year, updatedSchedule);
-    
-    if (success) {
-      console.log('✅ Escala mensal atualizada com sucesso!');
-      // Forçar refresh para garantir que todos os usuários vejam a troca
-      refreshSchedules();
+    if (originalSuccess && targetSuccess) {
+      console.log('✅ Ambas as escalas mensais atualizadas com sucesso!');
       
-      // Verificar se este é o schedule ativo e atualizar scheduleData
-      const activeSchedule = currentSchedules.find(s => s.month === month && s.year === year && s.isActive !== false);
-      if (activeSchedule) {
-        console.log('🔄 Atualizando scheduleData ativo com as trocas');
-        setScheduleData(updatedSchedule);
+      // Update local scheduleData if these are the active schedules
+      const activeOriginalSchedule = currentSchedules.find(s => s.month === originalMonth && s.year === originalYear && s.isActive !== false);
+      const activeTargetSchedule = currentSchedules.find(s => s.month === targetMonth && s.year === targetYear && s.isActive !== false);
+      
+      if (activeOriginalSchedule) {
+        console.log('🔄 Atualizando scheduleData ativo (original):', originalMonth, originalYear);
+        setScheduleData(updatedOriginalSchedule);
+      }
+      
+      if (activeTargetSchedule && (originalMonth !== targetMonth || originalYear !== targetYear)) {
+        console.log('🔄 Atualizando scheduleData ativo (target):', targetMonth, targetYear);
+        setScheduleData(updatedTargetSchedule);
       }
       
       // Forçar atualização do localStorage para todos os usuários
@@ -284,7 +312,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }, 100);
       
     } else {
-      console.error('❌ Falha ao atualizar escala mensal');
+      console.error('❌ Falha ao atualizar escalas mensais');
     }
   };
 
