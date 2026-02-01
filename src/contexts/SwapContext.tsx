@@ -330,14 +330,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return swapRequests.filter(req => req.status === 'approved');
   };
 
-  const importNewSchedule = (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate = true) => {
-    const result = addNewMonthSchedule(month, year, entries, importedBy, activate);
+  const importNewSchedule = (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate = true, replace = false) => {
+    const result = addNewMonthSchedule(month, year, entries, importedBy, activate, replace);
     
     // Log de auditoria - Importação de escala
+    const action = replace ? 'Substituição' : 'Importação';
     logScheduleImport(
       'admin', // ID do admin (genérico)
       importedBy, 
-      `Importação de escala: ${month}/${year} com ${entries.length} dias`
+      `${action} de escala: ${month}/${year} com ${entries.length} dias`
     );
     
     if (result.success) {

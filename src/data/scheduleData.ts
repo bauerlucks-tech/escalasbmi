@@ -222,14 +222,15 @@ export const addNewMonthSchedule = (
   year: number, 
   entries: ScheduleEntry[], 
   importedBy: string,
-  activate: boolean = true
+  activate: boolean = true,
+  replace: boolean = false
 ): { success: boolean; message: string; archived?: ArchivedSchedule[] } => {
   const storage = createScheduleStorage();
   
   // Check if month already exists
   const existingIndex = storage.current.findIndex(s => s.month === month && s.year === year);
   
-  if (existingIndex !== -1) {
+  if (existingIndex !== -1 && !replace) {
     return { 
       success: false, 
       message: `Já existe uma escala para ${getMonthName(month)}/${year}` 
@@ -263,7 +264,7 @@ export const addNewMonthSchedule = (
   });
   storage.archived.push(...archived);
   
-  // Add new schedule
+  // Add new schedule or replace existing
   const newSchedule: MonthSchedule = {
     month,
     year,
@@ -273,7 +274,14 @@ export const addNewMonthSchedule = (
     isActive: activate // Use the activation parameter
   };
   
-  storage.current.push(newSchedule);
+  if (existingIndex !== -1 && replace) {
+    // Replace existing schedule
+    storage.current[existingIndex] = newSchedule;
+  } else {
+    // Add new schedule
+    storage.current.push(newSchedule);
+  }
+  
   saveScheduleStorage(storage);
   
   return { 
