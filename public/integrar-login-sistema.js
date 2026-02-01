@@ -173,37 +173,85 @@ class SystemAuthIntegration {
     `;
     
     loginScreen.innerHTML = `
-      <div style="background: white; padding: 2rem; border: 1px solid #dee2e6; border-radius: 8px; max-width: 400px; width: 90%;">
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-          <h1 style="margin: 0; color: #212529; font-size: 1.5rem; font-weight: 500;">Sistema de Escalas</h1>
-          <p style="margin: 0.5rem 0 0 0; color: #6c757d; font-size: 0.9rem;">Acesso ao Sistema</p>
-        </div>
-        
-        <form id="auth-login-form" style="margin-bottom: 1rem;">
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; margin-bottom: 0.5rem; color: #495057; font-weight: 400;">Nome de Usuário</label>
-            <input type="text" id="auth-username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9rem;">
+      <div class="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div class="glass-card-elevated w-full max-w-md p-8">
+          <!-- Header -->
+          <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
+              🚁
+            </div>
+            <h1 class="text-2xl font-bold text-gradient mb-2">Operações Aéreas Offshore</h1>
+            <p class="text-muted-foreground text-sm">
+              Sistema de Gestão de Escalas - Área Branca SBMI
+            </p>
           </div>
-          
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; margin-bottom: 0.5rem; color: #495057; font-weight: 400;">Senha</label>
-            <input type="password" id="auth-password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9rem;">
+
+          <!-- Login Form -->
+          <form id="auth-login-form" class="space-y-5">
+            <div class="space-y-2">
+              <label for="auth-username" class="text-sm text-muted-foreground">
+                Nome do Operador
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground">👤</span>
+                <input
+                  id="auth-username"
+                  type="text"
+                  placeholder="Seu nome"
+                  required
+                  class="w-full pl-10 bg-muted/50 border-border/50 focus:border-primary transition-colors p-3 border rounded-md"
+                />
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label for="auth-password" class="text-sm text-muted-foreground">
+                Senha
+              </label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground">🔒</span>
+                <input
+                  id="auth-password"
+                  type="password"
+                  placeholder="••••"
+                  required
+                  class="w-full pl-10 bg-muted/50 border-border/50 focus:border-primary transition-colors p-3 border rounded-md"
+                />
+              </div>
+            </div>
+
+            <div id="auth-login-message" class="flex items-center gap-2 text-destructive text-sm bg-destructive/10 p-3 rounded-lg" style="display: none;">
+              <span class="w-4 h-4">⚠️</span>
+              <span id="auth-login-message-text"></span>
+            </div>
+
+            <button 
+              type="submit" 
+              class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-5 glow-primary transition-all p-3 border rounded-md"
+            >
+              Acessar Sistema
+            </button>
+          </form>
+
+          <!-- User hints -->
+          <div class="mt-6 pt-6 border-t border-border/50">
+            <p class="text-xs text-muted-foreground text-center">
+              Credenciais: <span class="font-mono text-primary">ADMIN/admin123</span>
+            </p>
           </div>
-          
-          <button type="submit" style="width: 100%; padding: 0.5rem; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 0.9rem; cursor: pointer;">
-            Entrar
-          </button>
-        </form>
-        
-        <div id="auth-login-message" style="padding: 0.5rem; border-radius: 4px; text-align: center; font-size: 0.85rem; display: none;"></div>
-        
-        <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; color: #6c757d; border: 1px solid #e9ecef;">
-          <p style="margin: 0 0 0.5rem 0; font-weight: 500;">Credenciais:</p>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem;">
-            <div><strong>ADMIN</strong></div>
-            <div>admin123</div>
-            <div><strong>LUCAS</strong></div>
-            <div>lucas123</div>
+
+          <!-- Footer info -->
+          <div class="mt-4 space-y-2">
+            <div class="text-center">
+              <p class="text-xs text-muted-foreground">
+                Criado por: <span class="text-primary font-medium">Lucas Pott</span>
+              </p>
+            </div>
+            <div class="text-center">
+              <p class="text-xs text-muted-foreground">
+                Versão: <span class="text-primary font-mono">1.3.100433</span> <span class="text-muted-foreground">(27f2ff7)</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -219,6 +267,7 @@ class SystemAuthIntegration {
   setupLoginEventListeners() {
     const form = document.getElementById('auth-login-form');
     const messageDiv = document.getElementById('auth-login-message');
+    const messageText = document.getElementById('auth-login-message-text');
     
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -227,42 +276,29 @@ class SystemAuthIntegration {
       const password = document.getElementById('auth-password').value;
       
       if (!username || !password) {
-        messageDiv.style.cssText = 'background: #fee2e2; color: #dc2626; padding: 0.75rem; border-radius: 8px; text-align: center; font-size: 0.9rem;';
-        messageDiv.textContent = '❌ Preencha todos os campos';
-        messageDiv.style.display = 'block';
+        messageText.textContent = 'Preencha todos os campos';
+        messageDiv.style.display = 'flex';
         return;
       }
       
       // Mostrar loading
-      messageDiv.style.cssText = 'background: #dbeafe; color: #1e40af; padding: 0.75rem; border-radius: 8px; text-align: center; font-size: 0.9rem;';
-      messageDiv.textContent = '🔄 Autenticando...';
-      messageDiv.style.display = 'block';
+      messageText.textContent = 'Autenticando...';
+      messageDiv.className = 'flex items-center gap-2 text-primary text-sm bg-primary/10 p-3 rounded-lg';
+      messageDiv.style.display = 'flex';
       
       const result = await this.authManager.login(username, password);
       
       if (result.success) {
-        messageDiv.style.cssText = 'background: #dcfce7; color: #166534; padding: 0.75rem; border-radius: 8px; text-align: center; font-size: 0.9rem;';
-        messageDiv.textContent = '✅ Login realizado! Redirecionando...';
+        messageText.textContent = 'Login realizado! Redirecionando...';
+        messageDiv.className = 'flex items-center gap-2 text-primary text-sm bg-primary/10 p-3 rounded-lg';
         
         setTimeout(() => {
           this.showSystemInterface(result.user);
         }, 1000);
       } else {
-        messageDiv.style.cssText = 'background: #fee2e2; color: #dc2626; padding: 0.75rem; border-radius: 8px; text-align: center; font-size: 0.9rem;';
-        messageDiv.textContent = '❌ ' + result.error;
+        messageText.textContent = result.error;
+        messageDiv.className = 'flex items-center gap-2 text-destructive text-sm bg-destructive/10 p-3 rounded-lg';
       }
-    });
-    
-    // Remover efeitos de foco customizados para manter design simples
-    const inputs = form.querySelectorAll('input');
-    inputs.forEach(input => {
-      input.addEventListener('focus', () => {
-        input.style.borderColor = '#80bdff';
-      });
-      
-      input.addEventListener('blur', () => {
-        input.style.borderColor = '#ced4da';
-      });
     });
   }
 
