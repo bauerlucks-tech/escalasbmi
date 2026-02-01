@@ -352,17 +352,56 @@ class SystemAuthIntegration {
 
   // Esconder conteúdo principal
   hideMainContent() {
-    const mainContent = document.querySelector('main') || document.body.querySelector('#root') || document.body;
-    if (mainContent) {
-      mainContent.style.display = 'none';
+    console.log('🔄 Escondendo conteúdo principal...');
+    
+    // Tentar múltiplos seletores para encontrar o conteúdo
+    const selectors = [
+      '#root',
+      'main',
+      '[id*="root"]',
+      '[class*="app"]',
+      'body > div:first-child',
+      'body > *:not(script):not(style):not(link):not(meta)'
+    ];
+    
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element && element.id !== 'auth-login-screen') {
+        console.log('📦 Escondendo elemento:', selector, element.tagName);
+        element.style.display = 'none';
+        break;
+      }
     }
   }
 
   // Mostrar conteúdo principal
   showMainContent() {
-    const mainContent = document.querySelector('main') || document.body.querySelector('#root') || document.body;
-    if (mainContent) {
-      mainContent.style.display = '';
+    console.log('📱 Mostrando conteúdo principal...');
+    
+    // Tentar múltiplos seletores para encontrar o conteúdo
+    const selectors = [
+      '#root',
+      'main',
+      '[id*="root"]',
+      '[class*="app"]',
+      'body > div:first-child',
+      'body > *:not(script):not(style):not(link):not(meta)'
+    ];
+    
+    let found = false;
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element && element.id !== 'auth-login-screen') {
+        console.log('📦 Mostrando elemento:', selector, element.tagName);
+        element.style.display = '';
+        found = true;
+        break;
+      }
+    }
+    
+    if (!found) {
+      console.log('⚠️ Nenhum conteúdo principal encontrado, tentando mostrar body');
+      document.body.style.display = '';
     }
   }
 
