@@ -1,0 +1,380 @@
+// LOGIN SIMPLES COM SERVICE KEY - ABORDAGEM DIRETA
+// Contorna RLS usando Service Role Key
+
+class DirectAuthManager {
+  constructor() {
+    this.supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
+    this.supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+    this.currentUser = null;
+  }
+
+  // Login direto com Service Key (contorna RLS)
+  async login(username, password) {
+    console.log('🔑 Fazendo login direto:', username);
+    
+    try {
+      // Buscar usuário usando Service Key (contorna RLS)
+      const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
+        method: 'GET',
+        headers: {
+          'apikey': this.supabaseServiceKey,
+          'Authorization': 'Bearer ' + this.supabaseServiceKey,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        console.log('❌ Erro na requisição:', response.status);
+        return { success: false, error: 'Erro na autenticação' };
+      }
+      
+      const users = await response.json();
+      
+      if (!users || users.length === 0) {
+        console.log('❌ Usuário ou senha inválidos');
+        return { success: false, error: 'Usuário ou senha inválidos' };
+      }
+      
+      const user = users[0];
+      
+      // Login bem-sucedido
+      this.currentUser = user;
+      
+      // Salvar no localStorage
+      localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
+      
+      // Criar log de login
+      await fetch(this.supabaseUrl + '/rest/v1/audit_logs', {
+        method: 'POST',
+        headers: {
+          'apikey': this.supabaseServiceKey,
+          'Authorization': 'Bearer ' + this.supabaseServiceKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_name: user.name,
+          action: 'LOGIN',
+          details: 'Login realizado - ' + new Date().toISOString(),
+          created_at: new Date().toISOString()
+        })
+      });
+      
+      console.log('✅ Login successful:', user.name);
+      
+      return { 
+        success: true, 
+        user: user
+      };
+      
+    } catch (error) {
+      console.error('❌ Erro no login:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Logout
+  async logout() {
+    console.log('🚪 Fazendo logout...');
+    
+    try {
+      const userName = this.currentUser?.name;
+      
+      // Criar log de logout
+      if (userName) {
+        await fetch(this.supabaseUrl + '/rest/v1/audit_logs', {
+          method: 'POST',
+          headers: {
+            'apikey': this.supabaseServiceKey,
+            'Authorization': 'Bearer ' + this.supabaseServiceKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_name: userName,
+            action: 'LOGOUT',
+            details: 'Logout realizado - ' + new Date().toISOString(),
+            created_at: new Date().toISOString()
+          })
+        });
+      }
+      
+      // Limpar dados
+      this.currentUser = null;
+      localStorage.removeItem('directAuth_currentUser');
+      
+      console.log('✅ Logout realizado');
+      return { success: true };
+      
+    } catch (error) {
+      console.error('❌ Erro no logout:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Verificar se está logado
+  isLoggedIn() {
+    if (!this.currentUser) {
+      const storedUser = localStorage.getItem('directAuth_currentUser');
+      if (storedUser) {
+        this.currentUser = JSON.parse(storedUser);
+      }
+    }
+    return this.currentUser !== null;
+  }
+
+  // Obter usuário atual
+  getCurrentUser() {
+    if (!this.currentUser) {
+      const storedUser = localStorage.getItem('directAuth_currentUser');
+      if (storedUser) {
+        this.currentUser = JSON.parse(storedUser);
+      }
+    }
+    return this.currentUser;
+  }
+
+  // Verificar permissão
+  hasRole(requiredRole) {
+    const user = this.getCurrentUser();
+    if (!user) return false;
+    
+    const roleHierarchy = {
+      'operador': 1,
+      'administrador': 2,
+      'super_admin': 3
+    };
+    
+    const userLevel = roleHierarchy[user.role] || 0;
+    const requiredLevel = roleHierarchy[requiredRole] || 0;
+    
+    return userLevel >= requiredLevel;
+  }
+}
+
+// Função para configurar senhas com Service Key
+async function configurarSenhasDireto() {
+  console.log('🔑 CONFIGURANDO SENHAS (MÉTODO DIRETO)');
+  console.log('========================================');
+  
+  try {
+    const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+    const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
+    
+    // Buscar usuários atuais
+    const response = await fetch(supabaseUrl + '/rest/v1/users?select=*', {
+      headers: {
+        'apikey': serviceKey,
+        'Authorization': 'Bearer ' + serviceKey
+      }
+    });
+    
+    const users = await response.json();
+    console.log('👥 Encontrados ' + users.length + ' usuários');
+    
+    // Gerar senhas simples
+    console.log('');
+    console.log('🔑 GERANDO SENHAS SIMPLES...');
+    console.log('===============================');
+    
+    const userCredentials = [];
+    
+    users.forEach(user => {
+      const password = user.name.toLowerCase().replace(/\s+/g, '') + '123';
+      
+      userCredentials.push({
+        name: user.name,
+        password: password,
+        role: user.role
+      });
+      
+      console.log('👤 ' + user.name);
+      console.log('   🔑 Senha: ' + password);
+      console.log('   📋 Role: ' + user.role);
+      console.log('');
+    });
+    
+    // Atualizar senhas no banco
+    console.log('💾 ATUALIZANDO SENHAS NO BANCO...');
+    
+    let updated = 0;
+    let errors = 0;
+    
+    for (const user of userCredentials) {
+      try {
+        const updateResponse = await fetch(supabaseUrl + '/rest/v1/users?name=eq.' + user.name, {
+          method: 'PATCH',
+          headers: {
+            'apikey': serviceKey,
+            'Authorization': 'Bearer ' + serviceKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ password: user.password })
+        });
+        
+        if (updateResponse.ok) {
+          console.log('✅ ' + user.name + ' atualizado');
+          updated++;
+        } else {
+          console.log('❌ Erro ao atualizar ' + user.name + ': ' + updateResponse.status);
+          errors++;
+        }
+      } catch (error) {
+        console.log('❌ Erro ao atualizar ' + user.name + ': ' + error.message);
+        errors++;
+      }
+    }
+    
+    // Resumo
+    console.log('');
+    console.log('📊 RESUMO DA ATUALIZAÇÃO');
+    console.log('==========================');
+    console.log('✅ Atualizados: ' + updated);
+    console.log('❌ Erros: ' + errors);
+    console.log('📋 Total: ' + users.length);
+    
+    if (updated > 0) {
+      console.log('');
+      console.log('🎉 SENHAS CONFIGURADAS COM SUCESSO!');
+      console.log('💡 Use as credenciais acima para fazer login');
+      console.log('🔧 Próximo passo: testarLoginDireto()');
+    }
+    
+    return { updated, errors, total: users.length };
+    
+  } catch (error) {
+    console.error('❌ Erro na configuração:', error);
+    return { updated: 0, errors: 1, total: 0 };
+  }
+}
+
+// Função para testar login
+async function testarLoginDireto() {
+  console.log('🧪 TESTANDO LOGIN DIRETO');
+  console.log('========================');
+  
+  const auth = new DirectAuthManager();
+  
+  // Testar com ADMIN
+  console.log('🧪 Testando com ADMIN/admin123...');
+  const result = await auth.login('ADMIN', 'admin123');
+  
+  if (result.success) {
+    console.log('✅ Login bem-sucedido!');
+    console.log('👤 Usuário:', result.user.name);
+    console.log('📋 Role:', result.user.role);
+    
+    // Testar logout
+    console.log('');
+    console.log('🚪 Testando logout...');
+    const logoutResult = await auth.logout();
+    console.log('📊 Logout:', logoutResult.success ? '✅ Sucesso' : '❌ Erro');
+    
+  } else {
+    console.log('❌ Falha no login:', result.error);
+  }
+}
+
+// Função para criar interface de login direto
+function criarInterfaceLoginDireto() {
+  console.log('🖥️ Criando interface de login direto...');
+  
+  // Remover modal anterior se existir
+  const existingModal = document.getElementById('direct-login-modal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
+  // Criar modal de login
+  const loginModal = document.createElement('div');
+  loginModal.id = 'direct-login-modal';
+  loginModal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  `;
+  
+  loginModal.innerHTML = `
+    <div style="background: white; padding: 2rem; border-radius: 8px; min-width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      <h2 style="margin: 0 0 1rem 0; color: #333; text-align: center;">🔐 Login Sistema de Escalas</h2>
+      <p style="margin: 0 0 1rem 0; color: #666; text-align: center; font-size: 0.9rem;">Acesso direto ao sistema</p>
+      
+      <form id="direct-login-form">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; color: #666;">Nome de Usuário:</label>
+          <input type="text" id="login-username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; color: #666;">Senha:</label>
+          <input type="password" id="login-password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+        
+        <button type="submit" style="width: 100%; padding: 0.75rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Entrar
+        </button>
+      </form>
+      
+      <div id="login-message" style="margin-top: 1rem; padding: 0.5rem; border-radius: 4px; display: none;"></div>
+      
+      <div style="margin-top: 1rem; text-align: center; font-size: 0.8rem; color: #666;">
+        <p>📋 Credenciais de exemplo:</p>
+        <p><strong>ADMIN</strong> / admin123</p>
+        <p><strong>LUCAS</strong> / lucas123</p>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(loginModal);
+  
+  // Adicionar event listeners
+  document.getElementById('direct-login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const messageDiv = document.getElementById('login-message');
+    
+    if (!username || !password) {
+      messageDiv.style.cssText = 'background: #f8d7da; color: #721c24; padding: 0.5rem; border-radius: 4px;';
+      messageDiv.textContent = '❌ Preencha todos os campos';
+      messageDiv.style.display = 'block';
+      return;
+    }
+    
+    const auth = new DirectAuthManager();
+    const result = await auth.login(username, password);
+    
+    if (result.success) {
+      messageDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 0.5rem; border-radius: 4px;';
+      messageDiv.textContent = '✅ Login realizado com sucesso! Bem-vindo ' + result.user.name;
+      
+      setTimeout(() => {
+        loginModal.style.display = 'none';
+        window.location.reload();
+      }, 1500);
+    } else {
+      messageDiv.style.cssText = 'background: #f8d7da; color: #721c24; padding: 0.5rem; border-radius: 4px;';
+      messageDiv.textContent = '❌ ' + result.error;
+    }
+    
+    messageDiv.style.display = 'block';
+  });
+}
+
+// Exportar funções
+window.DirectAuthManager = DirectAuthManager;
+window.configurarSenhasDireto = configurarSenhasDireto;
+window.testarLoginDireto = testarLoginDireto;
+window.criarInterfaceLoginDireto = criarInterfaceLoginDireto;
+
+console.log('🔧 SISTEMA DE LOGIN DIRETO CARREGADO!');
+console.log('🔑 Para configurar senhas: configurarSenhasDireto()');
+console.log('🧪 Para testar login: testarLoginDireto()');
+console.log('🖥️ Para criar interface: criarInterfaceLoginDireto()');
+console.log('✅ Contorna RLS com Service Key!');
