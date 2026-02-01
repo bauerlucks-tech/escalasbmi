@@ -137,10 +137,50 @@ class SystemAuthIntegration {
       loginScreen.remove();
     }
     
+    // Sincronizar com AuthContext do React
+    this.syncWithReactUser(user);
+    
     // Mostrar conteúdo principal
     this.showMainContent();
     
     // NÃO adicionar header ou barra - apenas mostrar sistema
+  }
+
+  // Sincronizar usuário com AuthContext do React
+  syncWithReactUser(user) {
+    try {
+      // Disparar evento customizado para React ouvir
+      const event = new CustomEvent('externalLogin', {
+        detail: {
+          user: {
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            status: user.status,
+            email: user.email || `${user.name.toLowerCase()}@escalasbmi.com`
+          }
+        }
+      });
+      
+      window.dispatchEvent(event);
+      console.log('🔄 Evento externalLogin disparado para React');
+      
+      // Também salvar no localStorage que React possa ler
+      const reactUser = {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        status: user.status,
+        email: user.email || `${user.name.toLowerCase()}@escalasbmi.com`,
+        password: user.password // Para compatibilidade
+      };
+      
+      localStorage.setItem('reactCurrentUser', JSON.stringify(reactUser));
+      console.log('💾 Usuário salvo no localStorage para React');
+      
+    } catch (error) {
+      console.error('❌ Erro ao sincronizar com React:', error);
+    }
   }
 
   // Criar tela de login
