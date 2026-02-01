@@ -73,7 +73,12 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
 
   const [currentSchedules, setCurrentSchedules] = useState<MonthSchedule[]>(() => {
-    return getCurrentSchedules();
+    const schedules = getCurrentSchedules();
+    console.log('📅 Schedules carregados:', schedules.length, 'meses');
+    schedules.forEach(s => {
+      console.log(`  - ${s.month}/${s.year}: ${s.entries.length} dias (ativo: ${s.isActive})`);
+    });
+    return schedules;
   });
 
   const [archivedSchedules, setArchivedSchedules] = useState<ArchivedSchedule[]>(() => {
@@ -87,6 +92,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
   }, [scheduleData]);
+
+  // Sincronizar scheduleData com o schedule ativo atual
+  useEffect(() => {
+    const activeSchedule = currentSchedules.find(s => s.isActive !== false);
+    if (activeSchedule && activeSchedule.entries.length > 0) {
+      console.log('🔄 Sincronizando scheduleData com schedule ativo:', activeSchedule.month, activeSchedule.year);
+      setScheduleData(activeSchedule.entries);
+    }
+  }, [currentSchedules]);
 
   const updateSchedule = (newSchedule: ScheduleEntry[]) => {
     setScheduleData(newSchedule);
