@@ -336,7 +336,9 @@ class SystemAuthIntegration {
         messageDiv.style.color = '#22c55e';
         
         setTimeout(() => {
-          this.showSystemInterface(result.user);
+          // Forçar reload completo para garantir que React recarregue com usuário correto
+          console.log('🔄 Forçando reload completo...');
+          window.location.reload();
         }, 1000);
       } else {
         messageText.textContent = result.error;
