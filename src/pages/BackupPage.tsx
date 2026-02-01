@@ -87,29 +87,30 @@ const BackupPage: React.FC = () => {
   }, []);
 
   // Auto backup at 01:00 with improved reliability
-  useEffect(() => {
-    const checkAndRunAutoBackup = () => {
-      const now = new Date();
-      const lastBackup = localStorage.getItem('last_auto_backup');
-      
-      // Check if it's between 01:00 and 01:05 and backup hasn't run today
-      const hour = now.getHours();
-      const minute = now.getMinutes();
-      const today = now.toDateString();
-      
-      if (hour === 1 && minute >= 0 && minute <= 5) {
-        if (!lastBackup || lastBackup !== today) {
-          console.log('🤖 Iniciando backup automático programado...');
-          runAutoBackup();
-          localStorage.setItem('last_auto_backup', today);
-        }
-      }
-    };
+  // SISTEMA DE BACKUP AUTOMÁTICO DESATIVADO
+// useEffect(() => {
+//   const checkAndRunAutoBackup = () => {
+//     const now = new Date();
+//     const lastBackup = localStorage.getItem('last_auto_backup');
+//     
+//     // Check if it's between 01:00 and 01:05 and backup hasn't run today
+//     const hour = now.getHours();
+//     const minute = now.getMinutes();
+//     const today = now.toDateString();
+//     
+//     if (hour === 1 && minute >= 0 && minute <= 5) {
+//       if (!lastBackup || lastBackup !== today) {
+//         console.log('🤖 Iniciando backup automático programado...');
+//         runAutoBackup();
+//         localStorage.setItem('last_auto_backup', today);
+//       }
+//     }
+//   };
 
-    const interval = setInterval(checkAndRunAutoBackup, 60000); // Check every minute
+//   const interval = setInterval(checkAndRunAutoBackup, 60000); // Check every minute
 
-    return () => clearInterval(interval);
-  }, []);
+//   return () => clearInterval(interval);
+// }, []);
 
   const runAutoBackup = async () => {
     try {
@@ -718,21 +719,24 @@ const BackupPage: React.FC = () => {
         </div>
 
         
-        {/* Auto Backup Info */}
+        {/* Auto Backup Info - DESATIVADO */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
+              <Clock className="w-5 h-5 text-muted-foreground" />
               Backup Automático
             </CardTitle>
             <CardDescription>
-              O sistema realiza backup automaticamente todos os dias às 01:00
+              Sistema de backup automático está desativado
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="w-4 h-4" />
-              <span>Próximo backup: Hoje às 01:00</span>
+              <XCircle className="w-4 h-4 text-warning" />
+              <span>Backup automático: DESATIVADO</span>
+            </div>
+            <div className="text-xs text-muted-foreground mt-2">
+              Use "Criar Backup Agora" para backups manuais
             </div>
           </CardContent>
         </Card>
@@ -753,7 +757,7 @@ const BackupPage: React.FC = () => {
               <div className="text-center py-8 text-muted-foreground">
                 <Database className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Nenhum backup armazenado ainda</p>
-                <p className="text-sm">O primeiro backup automático será criado às 01:00</p>
+                <p className="text-sm">Use "Criar Backup Agora" para criar backups manuais</p>
               </div>
             ) : (
               <ScrollArea className="h-96">
