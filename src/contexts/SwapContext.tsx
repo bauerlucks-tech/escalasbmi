@@ -265,7 +265,24 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     if (success) {
       console.log('✅ Escala mensal atualizada com sucesso!');
-      // refreshSchedules() já é chamado dentro de updateMonthScheduleFunc
+      // Forçar refresh para garantir que todos os usuários vejam a troca
+      refreshSchedules();
+      
+      // Verificar se este é o schedule ativo e atualizar scheduleData
+      const activeSchedule = currentSchedules.find(s => s.month === month && s.year === year && s.isActive !== false);
+      if (activeSchedule) {
+        console.log('🔄 Atualizando scheduleData ativo com as trocas');
+        setScheduleData(updatedSchedule);
+      }
+      
+      // Forçar atualização do localStorage para todos os usuários
+      setTimeout(() => {
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'escala_scheduleStorage',
+          newValue: localStorage.getItem('escala_scheduleStorage')
+        }));
+      }, 100);
+      
     } else {
       console.error('❌ Falha ao atualizar escala mensal');
     }
