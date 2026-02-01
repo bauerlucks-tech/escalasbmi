@@ -48,60 +48,27 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
 
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
-    // FORÇAR DADOS DE JANEIRO DIRETAMENTE - Sem verificação
-    console.log('� FORÇANDO JANEIRO DIRETAMENTE NO ESTADO INICIAL...');
+    // Carregar dados do localStorage ou usar dados ativos do sistema
     try {
-      // Importar dados completos de Janeiro diretamente
-      const januaryData = [
-        { date: "01/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "CARLOS", fechamento: "CARLOS" },
-        { date: "02/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "ROSANA", fechamento: "ROSANA" },
-        { date: "03/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "LUCAS", fechamento: "LUCAS" },
-        { date: "04/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "HENRIQUE", fechamento: "HENRIQUE" },
-        { date: "05/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "ROSANA", fechamento: "KELLY" },
-        { date: "06/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "CARLOS", fechamento: "KELLY" },
-        { date: "07/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "ROSANA" },
-        { date: "08/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "CARLOS", fechamento: "ROSANA" },
-        { date: "09/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "KELLY" },
-        { date: "10/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "HENRIQUE", fechamento: "HENRIQUE" },
-        { date: "11/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "LUCAS", fechamento: "LUCAS" },
-        { date: "12/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "LUCAS", fechamento: "ROSANA" },
-        { date: "13/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "CARLOS", fechamento: "ROSANA" },
-        { date: "14/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "CARLOS", fechamento: "KELLY" },
-        { date: "15/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "KELLY" },
-        { date: "16/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "ROSANA" },
-        { date: "17/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "LUCAS", fechamento: "LUCAS" },
-        { date: "18/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "LUCAS", fechamento: "LUCAS" },
-        { date: "19/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "CARLOS", fechamento: "KELLY" },
-        { date: "20/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "CARLOS", fechamento: "KELLY" },
-        { date: "21/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "ROSANA" },
-        { date: "22/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "ROSANA" },
-        { date: "23/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "GUILHERME", fechamento: "KELLY" },
-        { date: "24/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "GUILHERME", fechamento: "KELLY" },
-        { date: "25/01/2026", dayOfWeek: "DOMINGO", meioPeriodo: "CARLOS", fechamento: "ROSANA" },
-        { date: "26/01/2026", dayOfWeek: "SEGUNDA-FEIRA", meioPeriodo: "CARLOS", fechamento: "ROSANA" },
-        { date: "27/01/2026", dayOfWeek: "TERÇA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "LUCAS" },
-        { date: "28/01/2026", dayOfWeek: "QUARTA-FEIRA", meioPeriodo: "HENRIQUE", fechamento: "LUCAS" },
-        { date: "29/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "GUILHERME", fechamento: "KELLY" },
-        { date: "30/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "GUILHERME", fechamento: "KELLY" },
-        { date: "31/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "CARLOS", fechamento: "ROSANA" }
-      ];
+      const saved = localStorage.getItem('escala_scheduleData');
+      if (saved) {
+        const data = JSON.parse(saved);
+        console.log('📅 Dados carregados do localStorage:', data.length, 'dias');
+        return data;
+      }
       
-      console.log('✅ JANEIRO APLICADO DIRETAMENTE:', januaryData.length, 'dias');
-      console.log('👥 Operadores:', [...new Set(januaryData.map(d => d.meioPeriodo).concat(januaryData.map(d => d.fechamento)))].filter(n => n && n !== '').join(', '));
+      // Se não houver dados no localStorage, tentar obter do schedule ativo
+      const currentSchedule = getCurrentSchedule();
+      if (currentSchedule && currentSchedule.entries.length > 0) {
+        console.log('📅 Dados carregados do schedule ativo:', currentSchedule.entries.length, 'dias');
+        return currentSchedule.entries;
+      }
       
-      // Salvar imediatamente no localStorage para persistência
-      localStorage.setItem('escala_scheduleData', JSON.stringify(januaryData));
-      console.log('� Janeiro salvo no localStorage');
-      
-      return januaryData;
+      console.log('📅 Nenhum dado encontrado, iniciando com array vazio');
+      return [];
     } catch (error) {
-      console.error('❌ Erro ao forçar Janeiro:', error);
-      // Fallback absoluto
-      return [
-        { date: "01/01/2026", dayOfWeek: "QUINTA-FEIRA", meioPeriodo: "CARLOS", fechamento: "CARLOS" },
-        { date: "02/01/2026", dayOfWeek: "SEXTA-FEIRA", meioPeriodo: "ROSANA", fechamento: "ROSANA" },
-        { date: "03/01/2026", dayOfWeek: "SÁBADO", meioPeriodo: "LUCAS", fechamento: "LUCAS" }
-      ];
+      console.error('❌ Erro ao carregar dados:', error);
+      return [];
     }
   });
 
@@ -120,70 +87,6 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
   }, [scheduleData]);
-
-  // Forçar restauração imediata de Janeiro para operadores
-  useEffect(() => {
-    console.log('🚀 RESTAURAÇÃO IMEDIATA DE JANEIRO PARA OPERADORES...');
-    try {
-      // IMPORTANTE: Forçar restauração completa independentemente do estado atual
-      console.log('🔄 Forçando restauração completa de Janeiro...');
-      
-      // Importar dados completos de Janeiro
-      const { scheduleData: completeJanuaryData } = require('@/data/scheduleData');
-      console.log('📦 Dados completos de Janeiro:', completeJanuaryData.length);
-      
-      // Criar entrada completa de Janeiro
-      const completeJanuarySchedule = {
-        month: 1,
-        year: 2026,
-        entries: completeJanuaryData,
-        importedAt: new Date().toISOString(),
-        importedBy: 'immediate_restore_for_operators',
-        isActive: true
-      };
-      
-      // Forçar atualização do storage
-      const storage = require('@/data/scheduleData').createScheduleStorage();
-      const existingJanuaryIndex = storage.current.findIndex(s => s.month === 1 && s.year === 2026);
-      
-      if (existingJanuaryIndex >= 0) {
-        console.log('🔄 Atualizando Janeiro existente...');
-        storage.current[existingJanuaryIndex] = completeJanuarySchedule;
-      } else {
-        console.log('➕ Adicionando novo Janeiro...');
-        storage.current.push(completeJanuarySchedule);
-      }
-      
-      // Salvar imediatamente no localStorage
-      require('@/data/scheduleData').saveScheduleStorage(storage);
-      console.log('💾 Janeiro salvo no localStorage para operadores');
-      
-      // Forçar atualização imediata do estado
-      console.log('✅ Aplicando Janeiro como escala ativa imediatamente');
-      setScheduleData(completeJanuaryData);
-      
-      // Forçar refresh dos schedules
-      setTimeout(() => {
-        refreshSchedules();
-        console.log('🔄 Refresh forçado concluído');
-      }, 100);
-      
-      console.log('🎉 JANEIRO RESTAURADO E APLICADO PARA OPERADORES!');
-      console.log('📊 Total de dias:', completeJanuaryData.length);
-      console.log('👥 Operadores visíveis:', [...new Set(completeJanuaryData.map(d => d.meioPeriodo).concat(completeJanuaryData.map(d => d.fechamento)))].filter(n => n && n !== '').join(', '));
-      
-    } catch (error) {
-      console.error('❌ Erro na restauração imediata:', error);
-      // Fallback: usar dados diretamente
-      try {
-        const { scheduleData: fallbackData } = require('@/data/scheduleData');
-        setScheduleData(fallbackData);
-        console.log('🛡️ Fallback aplicado:', fallbackData.length, 'dias');
-      } catch (fallbackError) {
-        console.error('❌ Erro no fallback:', fallbackError);
-      }
-    }
-  }, []);
 
   const updateSchedule = (newSchedule: ScheduleEntry[]) => {
     setScheduleData(newSchedule);
