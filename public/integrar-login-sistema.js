@@ -170,8 +170,8 @@ class SystemAuthIntegration {
     // Mostrar conteúdo principal
     this.showMainContent();
     
-    // SEMPRE criar botão de logout flutuante
-    this.addLogoutButton();
+    // Conectar ao botão CORRETO do React
+    this.connectReactLogoutButton();
     
     // NÃO adicionar header ou barra - apenas mostrar sistema
   }
@@ -575,7 +575,38 @@ class SystemAuthIntegration {
       this.logout();
     });
     
-    console.log(' Botão de logout flutuante criado');
+    console.log('✅ Botão de logout flutuante criado');
+  }
+  
+  // Conectar ao botão CORRETO do React
+  connectReactLogoutButton() {
+    // Esperar um pouco para o React renderizar
+    setTimeout(() => {
+      // Procurar pelo botão com ícone lucide-log-out
+      const reactLogoutBtn = document.querySelector('button svg.lucide-log-out')?.closest('button');
+      
+      if (reactLogoutBtn) {
+        console.log('✅ Botão React encontrado:', reactLogoutBtn);
+        
+        // Remover eventos existentes para evitar duplicação
+        const newBtn = reactLogoutBtn.cloneNode(true);
+        reactLogoutBtn.parentNode.replaceChild(newBtn, reactLogoutBtn);
+        
+        // Adicionar evento correto
+        newBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🚪 BOTÃO REACT DE LOGOUT CLICADO!');
+          this.logout();
+        });
+        
+        console.log('✅ Evento adicionado ao botão React');
+      } else {
+        console.log('❌ Botão React não encontrado, tentando novamente...');
+        // Tentar novamente após um tempo
+        setTimeout(() => this.connectReactLogoutButton(), 2000);
+      }
+    }, 1000);
   }
 }
 

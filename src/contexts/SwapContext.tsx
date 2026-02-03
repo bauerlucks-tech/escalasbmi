@@ -15,6 +15,7 @@ import {
   ArchivedSchedule
 } from '@/data/scheduleData';
 import { logSwapRequest, logSwapResponse, logSwapApproval, logScheduleImport } from '@/data/auditLogs';
+import { SupabaseAPI } from '@/lib/supabase';
 
 interface SwapContextType {
   swapRequests: SwapRequest[];
@@ -42,10 +43,55 @@ interface SwapContextType {
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
 
 export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [swapRequests, setSwapRequests] = useState<SwapRequest[]>(() => {
-    const saved = localStorage.getItem('escala_swapRequests');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([]);
+
+  // Carregar trocas do Supabase ao iniciar
+  useEffect(() => {
+    const loadSwapRequests = async () => {
+      try {
+        const requests = await SupabaseAPI.getSwapRequests();
+        // Converter tipos do Supabase para o formato local
+        const convertedRequests = requests.map(req => ({
+          id: req.id,
+          requesterId: req.requester_id,
+          requesterName: req.requester_name,
+          targetId: req.target_id,
+          targetName: req.target_name,
+          originalDate: req.original_date,
+          originalShift: req.original_shift,
+          targetDate: req.target_date,
+          targetShift: req.target_shift,
+          status: req.status,
+          respondedAt: req.responded_at,
+          respondedBy: req.responded_by,
+          adminApproved: req.admin_approved,
+          adminApprovedAt: req.admin_approved_at,
+          adminApprovedBy: req.admin_approved_by,
+          createdAt: req.created_at,
+          // Manter campos originais também para compatibilidade
+          requester_id: req.requester_id,
+          requester_name: req.requester_name,
+          target_id: req.target_id,
+          target_name: req.target_name,
+          original_date: req.original_date,
+          original_shift: req.original_shift,
+          target_date: req.target_date,
+          target_shift: req.target_shift,
+          created_at: req.created_at
+        }));
+        setSwapRequests(convertedRequests);
+      } catch (error) {
+        console.error('Erro ao carregar trocas do Supabase:', error);
+        // Fallback para localStorage se Supabase falhar
+        const saved = localStorage.getItem('escala_swapRequests');
+        if (saved) {
+          setSwapRequests(JSON.parse(saved));
+        }
+      }
+    };
+    
+    loadSwapRequests();
+  }, []);
 
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
     // Carregar dados do Supabase via localStorage ou usar dados ativos do sistema
@@ -112,6 +158,13 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const updateSchedule = (newSchedule: ScheduleEntry[]) => {
     setScheduleData(newSchedule);
+  };
+
+  const refreshSchedules = () => {
+    setCurrentSchedules(getCurrentSchedules());
+    setArchivedSchedules(getArchivedSchedules());
+    // Manter o scheduleData atual, não forçar Janeiro
+    // Isso permite que as trocas sejam mantidas
   };
 
   const updateMonthScheduleFunc = (month: number, year: number, entries: ScheduleEntry[]) => {
@@ -238,21 +291,75 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const createSwapRequest = (request: Omit<SwapRequest, 'id' | 'createdAt'>) => {
-    const newRequest: SwapRequest = {
-      ...request,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-    
-    // Log de auditoria - Solicitação de troca
-    logSwapRequest(
-      request.requesterId, 
-      request.requesterName, 
-      `Solicitação de troca: ${request.originalDate} (${request.originalShift}) ⇄ ${request.targetDate} (${request.targetShift}) com ${request.targetName}`
-    );
-    
-    setSwapRequests(prev => [...prev, newRequest]);
+  const createSwapRequest = async (request: Omit<SwapRequest, 'id' | 'createdAt'>) => {
+    try {
+      // Converter formato local para formato Supabase
+      const supabaseRequest = {
+        requester_id: request.requesterId,
+        requester_name: request.requesterName,
+        target_id: request.targetId,
+        target_name: request.targetName,
+        original_date: request.originalDate,
+        original_shift: request.originalShift,
+        target_date: request.targetDate,
+        target_shift: request.targetShift,
+        status: request.status,
+        responded_at: request.respondedAt,
+        responded_by: request.respondedBy,
+        admin_approved: request.adminApproved,
+        admin_approved_at: request.adminApprovedAt,
+        admin_approved_by: request.adminApprovedBy
+      };
+      
+      // Criar no Supabase
+      const newRequest = await SupabaseAPI.createSwapRequest(supabaseRequest);
+      
+      // Converter resposta de volta para formato local
+      const convertedRequest = {
+        id: newRequest.id,
+        requesterId: newRequest.requester_id,
+        requesterName: newRequest.requester_name,
+        targetId: newRequest.target_id,
+        targetName: newRequest.target_name,
+        originalDate: newRequest.original_date,
+        originalShift: newRequest.original_shift,
+        targetDate: newRequest.target_date,
+        targetShift: newRequest.target_shift,
+        status: newRequest.status,
+        respondedAt: newRequest.responded_at,
+        respondedBy: newRequest.responded_by,
+        adminApproved: newRequest.admin_approved,
+        adminApprovedAt: newRequest.admin_approved_at,
+        adminApprovedBy: newRequest.admin_approved_by,
+        createdAt: newRequest.created_at
+      };
+      
+      // Atualizar estado local
+      setSwapRequests(prev => [...prev, convertedRequest]);
+      
+      // Log de auditoria
+      logSwapRequest(
+        request.requesterId || 'unknown',
+        request.requesterName,
+        `SOLICITAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
+      );
+      
+      return convertedRequest;
+    } catch (error) {
+      console.error('Erro ao criar solicitação no Supabase:', error);
+      
+      // Fallback para localStorage
+      const newRequest: SwapRequest = {
+        ...request,
+        id: `swap_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: new Date().toISOString()
+      };
+      
+      setSwapRequests(prev => [...prev, newRequest]);
+      localStorage.setItem('escala_swapRequests', JSON.stringify([...swapRequests, newRequest]));
+      
+      return newRequest;
+    }
   };
 
   const respondToSwap = (requestId: string, accept: boolean) => {
@@ -391,13 +498,6 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       refreshSchedules();
     }
     return success;
-  };
-
-  const refreshSchedules = () => {
-    setCurrentSchedules(getCurrentSchedules());
-    setArchivedSchedules(getArchivedSchedules());
-    // Manter o scheduleData atual, não forçar Janeiro
-    // Isso permite que as trocas sejam mantidas
   };
 
   return (

@@ -231,11 +231,23 @@ export class SupabaseAPI {
   static async getSwapRequests(): Promise<SwapRequest[]> {
     const { data, error } = await supabase
       .from('swap_requests')
-      .select('*')
+      .select(`
+        *,
+        users!requester_id(name),
+        users!target_id(name)
+      `)
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    
+    // Processar dados para extrair nomes do JOIN
+    const processedData = (data || []).map(item => ({
+      ...item,
+      requester_name: item.users?.requester_id?.name || '',
+      target_name: item.users?.target_id?.name || ''
+    }));
+    
+    return processedData;
   }
 
   static async createSwapRequest(request: Omit<SwapRequest, 'id' | 'created_at'>): Promise<SwapRequest> {
