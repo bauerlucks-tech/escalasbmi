@@ -30,6 +30,7 @@ interface SwapContextType {
   getPendingCount: (userName: string) => number;
   getPendingAdminApproval: () => SwapRequest[];
   getApprovedSwaps: () => SwapRequest[];
+  getMyNotifications: (userId: string, userName: string) => SwapRequest[];
   updateSchedule: (newSchedule: ScheduleEntry[]) => void;
   updateMonthSchedule: (month: number, year: number, entries: ScheduleEntry[]) => boolean;
   importNewSchedule: (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate?: boolean) => { success: boolean; message: string; archived?: ArchivedSchedule[] };
@@ -408,6 +409,13 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         adminName, 
         `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
       );
+
+      // NOTIFICAÇÃO PARA O SOLICITANTE
+      logSwapRequest(
+        request.requesterId || 'unknown',
+        request.requesterName,
+        `✅ TROCA APROVADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName}`
+      );
     }
 
     // Apply the swap to the schedule when approved
@@ -440,6 +448,14 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getApprovedSwaps = () => {
     return swapRequests.filter(req => req.status === 'approved');
+  };
+
+  // Função para obter notificações do usuário atual
+  const getMyNotifications = (userId: string, userName: string) => {
+    return swapRequests.filter(req => 
+      (req.requesterId === userId && req.status === 'approved') || // Minhas solicitações aprovadas
+      (req.targetName === userName && (req.status === 'pending' || req.status === 'accepted')) // Solicitações para mim
+    );
   };
 
   const importNewSchedule = (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate = true, replace = false) => {
@@ -514,6 +530,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       getPendingCount,
       getPendingAdminApproval,
       getApprovedSwaps,
+      getMyNotifications,
       updateSchedule,
       updateMonthSchedule: updateMonthScheduleFunc,
       importNewSchedule,
