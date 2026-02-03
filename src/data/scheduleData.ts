@@ -45,6 +45,9 @@ export interface MonthSchedule {
   isArchived?: boolean;
   archivedAt?: string;
   isActive?: boolean; // New field to control activation
+  is_active?: boolean; // Supabase field (snake_case)
+  created_at?: string; // Supabase field
+  updated_at?: string; // Supabase field
 }
 
 export interface ArchivedSchedule extends MonthSchedule {

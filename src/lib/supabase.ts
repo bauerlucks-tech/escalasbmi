@@ -164,7 +164,12 @@ export class SupabaseAPI {
       .order('year', { ascending: false })
       .order('month', { ascending: false });
     
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Erro ao carregar month_schedules:', error);
+      throw error;
+    }
+    
+    console.log('📅 Month schedules carregados do Supabase:', data);
     return data || [];
   }
 
@@ -312,6 +317,26 @@ export class SupabaseAPI {
       });
       localStorage.setItem('escala_auditLogs', JSON.stringify(logs.slice(0, 1000)));
     }
+  }
+
+  // MONTH SCHEDULES
+  static async updateMonthSchedule(month: number, year: number, entries: any[]): Promise<boolean> {
+    const { error } = await supabase
+      .from('month_schedules')
+      .update({ 
+        entries: entries,
+        updated_at: new Date().toISOString()
+      })
+      .eq('month', month)
+      .eq('year', year);
+    
+    if (error) {
+      console.error('❌ Erro ao atualizar month_schedule:', error);
+      throw error;
+    }
+    
+    console.log('✅ Month schedule atualizado:', { month, year, entries: entries.length });
+    return true;
   }
 
   // FÉRIAS

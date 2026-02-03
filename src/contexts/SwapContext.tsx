@@ -32,7 +32,7 @@ interface SwapContextType {
   getApprovedSwaps: () => SwapRequest[];
   getMyNotifications: (userId: string, userName: string) => SwapRequest[];
   updateSchedule: (newSchedule: ScheduleEntry[]) => void;
-  updateMonthSchedule: (month: number, year: number, entries: ScheduleEntry[]) => boolean;
+  updateMonthSchedule: (month: number, year: number, entries: ScheduleEntry[]) => Promise<boolean>;
   importNewSchedule: (month: number, year: number, entries: ScheduleEntry[], importedBy: string, activate?: boolean) => { success: boolean; message: string; archived?: ArchivedSchedule[] };
   archiveCurrentSchedule: (month: number, year: number, archivedBy: string) => boolean;
   restoreArchivedSchedule: (month: number, year: number) => boolean;
@@ -134,14 +134,34 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   });
 
-  const [currentSchedules, setCurrentSchedules] = useState<MonthSchedule[]>(() => {
-    const schedules = getCurrentSchedules();
-    console.log('📅 Schedules carregados:', schedules.length, 'meses');
-    schedules.forEach(s => {
-      console.log(`  - ${s.month}/${s.year}: ${s.entries.length} dias (ativo: ${s.isActive})`);
-    });
-    return schedules;
-  });
+  const [currentSchedules, setCurrentSchedules] = useState<MonthSchedule[]>([]);
+
+  // Carregar escalas do Supabase ao iniciar
+  useEffect(() => {
+    const loadSchedules = async () => {
+      try {
+        console.log('🔄 Carregando escalas do Supabase...');
+        const schedules = await SupabaseAPI.getMonthSchedules();
+        console.log('📅 Escalas recebidas:', schedules);
+        
+        setCurrentSchedules(schedules);
+        
+        // Encontrar schedule ativo mais recente
+        const activeSchedule = schedules.find(s => s.is_active !== false);
+        if (activeSchedule && activeSchedule.entries) {
+          console.log('📅 Schedule ativo encontrado:', activeSchedule.month, '/', activeSchedule.year);
+          setScheduleData(activeSchedule.entries);
+        }
+      } catch (error) {
+        console.error('❌ Erro ao carregar escalas do Supabase:', error);
+        // Fallback para localStorage
+        const schedules = getCurrentSchedules();
+        setCurrentSchedules(schedules);
+      }
+    };
+    
+    loadSchedules();
+  }, []);
 
   const [archivedSchedules, setArchivedSchedules] = useState<ArchivedSchedule[]>(() => {
     return getArchivedSchedules();
@@ -169,24 +189,48 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setScheduleData(newSchedule);
   };
 
-  const refreshSchedules = () => {
-    setCurrentSchedules(getCurrentSchedules());
-    setArchivedSchedules(getArchivedSchedules());
-    // Manter o scheduleData atual, não forçar Janeiro
-    // Isso permite que as trocas sejam mantidas
+  const refreshSchedules = async () => {
+    try {
+      console.log('🔄 Recarregando escalas do Supabase...');
+      const schedules = await SupabaseAPI.getMonthSchedules();
+      setCurrentSchedules(schedules);
+      setArchivedSchedules(getArchivedSchedules());
+    } catch (error) {
+      console.error('❌ Erro ao recarregar escalas:', error);
+      // Fallback para localStorage
+      setCurrentSchedules(getCurrentSchedules());
+      setArchivedSchedules(getArchivedSchedules());
+    }
   };
 
-  const updateMonthScheduleFunc = (month: number, year: number, entries: ScheduleEntry[]) => {
-    const success = updateMonthSchedule(month, year, entries);
-    if (success) {
-      refreshSchedules();
+  const updateMonthScheduleFunc = async (month: number, year: number, entries: ScheduleEntry[]) => {
+    try {
+      console.log('🔄 Atualizando schedule no Supabase:', { month, year });
+      await SupabaseAPI.updateMonthSchedule(month, year, entries);
+      
+      // Recarregar schedules do Supabase
+      await refreshSchedules();
+      
       // Update current schedule data if this is the active schedule
       const currentSchedule = currentSchedules.find(s => s.month === month && s.year === year);
-      if (currentSchedule && currentSchedule.isActive !== false) {
+      if (currentSchedule && currentSchedule.is_active !== false) {
         setScheduleData(entries);
       }
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao atualizar schedule no Supabase:', error);
+      // Fallback para localStorage
+      const success = updateMonthSchedule(month, year, entries);
+      if (success) {
+        refreshSchedules();
+        const currentSchedule = currentSchedules.find(s => s.month === month && s.year === year);
+        if (currentSchedule && currentSchedule.is_active !== false) {
+          setScheduleData(entries);
+        }
+      }
+      return success;
     }
-    return success;
   };
 
   const applySwapToSchedule = (request: SwapRequest) => {
