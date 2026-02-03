@@ -15,7 +15,7 @@ import {
   ArchivedSchedule
 } from '@/data/scheduleData';
 import { logSwapRequest, logSwapResponse, logSwapApproval, logScheduleImport } from '@/data/auditLogs';
-import { SupabaseAPI } from '@/lib/supabase';
+import { SupabaseAPI, SwapRequestSupabase } from '@/lib/supabase';
 
 interface SwapContextType {
   swapRequests: SwapRequest[];
@@ -472,45 +472,75 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const adminApproveSwap = async (requestId: string, adminName: string) => {
     const request = swapRequests.find(r => r.id === requestId);
     
-    setSwapRequests(prev => prev.map(req =>
-      req.id === requestId
-        ? { 
-            ...req, 
-            status: 'approved' as const,
-            adminApproved: true,
-            adminApprovedAt: new Date().toISOString(),
-            adminApprovedBy: adminName
-          }
-        : req
-    ));
+    try {
+      // Atualizar no Supabase primeiro
+      const updates = {
+        status: 'approved' as const,
+        admin_approved: true,
+        admin_approved_at: new Date().toISOString(),
+        admin_approved_by: adminName
+      };
+      
+      await SupabaseAPI.updateSwapRequest(requestId, updates);
+      
+      // Atualizar estado local
+      setSwapRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? { 
+              ...req, 
+              status: 'approved' as const,
+              adminApproved: true,
+              adminApprovedAt: new Date().toISOString(),
+              adminApprovedBy: adminName
+            }
+          : req
+      ));
 
-    // Log de auditoria - Aprovação admin
-    if (request) {
-      await SupabaseAPI.addAuditLog(
-        'admin', // ID do admin (genérico)
-        adminName, 
-        'SWAP_APPROVAL',
-        `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
-      );
+      // Log de auditoria - Aprovação admin
+      if (request) {
+        await SupabaseAPI.addAuditLog(
+          'admin', // ID do admin (genérico)
+          adminName, 
+          'SWAP_APPROVAL',
+          `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
+        );
 
-      // NOTIFICAÇÃO PARA O SOLICITANTE
-      await SupabaseAPI.addAuditLog(
-        request.requesterId || 'unknown',
-        request.requesterName,
-        'SWAP_REQUEST',
-        `✅ TROCA APROVADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName}`
-      );
-    }
+        // NOTIFICAÇÃO PARA O SOLICITANTE
+        await SupabaseAPI.addAuditLog(
+          request.requesterId || 'unknown',
+          request.requesterName,
+          'SWAP_REQUEST',
+          `✅ TROCA APROVADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName}`
+        );
+      }
 
-    // Apply the swap to the schedule when approved
-    if (request) {
-      applySwapToSchedule({
-        ...request,
-        status: 'approved',
-        adminApproved: true,
-        adminApprovedAt: new Date().toISOString(),
-        adminApprovedBy: adminName
-      });
+      // Apply the swap to the schedule when approved
+      if (request) {
+        applySwapToSchedule({
+          ...request,
+          status: 'approved',
+          adminApproved: true,
+          adminApprovedAt: new Date().toISOString(),
+          adminApprovedBy: adminName
+        });
+      }
+      
+      console.log('✅ Troca aprovada no Supabase:', { requestId, adminName });
+    } catch (error) {
+      console.error('❌ Erro ao aprovar troca no Supabase:', error);
+      
+      // Fallback - apenas atualizar local
+      setSwapRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? { 
+              ...req, 
+              status: 'approved' as const,
+              adminApproved: true,
+              adminApprovedAt: new Date().toISOString(),
+              adminApprovedBy: adminName
+            }
+          : req
+      ));
     }
   };
 

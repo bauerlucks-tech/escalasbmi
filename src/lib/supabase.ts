@@ -2,6 +2,7 @@
 // Substituir completamente o localStorage por Supabase
 
 import { createClient } from '@supabase/supabase-js';
+import { SwapRequest } from '@/data/scheduleData';
 
 // Configuração do Supabase
 const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
@@ -41,7 +42,10 @@ export interface ScheduleEntry {
   fechamento: string;
 }
 
-export interface SwapRequest {
+// Usar SwapRequest do scheduleData.ts para evitar conflito
+
+// Tipo específico para Supabase (snake_case)
+export interface SwapRequestSupabase {
   id: string;
   requester_id: string;
   requester_name: string;
@@ -233,7 +237,7 @@ export class SupabaseAPI {
   }
 
   // SOLICITAÇÕES DE TROCA
-  static async getSwapRequests(): Promise<SwapRequest[]> {
+  static async getSwapRequests(): Promise<SwapRequestSupabase[]> {
     const { data, error } = await supabase
       .from('swap_requests')
       .select('*')
@@ -257,7 +261,7 @@ export class SupabaseAPI {
     return processedData;
   }
 
-  static async createSwapRequest(request: Omit<SwapRequest, 'id' | 'created_at'>): Promise<SwapRequest> {
+  static async createSwapRequest(request: Omit<SwapRequestSupabase, 'id' | 'created_at'>): Promise<SwapRequestSupabase> {
     const { data, error } = await supabase
       .from('swap_requests')
       .insert(request)
@@ -268,7 +272,7 @@ export class SupabaseAPI {
     return data;
   }
 
-  static async updateSwapRequest(id: string, updates: Partial<SwapRequest>): Promise<SwapRequest> {
+  static async updateSwapRequest(id: string, updates: Partial<SwapRequestSupabase>): Promise<SwapRequestSupabase> {
     const { data, error } = await supabase
       .from('swap_requests')
       .update(updates)
@@ -280,7 +284,7 @@ export class SupabaseAPI {
     return data;
   }
 
-  static async getPendingSwaps(): Promise<SwapRequest[]> {
+  static async getPendingSwaps(): Promise<SwapRequestSupabase[]> {
     const { data, error } = await supabase
       .from('swap_requests')
       .select('*')
@@ -465,7 +469,7 @@ export class SupabaseAPI {
   }
 
   // UTILITÁRIOS
-  static async applySwapToSchedule(request: SwapRequest): Promise<void> {
+  static async applySwapToSchedule(request: SwapRequestSupabase): Promise<void> {
     // Buscar a escala do mês original
     const originalDate = new Date(request.original_date);
     const originalMonth = originalDate.getMonth() + 1;
