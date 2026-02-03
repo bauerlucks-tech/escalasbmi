@@ -251,7 +251,7 @@ class SystemAuthIntegration {
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
             <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v1.3.100433</span>
+              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v2.0</span>
             </div>
           </div>
 
@@ -318,7 +318,7 @@ class SystemAuthIntegration {
             </div>
             <div style="text-align: center;">
               <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem;">
-                Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">1.3.100433</span> <span style="color: rgba(255, 255, 255, 0.35);">(c872c5f)</span>
+                Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>
               </p>
             </div>
           </div>
@@ -507,7 +507,7 @@ class SystemAuthIntegration {
         <span style="color: #6c757d; margin-left: 0.5rem;">(${user.role})</span>
         <span style="color: #28a745; font-weight: 600; margin-left: 0.5rem;">ATIVO</span>
         <span style="color: #6c757d; margin-left: 0.5rem;">|</span>
-        <span style="color: #6c757d; margin-left: 0.5rem;">v1.3.100433</span>
+        <span style="color: #6c757d; margin-left: 0.5rem;">v2.0</span>
       </div>
       <button id="auth-logout-btn" style="background: #dc3545; color: white; padding: 0.25rem 0.75rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
         Sair

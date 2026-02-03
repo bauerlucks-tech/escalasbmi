@@ -46,7 +46,7 @@ export const createCompleteBackup = (): CompleteBackup => {
     : [];
 
   return {
-    version: '1.0.0',
+    version: '2.0',
     timestamp: new Date().toISOString(),
     data: {
       schedules: schedules,

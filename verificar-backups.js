@@ -65,7 +65,7 @@ function verificarBackupsAutomaticos() {
       const usersData = storedUsers ? JSON.parse(storedUsers) : [];
 
       const backup = {
-        version: '1.0.0',
+        version: '2.0',
         timestamp: new Date().toISOString(),
         data: {
           schedules: schedules,

@@ -143,7 +143,7 @@ const BackupPage: React.FC = () => {
         const usersData = storedUsers ? JSON.parse(storedUsers) : [];
 
         const backup: CompleteBackup = {
-          version: '1.0.0',
+          version: '2.0',
           timestamp: new Date().toISOString(),
           data: {
             schedules: schedules,
@@ -196,7 +196,7 @@ const BackupPage: React.FC = () => {
         const usersData = storedUsers ? JSON.parse(storedUsers) : [];
 
         const backup: CompleteBackup = {
-          version: '1.0.0',
+          version: '2.0',
           timestamp: new Date().toISOString(),
           data: {
             schedules: schedules,

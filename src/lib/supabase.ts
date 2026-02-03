@@ -407,7 +407,7 @@ export class SupabaseAPI {
       .insert({
         backup_data: data,
         backup_type: 'manual',
-        version: '1.3.100322',
+        version: '2.0',
         file_size: JSON.stringify(data).length
       });
     

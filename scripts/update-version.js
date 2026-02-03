@@ -12,7 +12,7 @@ function getCommitHash() {
   }
 }
 
-// Gerar versão no formato 1.3.DDHH (dia invertido + hora)
+// Gerar versão no formato 2.0.DDHH (dia invertido + hora)
 function generateVersion() {
   const now = new Date();
   const day = now.getDate().toString().padStart(2, '0');
@@ -22,8 +22,8 @@ function generateVersion() {
   // Inverter o dia: 31 -> 13
   const invertedDay = day.split('').reverse().join('');
   
-  // Formato: 1.3.DDHH (ex: 1.3.1319 para dia 31, hora 19)
-  return `1.3.${invertedDay}${hours}${minutes}`;
+  // Formato: 2.0.DDHH (ex: 2.0.1319 para dia 31, hora 19)
+  return `2.0.${invertedDay}${hours}${minutes}`;
 }
 
 // Atualizar versão no sistema (não precisa mais do LoginScreen.tsx)
