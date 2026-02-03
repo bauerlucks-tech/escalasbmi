@@ -475,6 +475,7 @@ class SystemAuthIntegration {
       console.log('⚠️ Nenhum conteúdo principal encontrado, tentando mostrar body');
       document.body.style.display = '';
     }
+  }
 
   // Adicionar informações do usuário
   addUserInfo(user) {
@@ -521,6 +522,9 @@ class SystemAuthIntegration {
         console.log('🚪 BOTÃO DE LOGOUT CLICADO!');
         this.logout();
       });
+    }
+  }
+  
   addLogoutButton() {
     // Verificar se já tem header
     if (document.getElementById('auth-user-header')) {
@@ -555,13 +559,12 @@ class SystemAuthIntegration {
   }
 }
 
-// Inicializar automaticamente quando a página carregar
-document.addEventListener('DOMContentLoaded', async () => {
+// Inicializar sistema
+(async () => {
   console.log('🚀 Página carregada - Iniciando sistema de autenticação...');
-  
   const authIntegration = new SystemAuthIntegration();
   await authIntegration.initialize();
-});
+})();
 
 // Exportar para uso manual se necessário
 window.SystemAuthIntegration = SystemAuthIntegration;
