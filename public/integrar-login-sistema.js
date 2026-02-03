@@ -85,6 +85,33 @@ class SystemAuthIntegration {
           async logout() {
             this.currentUser = null;
             localStorage.removeItem('directAuth_currentUser');
+            localStorage.removeItem('reactCurrentUser');
+            localStorage.removeItem('escala_currentUser');
+            localStorage.removeItem('currentUser');
+            
+            // Limpar cache de escalas para forçar recarregamento
+            localStorage.removeItem('escala_scheduleStorage');
+            localStorage.removeItem('escala_scheduleData');
+            localStorage.removeItem('escala_currentSchedules');
+            localStorage.removeItem('escala_archivedSchedules');
+            
+            console.log('🧹 Cache de escalas limpo');
+            
+            // Disparar evento para React
+            try {
+              const event = new CustomEvent('externalLogout', {
+                detail: { timestamp: new Date().toISOString() }
+              });
+              window.dispatchEvent(event);
+              console.log('🔄 Evento externalLogout disparado para React');
+            } catch (error) {
+              console.error('❌ Erro ao disparar evento logout:', error);
+            }
+            
+            // Forçar reload completo para limpar qualquer cache restante
+            console.log('🔄 Forçando reload completo...');
+            window.location.reload();
+            
             return { success: true };
           }
         }
@@ -480,7 +507,7 @@ class SystemAuthIntegration {
     // Adicionar evento de logout
     document.getElementById('auth-logout-btn').addEventListener('click', async () => {
       await this.authManager.logout();
-      this.showLoginScreen();
+      // Não mostrar tela de login, apenas deixar o reload fazer o trabalho
     });
   }
 
@@ -513,7 +540,7 @@ class SystemAuthIntegration {
     
     logoutBtn.addEventListener('click', async () => {
       await this.authManager.logout();
-      this.showLoginScreen();
+      // Remover botão e deixar reload fazer o trabalho
       logoutBtn.remove();
     });
   }
