@@ -163,14 +163,64 @@ export const initialUsers: User[] = [
   { id: "12", name: "TESTE_SUPER", password: "1234", role: "super_admin", status: "ativo", hideFromSchedule: true },
 ];
 
+// Função para buscar dados do Supabase
+const fetchFromSupabase = async () => {
+  try {
+    const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
+    const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+    
+    const response = await fetch(`${supabaseUrl}/rest/v1/month_schedules?select=*&order=year.desc,month.desc`, {
+      headers: {
+        'apikey': serviceKey,
+        'Authorization': `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      const schedules = await response.json();
+      console.log(`✅ ${schedules.length} escalas buscadas do Supabase`);
+      
+      // Salvar no localStorage
+      localStorage.setItem('escala_scheduleStorage', JSON.stringify(schedules));
+      
+      // Disparar evento para atualizar UI
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'escala_scheduleStorage',
+        newValue: JSON.stringify(schedules)
+      }));
+      
+      return schedules;
+    } else {
+      console.log('❌ Erro ao buscar do Supabase:', response.status);
+      return null;
+    }
+  } catch (error) {
+    console.error('❌ Erro ao buscar do Supabase:', error);
+    return null;
+  }
+};
+
 // Helper functions for schedule management
 export const createScheduleStorage = (): ScheduleStorage => {
   const saved = localStorage.getItem('escala_scheduleStorage');
   if (saved) {
-    return JSON.parse(saved);
+    const parsed = JSON.parse(saved);
+    // Se for array (formato do Supabase), converter para ScheduleStorage
+    if (Array.isArray(parsed)) {
+      return {
+        current: parsed,
+        archived: []
+      };
+    }
+    return parsed;
   }
   
-  // Initialize with January and February 2026 as current schedules
+  // Se não tiver no localStorage, buscar do Supabase
+  console.log('🔄 Buscando dados do Supabase...');
+  fetchFromSupabase();
+  
+  // Initialize with January and February 2026 as current schedules (fallback)
   return {
     current: [
       {
