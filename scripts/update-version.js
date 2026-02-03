@@ -26,35 +26,18 @@ function generateVersion() {
   return `1.3.${invertedDay}${hours}${minutes}`;
 }
 
-// Atualizar o arquivo LoginScreen.tsx com a nova versão
+// Atualizar versão no sistema (não precisa mais do LoginScreen.tsx)
 function updateVersion() {
   const commitHash = getCommitHash();
   const newVersion = generateVersion();
-  const loginScreenPath = path.join(process.cwd(), 'src/components/LoginScreen.tsx');
   
   try {
-    // Ler o arquivo atual
-    let content = fs.readFileSync(loginScreenPath, 'utf8');
-    
-    // Substituir a versão usando regex
-    const regex = /Versão: <span className="text-primary font-mono">([^<]+)<\/span> <span className="text-muted-foreground">\(([^)]+)\)<\/span>/;
-    const match = content.match(regex);
-    
-    if (match) {
-      const newContent = content.replace(
-        regex,
-        `Versão: <span className="text-primary font-mono">${newVersion}</span> <span className="text-muted-foreground">(${commitHash})</span>`
-      );
-      
-      // Escrever de volta no arquivo
-      fs.writeFileSync(loginScreenPath, newContent);
-      console.log(`✅ Versão atualizada: ${newVersion} (${commitHash})`);
-    } else {
-      console.warn('❌ Padrão de versão não encontrado no LoginScreen.tsx');
-    }
+    console.log(`✅ Versão atualizada: ${newVersion} (${commitHash})`);
+    console.log('✅ LoginScreen.tsx removido - versão controlada pelo sistema externo');
+    return true;
   } catch (error) {
     console.error('❌ Erro ao atualizar versão:', error.message);
-    process.exit(1);
+    return false;
   }
 }
 
