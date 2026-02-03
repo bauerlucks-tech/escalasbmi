@@ -118,22 +118,85 @@ function sobrescreverLogout() {
   
   // Adicionar evento a todos os botões de logout
   console.log('🔧 Adicionando eventos a todos os botões...');
-  const logoutButtons = document.querySelectorAll('button[id*="logout"], button[id*="sair"], button:contains("Sair")');
   
-  logoutButtons.forEach((btn, index) => {
-    // Remover eventos existentes
-    const newBtn = btn.cloneNode(true);
-    btn.parentNode.replaceChild(newBtn, btn);
+  // Procurar por botões com diferentes seletores
+  const selectors = [
+    'button[id*="logout"]',
+    'button[id*="sair"]',
+    'button:contains("Sair")',
+    'button:contains("Logout")',
+    'button:contains("sair")',
+    'button:contains("logout")',
+    'button[class*="logout"]',
+    'button[class*="sair"]',
+    // Botão com ícone de logout (lucide-log-out)
+    'button svg.lucide-log-out',
+    // Botão com classes Tailwind que podem ser de logout
+    'button[class*="text-destructive"]',
+    'button[class*="hover:text-destructive"]',
+    // Botão com hover:destructive (muito provável ser o botão de logout)
+    'button[class*="hover:bg-destructive"]'
+  ];
+  
+  let foundButtons = [];
+  
+  selectors.forEach(selector => {
+    try {
+      const buttons = document.querySelectorAll(selector);
+      buttons.forEach(btn => {
+        if (!foundButtons.includes(btn)) {
+          foundButtons.push(btn);
+        }
+      });
+    } catch (error) {
+      // Ignorar erros de seletores inválidos
+    }
+  });
+  
+  // Procurar especificamente por botões com SVG de logout
+  const allButtons = document.querySelectorAll('button');
+  allButtons.forEach(btn => {
+    const svg = btn.querySelector('svg.lucide-log-out');
+    if (svg && !foundButtons.includes(btn)) {
+      foundButtons.push(btn);
+    }
+  });
+  
+  console.log(`   📊 Botões de logout encontrados: ${foundButtons.length}`);
+  
+  foundButtons.forEach((btn, index) => {
+    // Verificar se o botão realmente é de logout
+    const hasLogoutIcon = btn.querySelector('svg.lucide-log-out');
+    const hasLogoutClass = btn.className.includes('logout') || btn.className.includes('sair');
+    const hasLogoutText = btn.textContent.toLowerCase().includes('sair') || btn.textContent.toLowerCase().includes('logout');
+    const hasDestructiveClass = btn.className.includes('destructive');
     
-    // Adicionar novo evento
-    newBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log('🚪 Botão de logout clicado (sobrescrito)');
-      forcarLogoutAgora();
-    });
+    const isLogoutButton = hasLogoutIcon || hasLogoutClass || hasLogoutText || hasDestructiveClass;
     
-    console.log(`   ✅ Botão ${index + 1} sobrescrito`);
+    if (isLogoutButton) {
+      console.log(`   ✅ Botão ${index + 1}: ${btn.className.substring(0, 50)}...`);
+      
+      // Remover eventos existentes
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      
+      // Adicionar novo evento
+      newBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🚪 Botão de logout clicado (sobrescrito)');
+        console.log(`   📋 Botão: ${newBtn.className}`);
+        forcarLogoutAgora();
+      });
+      
+      // Adicionar estilo visual para indicar que está funcionando
+      newBtn.style.border = '2px solid #dc3545';
+      newBtn.style.boxShadow = '0 0 10px rgba(220, 53, 69, 0.3)';
+      
+      console.log(`   ✅ Botão ${index + 1} sobrescrito e estilizado`);
+    } else {
+      console.log(`   ❌ Botão ${index + 1}: não é de logout`);
+    }
   });
   
   // Adicionar botão de logout forçado
@@ -167,6 +230,35 @@ function sobrescreverLogout() {
   }
   
   console.log('✅ SOBRESCRITÇÃO DE LOGOUT CONCLUÍDA!');
+  
+  // Buscar contínua por novos botões de logout
+  setInterval(() => {
+    const newLogoutButtons = document.querySelectorAll('button svg.lucide-log-out');
+    newLogoutButtons.forEach(btn => {
+      if (!btn.hasAttribute('data-logout-fixed')) {
+        console.log('🔍 Novo botão de logout encontrado, aplicando correção...');
+        
+        // Remover eventos existentes
+        const newBtn = btn.closest('button').cloneNode(true);
+        btn.closest('button').parentNode.replaceChild(newBtn, btn.closest('button'));
+        
+        // Adicionar evento
+        newBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🚪 Novo botão de logout clicado');
+          forcarLogoutAgora();
+        });
+        
+        // Marcar como corrigido
+        newBtn.setAttribute('data-logout-fixed', 'true');
+        newBtn.style.border = '2px solid #dc3545';
+        newBtn.style.boxShadow = '0 0 10px rgba(220, 53, 69, 0.3)';
+        
+        console.log('✅ Novo botão corrigido');
+      }
+    });
+  }, 2000);
 }
 
 // Exportar funções
