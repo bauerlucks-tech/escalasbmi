@@ -39,16 +39,16 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   }
 
   // Adicionar aba de ajuda para operadores (não administradores)
-  if (!isAdmin(currentUser)) {
+  if (currentUser && !isAdmin(currentUser)) {
     tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });
   }
 
-  if (isAdmin(currentUser)) {
+  if (currentUser && isAdmin(currentUser)) {
     tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
   }
 
   // Adicionar aba de Backup apenas para Super Admin
-  if (isSuperAdmin(currentUser)) {
+  if (currentUser && isSuperAdmin(currentUser)) {
     tabs.push({ id: 'backup', label: 'Backup', icon: Database });
     tabs.push({ id: 'audit', label: 'Auditoria', icon: FileText });
   }
@@ -125,22 +125,22 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             </div>
             
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50">
-              {isSuperAdmin(currentUser) && (
+              {currentUser && isSuperAdmin(currentUser) && (
                 <Shield className="w-4 h-4 text-destructive" />
               )}
-              {isAdmin(currentUser) && !isSuperAdmin(currentUser) && (
+              {currentUser && isAdmin(currentUser) && !isSuperAdmin(currentUser) && (
                 <Shield className="w-4 h-4 text-primary" />
               )}
               {currentUser?.profileImage ? (
                 <Avatar className="w-6 h-6">
-                  <AvatarImage src={currentUser.profileImage} alt={currentUser.name} />
+                  <AvatarImage src={currentUser.profileImage} alt={currentUser.name || ''} />
                   <AvatarFallback className="text-[10px] bg-primary/20 text-primary">
-                    {getInitials(currentUser.name)}
+                    {getInitials(currentUser.name || '')}
                   </AvatarFallback>
                 </Avatar>
-              ) : (
-                <span className="text-sm font-medium">{getInitials(currentUser.name)}</span>
-              )}
+              ) : currentUser ? (
+                <span className="text-sm font-medium">{getInitials(currentUser.name || '')}</span>
+              ) : null}
             </div>
           </div>
         </div>
