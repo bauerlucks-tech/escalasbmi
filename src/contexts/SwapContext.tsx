@@ -339,9 +339,10 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setSwapRequests(prev => [...prev, convertedRequest]);
       
       // Log de auditoria
-      logSwapRequest(
+      await SupabaseAPI.addAuditLog(
         request.requesterId || 'unknown',
         request.requesterName,
+        'SWAP_REQUEST',
         `SOLICITAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
       );
       
@@ -363,7 +364,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const respondToSwap = (requestId: string, accept: boolean) => {
+  const respondToSwap = async (requestId: string, accept: boolean) => {
     const request = swapRequests.find(req => req.id === requestId);
     
     setSwapRequests(prev => prev.map(req =>
@@ -379,15 +380,16 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     // Log de auditoria - Resposta à troca
     if (request) {
-      logSwapResponse(
+      await SupabaseAPI.addAuditLog(
         request.targetId, 
         request.targetName, 
+        'SWAP_RESPONSE',
         `Resposta à solicitação de troca: ${accept ? 'ACEITA' : 'REJEITADA'} - ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName}`
       );
     }
   };
 
-  const adminApproveSwap = (requestId: string, adminName: string) => {
+  const adminApproveSwap = async (requestId: string, adminName: string) => {
     const request = swapRequests.find(r => r.id === requestId);
     
     setSwapRequests(prev => prev.map(req =>
@@ -404,16 +406,18 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Log de auditoria - Aprovação admin
     if (request) {
-      logSwapApproval(
+      await SupabaseAPI.addAuditLog(
         'admin', // ID do admin (genérico)
         adminName, 
+        'SWAP_APPROVAL',
         `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
       );
 
       // NOTIFICAÇÃO PARA O SOLICITANTE
-      logSwapRequest(
+      await SupabaseAPI.addAuditLog(
         request.requesterId || 'unknown',
         request.requesterName,
+        'SWAP_REQUEST',
         `✅ TROCA APROVADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName}`
       );
     }

@@ -284,6 +284,34 @@ export class SupabaseAPI {
     return data || [];
   }
 
+  // AUDIT LOGS
+  static async addAuditLog(userId: string | null, userName: string, action: string, details: string): Promise<void> {
+    const { error } = await supabase
+      .from('audit_logs')
+      .insert({
+        user_id: userId,
+        user_name: userName,
+        action,
+        details,
+        created_at: new Date().toISOString()
+      });
+    
+    if (error) {
+      console.error('Erro ao salvar log de auditoria:', error);
+      // Fallback para localStorage
+      const logs = JSON.parse(localStorage.getItem('escala_auditLogs') || '[]');
+      logs.unshift({
+        id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        user_id: userId,
+        user_name: userName,
+        action,
+        details,
+        created_at: new Date().toISOString()
+      });
+      localStorage.setItem('escala_auditLogs', JSON.stringify(logs.slice(0, 1000)));
+    }
+  }
+
   // FÉRIAS
   static async getVacationRequests(): Promise<VacationRequest[]> {
     const { data, error } = await supabase
