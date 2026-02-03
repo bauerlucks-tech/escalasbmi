@@ -475,14 +475,18 @@ class SystemAuthIntegration {
       console.log('⚠️ Nenhum conteúdo principal encontrado, tentando mostrar body');
       document.body.style.display = '';
     }
-  }
 
   // Adicionar informações do usuário
   addUserInfo(user) {
     // Criar header de usuário discreto
-    const userHeader = document.createElement('div');
-    userHeader.id = 'auth-user-header';
-    userHeader.style.cssText = `
+    const userHeader = document.getElementById('auth-user-header');
+    if (userHeader) {
+      userHeader.remove();
+    }
+    
+    const newUserHeader = document.createElement('div');
+    newUserHeader.id = 'auth-user-header';
+    newUserHeader.style.cssText = `
       background: #f8f9fa;
       padding: 0.75rem 1rem;
       border-bottom: 1px solid #dee2e6;
@@ -492,7 +496,7 @@ class SystemAuthIntegration {
       font-size: 0.85rem;
     `;
     
-    userHeader.innerHTML = `
+    newUserHeader.innerHTML = `
       <div>
         <span style="color: #6c757d;">Bem-vindo,</span>
         <span style="color: #212529; font-weight: 500; margin-left: 0.5rem;">${user.name}</span>
@@ -508,16 +512,15 @@ class SystemAuthIntegration {
     
     // Inserir no topo da página
     const firstElement = document.body.firstElementChild;
-    document.body.insertBefore(userHeader, firstElement);
+    document.body.insertBefore(newUserHeader, firstElement);
     
     // Adicionar evento de logout
-    document.getElementById('auth-logout-btn').addEventListener('click', async () => {
-      await this.authManager.logout();
-      // Não mostrar tela de login, apenas deixar o reload fazer o trabalho
-    });
-  }
-
-  // Adicionar botão de logout flutuante (se não tiver header)
+    const logoutBtn = document.getElementById('auth-logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        console.log('🚪 BOTÃO DE LOGOUT CLICADO!');
+        this.logout();
+      });
   addLogoutButton() {
     // Verificar se já tem header
     if (document.getElementById('auth-user-header')) {
