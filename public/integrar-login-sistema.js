@@ -429,14 +429,20 @@ class SystemAuthIntegration {
   hideMainContent() {
     console.log('🔄 Escondendo conteúdo principal...');
     
-    // Tentar múltiplos seletores para encontrar o conteúdo
+    // Esconder apenas o elemento #root (React app)
+    const rootElement = document.querySelector('#root');
+    if (rootElement) {
+      console.log('📦 Escondendo elemento #root');
+      rootElement.style.display = 'none';
+      return;
+    }
+    
+    // Se não encontrar #root, tentar outros seletores
     const selectors = [
-      '#root',
       'main',
       '[id*="root"]',
       '[class*="app"]',
-      'body > div:first-child',
-      'body > *:not(script):not(style):not(link):not(meta)'
+      'body > div:first-child'
     ];
     
     for (const selector of selectors) {
@@ -453,14 +459,20 @@ class SystemAuthIntegration {
   showMainContent() {
     console.log('📱 Mostrando conteúdo principal...');
     
-    // Tentar múltiplos seletores para encontrar o conteúdo
+    // Mostrar apenas o elemento #root (React app)
+    const rootElement = document.querySelector('#root');
+    if (rootElement) {
+      console.log('📦 Mostrando elemento #root');
+      rootElement.style.display = '';
+      return;
+    }
+    
+    // Se não encontrar #root, tentar outros seletores
     const selectors = [
-      '#root',
       'main',
       '[id*="root"]',
       '[class*="app"]',
-      'body > div:first-child',
-      'body > *:not(script):not(style):not(link):not(meta)'
+      'body > div:first-child'
     ];
     
     let found = false;
