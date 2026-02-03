@@ -10,6 +10,7 @@ import UserSettings from '@/components/UserSettings';
 import OperatorHelp from '@/components/OperatorHelp';
 import ThemeToggle from '@/components/ThemeToggle';
 import TestPanel from '@/components/TestPanel';
+import NotificationCenter from '@/components/NotificationCenter';
 
 interface HeaderProps {
   activeTab: string;
@@ -97,6 +98,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             {/* User Actions */}
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <NotificationCenter />
               <UserSettings trigger={
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                   <Settings className="w-5 h-5" />
