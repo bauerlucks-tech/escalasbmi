@@ -50,7 +50,10 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const loadSwapRequests = async () => {
       try {
+        console.log('🔄 Carregando solicitações do Supabase...');
         const requests = await SupabaseAPI.getSwapRequests();
+        console.log('📊 Solicitações recebidas:', requests);
+        
         // Converter tipos do Supabase para o formato local
         const convertedRequests = requests.map(req => ({
           id: req.id,
@@ -80,13 +83,18 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           target_shift: req.target_shift,
           created_at: req.created_at
         }));
+        
+        console.log('✅ Solicitações convertidas:', convertedRequests);
         setSwapRequests(convertedRequests);
       } catch (error) {
-        console.error('Erro ao carregar trocas do Supabase:', error);
+        console.error('❌ Erro ao carregar trocas do Supabase:', error);
         // Fallback para localStorage se Supabase falhar
+        console.log('🔄 Usando fallback localStorage...');
         const saved = localStorage.getItem('escala_swapRequests');
         if (saved) {
-          setSwapRequests(JSON.parse(saved));
+          const localRequests = JSON.parse(saved);
+          console.log('📊 Solicitações do localStorage:', localRequests);
+          setSwapRequests(localRequests);
         }
       }
     };
