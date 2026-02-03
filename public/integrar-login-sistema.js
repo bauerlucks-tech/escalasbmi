@@ -552,9 +552,8 @@ class SystemAuthIntegration {
     document.body.appendChild(logoutBtn);
     
     logoutBtn.addEventListener('click', async () => {
-      await this.authManager.logout();
-      // Remover botão e deixar reload fazer o trabalho
-      logoutBtn.remove();
+      console.log('🚪 BOTÃO DE LOGOUT CLICADO!');
+      this.logout();
     });
   }
 }
