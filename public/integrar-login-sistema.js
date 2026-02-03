@@ -156,7 +156,7 @@ class SystemAuthIntegration {
 
   // Mostrar interface do sistema
   showSystemInterface(user) {
-    console.log('📱 Mostrando interface do sistema para:', user.name);
+    console.log(`📱 Mostrando interface do sistema para: ${user.name}`);
     
     // Remover tela de login se existir
     const loginScreen = document.getElementById('auth-login-screen');
@@ -169,6 +169,9 @@ class SystemAuthIntegration {
     
     // Mostrar conteúdo principal
     this.showMainContent();
+    
+    // SEMPRE criar botão de logout flutuante
+    this.addLogoutButton();
     
     // NÃO adicionar header ou barra - apenas mostrar sistema
   }
@@ -519,48 +522,66 @@ class SystemAuthIntegration {
     const logoutBtn = document.getElementById('auth-logout-btn');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
-        console.log('🚪 BOTÃO DE LOGOUT CLICADO!');
+        console.log(' BOTÃO DE LOGOUT CLICADO!');
         this.logout();
+        this.addLogoutButton();
       });
     }
   }
   
   addLogoutButton() {
-    // Verificar se já tem header
-    if (document.getElementById('auth-user-header')) {
+    // Verificar se já tem botão flutuante
+    if (document.getElementById('auth-logout-float')) {
       return;
     }
     
-    // Criar botão flutuante discreto
+    // Criar botão flutuante BEM visível
     const logoutBtn = document.createElement('button');
     logoutBtn.id = 'auth-logout-float';
-    logoutBtn.innerHTML = 'Sair';
+    logoutBtn.innerHTML = '';
     logoutBtn.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #dc3545;
-      color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      z-index: 1000;
+      position: fixed !important;
+      top: 20px !important;
+      right: 20px !important;
+      background: #dc3545 !important;
+      color: white !important;
+      padding: 12px 20px !important;
+      border: none !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      font-size: 14px !important;
+      font-weight: bold !important;
+      z-index: 999999 !important;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
+      transition: all 0.3s ease !important;
     `;
+    
+    // Efeito hover
+    logoutBtn.addEventListener('mouseenter', () => {
+      logoutBtn.style.background = '#c82333 !important';
+      logoutBtn.style.transform = 'scale(1.05) !important';
+    });
+    
+    logoutBtn.addEventListener('mouseleave', () => {
+      logoutBtn.style.background = '#dc3545 !important';
+      logoutBtn.style.transform = 'scale(1) !important';
+    });
     
     document.body.appendChild(logoutBtn);
     
-    logoutBtn.addEventListener('click', async () => {
-      console.log('🚪 BOTÃO DE LOGOUT CLICADO!');
+    // Adicionar evento de logout
+    logoutBtn.addEventListener('click', () => {
+      console.log(' BOTÃO DE LOGOUT CLICADO!');
       this.logout();
     });
+    
+    console.log(' Botão de logout flutuante criado');
   }
 }
 
 // Inicializar sistema
 (async () => {
-  console.log('🚀 Página carregada - Iniciando sistema de autenticação...');
+  console.log(' Página carregada - Iniciando sistema de autenticação...');
   const authIntegration = new SystemAuthIntegration();
   await authIntegration.initialize();
 })();
