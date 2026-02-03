@@ -289,7 +289,7 @@
   console.log('   📋 Verificar console para detalhes');
   console.log('   📋 Recarregar página se necessário');
   
-}
+})();
 
 // Exportar função
 window.debugLogoutFinal = debugLogoutFinal;
