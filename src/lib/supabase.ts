@@ -231,22 +231,24 @@ export class SupabaseAPI {
   static async getSwapRequests(): Promise<SwapRequest[]> {
     const { data, error } = await supabase
       .from('swap_requests')
-      .select(`
-        *,
-        users!requester_id(name),
-        users!target_id(name)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
     
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Erro na query do Supabase:', error);
+      throw error;
+    }
     
-    // Processar dados para extrair nomes do JOIN
+    console.log('📊 Dados brutos do Supabase:', data);
+    
+    // Processar dados sem JOIN complexo
     const processedData = (data || []).map(item => ({
       ...item,
-      requester_name: item.users?.requester_id?.name || '',
-      target_name: item.users?.target_id?.name || ''
+      requester_name: item.requester_name || '',
+      target_name: item.target_name || ''
     }));
     
+    console.log('✅ Dados processados:', processedData);
     return processedData;
   }
 
