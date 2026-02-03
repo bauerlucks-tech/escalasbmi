@@ -48,19 +48,26 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
 
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
-    // Carregar dados do localStorage ou usar dados ativos do sistema
+    // Carregar dados do Supabase via localStorage ou usar dados ativos do sistema
     try {
-      const saved = localStorage.getItem('escala_scheduleData');
+      // Buscar do Supabase (escala_scheduleStorage)
+      const saved = localStorage.getItem('escala_scheduleStorage');
       if (saved) {
-        const data = JSON.parse(saved);
-        console.log('📅 Dados carregados do localStorage:', data.length, 'dias');
-        return data;
+        const schedules = JSON.parse(saved);
+        if (Array.isArray(schedules)) {
+          // Encontrar schedule ativo mais recente
+          const activeSchedule = schedules.find(s => s.is_active !== false);
+          if (activeSchedule && activeSchedule.entries) {
+            console.log('📅 Dados carregados do Supabase:', activeSchedule.entries.length, 'dias');
+            return activeSchedule.entries;
+          }
+        }
       }
       
-      // Se não houver dados no localStorage, tentar obter do schedule ativo
+      // Fallback: buscar do schedule ativo local
       const currentSchedule = getCurrentSchedule();
       if (currentSchedule && currentSchedule.entries.length > 0) {
-        console.log('📅 Dados carregados do schedule ativo:', currentSchedule.entries.length, 'dias');
+        console.log('📅 Dados carregados do schedule ativo local:', currentSchedule.entries.length, 'dias');
         return currentSchedule.entries;
       }
       
@@ -89,9 +96,10 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem('escala_swapRequests', JSON.stringify(swapRequests));
   }, [swapRequests]);
 
-  useEffect(() => {
-    localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
-  }, [scheduleData]);
+  // NÃO salvar mais em escala_scheduleData - isso estava sobrescrevendo dados do Supabase
+  // useEffect(() => {
+  //   localStorage.setItem('escala_scheduleData', JSON.stringify(scheduleData));
+  // }, [scheduleData]);
 
   // Sincronizar scheduleData com o schedule ativo atual
   useEffect(() => {
