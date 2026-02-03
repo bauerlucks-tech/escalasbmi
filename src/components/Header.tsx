@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               </div>
               <p className="text-xs text-muted-foreground">Sistema de Escalas</p>
               <div className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground">
-                v2.1.0
+                v1.3.100433
               </div>
             </div>
           </div>

@@ -207,7 +207,7 @@
             Sistema de Gestão de Escalas - Área Branca SBMI
           </p>
           <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-            <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v2.1.0 - 03/02/2026</span>
+            <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v1.3.100433</span>
           </div>
         </div>
 
