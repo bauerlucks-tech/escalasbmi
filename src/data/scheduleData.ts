@@ -275,6 +275,39 @@ export const addNewMonthSchedule = (
   activate: boolean = true,
   replace: boolean = false
 ): { success: boolean; message: string; archived?: ArchivedSchedule[] } => {
+  // BLOQUEAR MODIFICAÇÃO - DADOS VÊM DO SUPABASE
+  console.log('🚫 Bloqueando modificação local - dados devem vir do Supabase');
+  console.log(`📋 Tentativa de modificar ${month}/${year} bloqueada`);
+  
+  // Verificar se já existe no Supabase
+  const supabaseData = localStorage.getItem('escala_scheduleStorage');
+  if (supabaseData) {
+    try {
+      const schedules = JSON.parse(supabaseData);
+      const existingSchedule = schedules.find(s => s.month === month && s.year === year);
+      
+      if (existingSchedule && !replace) {
+        return { 
+          success: false, 
+          message: `Já existe uma escala para ${getMonthName(month)}/${year} no Supabase` 
+        };
+      }
+      
+      if (existingSchedule) {
+        console.log('⚠️ Escala já existe no Supabase, modificação bloqueada');
+        return { 
+          success: false, 
+          message: `Escala de ${getMonthName(month)}/${year} já existe no Supabase - modificação bloqueada` 
+        };
+      }
+    } catch (error) {
+      console.error('❌ Erro ao verificar Supabase:', error);
+    }
+  }
+  
+  // Se não existir, permitir criação (mas apenas no localStorage local)
+  console.log('✅ Permissão concedida - escala não existe no Supabase');
+  
   const storage = createScheduleStorage();
   
   // Check if month already exists
@@ -332,16 +365,40 @@ export const addNewMonthSchedule = (
     storage.current.push(newSchedule);
   }
   
+  // Salvar APENAS no localStorage local (não afeta Supabase)
   saveScheduleStorage(storage);
   
   return { 
     success: true, 
-    message: `Escala de ${getMonthName(month)}/${year} importada com sucesso`,
+    message: `Escala de ${getMonthName(month)}/${year} criada localmente (não sincronizada com Supabase)`,
     archived: archived.length > 0 ? archived : undefined
   };
 };
 
 export const updateMonthSchedule = (month: number, year: number, entries: ScheduleEntry[]): boolean => {
+  // BLOQUEAR MODIFICAÇÃO - DADOS VÊM DO SUPABASE
+  console.log('🚫 Bloqueando modificação de escala - dados devem vir do Supabase');
+  console.log(`📋 Tentativa de modificar ${month}/${year} bloqueada`);
+  
+  // Verificar se existe no Supabase
+  const supabaseData = localStorage.getItem('escala_scheduleStorage');
+  if (supabaseData) {
+    try {
+      const schedules = JSON.parse(supabaseData);
+      const existingSchedule = schedules.find(s => s.month === month && s.year === year);
+      
+      if (existingSchedule) {
+        console.log('⚠️ Escala existe no Supabase, modificação bloqueada');
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Erro ao verificar Supabase:', error);
+    }
+  }
+  
+  // Se não existir no Supabase, permitir modificação local
+  console.log('✅ Permissão concedida - escala não existe no Supabase');
+  
   const storage = createScheduleStorage();
   const scheduleIndex = storage.current.findIndex(s => s.month === month && s.year === year);
   
@@ -350,6 +407,8 @@ export const updateMonthSchedule = (month: number, year: number, entries: Schedu
   // Update the schedule entries
   storage.current[scheduleIndex].entries = entries;
   saveScheduleStorage(storage);
+  
+  console.log(`📝 Escala ${month}/${year} atualizada localmente (não sincronizada com Supabase)`);
   
   return true;
 };
