@@ -152,7 +152,7 @@ const SwapRequestView: React.FC = () => {
   const selectedMyEntry = selectedMyDay ? getScheduleByDate(selectedMyDay, false) : null;
   const selectedTargetEntry = selectedTargetDay ? getScheduleByDate(selectedTargetDay, true) : null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedMyDay || !selectedMyShift || !selectedOperator || !selectedTargetDay || !selectedTargetShift) {
       toast.error('Preencha todos os campos para solicitar a troca');
       return;
@@ -165,7 +165,7 @@ const SwapRequestView: React.FC = () => {
       return;
     }
 
-    createSwapRequest({
+    await createSwapRequest({
       requesterId: currentUser.id,
       requesterName: currentUser.name,
       targetId: targetUser.id,

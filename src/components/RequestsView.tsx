@@ -103,8 +103,8 @@ const RequestsView: React.FC = () => {
     );
   };
 
-  const handleRespond = (requestId: string, accept: boolean) => {
-    respondToSwap(requestId, accept);
+  const handleRespond = async (requestId: string, accept: boolean) => {
+    await respondToSwap(requestId, accept);
     toast.success(accept ? 'Troca aceita! Aguardando aprovação do administrador.' : 'Troca recusada');
   };
 

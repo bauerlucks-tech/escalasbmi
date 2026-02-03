@@ -151,9 +151,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     setNewPassword('');
   };
 
-  const handleApproveSwap = (requestId: string) => {
+  const handleApproveSwap = async (requestId: string) => {
     if (!currentUser) return;
-    adminApproveSwap(requestId, currentUser.name);
+    await adminApproveSwap(requestId, currentUser.name);
     toast.success('Troca aprovada com sucesso!');
   };
 
