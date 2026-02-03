@@ -623,6 +623,60 @@ class SystemAuthIntegration {
       }
     }, 1000);
   }
+  
+  // Método logout para SystemAuthIntegration
+  async logout() {
+    console.log('🚪 EXECUTANDO LOGOUT DO SYSTEM AUTH...');
+    
+    try {
+      // Limpar todos os dados de autenticação
+      this.authManager.currentUser = null;
+      localStorage.removeItem('directAuth_currentUser');
+      localStorage.removeItem('reactCurrentUser');
+      localStorage.removeItem('escala_currentUser');
+      localStorage.removeItem('currentUser');
+      
+      // Limpar cache de escalas
+      localStorage.removeItem('escala_scheduleStorage');
+      localStorage.removeItem('escala_scheduleData');
+      localStorage.removeItem('escala_currentSchedules');
+      localStorage.removeItem('escala_archivedSchedules');
+      
+      console.log('🧹 Cache e autenticação limpos');
+      
+      // Disparar evento para React
+      try {
+        const event = new CustomEvent('externalLogout', {
+          detail: { timestamp: new Date().toISOString() }
+        });
+        window.dispatchEvent(event);
+        console.log('🔄 Evento externalLogout disparado');
+      } catch (error) {
+        console.error('❌ Erro ao disparar evento:', error);
+      }
+      
+      // Remover botões de logout
+      const floatBtn = document.getElementById('auth-logout-float');
+      if (floatBtn) floatBtn.remove();
+      
+      const userHeader = document.getElementById('auth-user-header');
+      if (userHeader) userHeader.remove();
+      
+      // Criar tela de login
+      this.showLoginScreen();
+      
+      console.log('✅ Logout concluído');
+      
+      // Forçar reload completo
+      setTimeout(() => {
+        console.log('🔄 Forçando reload completo...');
+        window.location.reload();
+      }, 1000);
+      
+    } catch (error) {
+      console.error('❌ Erro no logout:', error);
+    }
+  }
 }
 
 // Inicializar sistema
