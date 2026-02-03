@@ -1,4 +1,4 @@
-// DEBUG E CORREÇÃO FINAL DO LOGOUT
+// DEBUG E CORREÇÃO FINAL DO LOGOUT - CORRIGIDO
 // Script para diagnosticar e corrigir o problema do logout
 
 (function debugLogoutFinal() {
