@@ -419,25 +419,53 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const respondToSwap = async (requestId: string, accept: boolean) => {
     const request = swapRequests.find(req => req.id === requestId);
     
-    setSwapRequests(prev => prev.map(req =>
-      req.id === requestId
-        ? { 
-            ...req, 
-            status: accept ? 'accepted' : 'rejected',
-            respondedAt: new Date().toISOString(),
-            respondedBy: req.targetName
-          }
-        : req
-    ));
-    
-    // Log de auditoria - Resposta à troca
-    if (request) {
-      await SupabaseAPI.addAuditLog(
-        request.targetId, 
-        request.targetName, 
-        'SWAP_RESPONSE',
-        `Resposta à solicitação de troca: ${accept ? 'ACEITA' : 'REJEITADA'} - ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName}`
-      );
+    try {
+      // Atualizar no Supabase primeiro
+      const updates = {
+        status: accept ? 'accepted' as const : 'rejected' as const,
+        responded_at: new Date().toISOString(),
+        responded_by: request?.targetName || ''
+      };
+      
+      await SupabaseAPI.updateSwapRequest(requestId, updates);
+      
+      // Atualizar estado local
+      setSwapRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? { 
+              ...req, 
+              status: accept ? 'accepted' : 'rejected',
+              respondedAt: new Date().toISOString(),
+              respondedBy: req.targetName
+            }
+          : req
+      ));
+      
+      // Log de auditoria - Resposta à troca
+      if (request) {
+        await SupabaseAPI.addAuditLog(
+          request.targetId, 
+          request.targetName, 
+          'SWAP_RESPONSE',
+          `Resposta à solicitação de troca: ${accept ? 'ACEITA' : 'REJEITADA'} - ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName}`
+        );
+      }
+      
+      console.log('✅ Troca respondida no Supabase:', { requestId, accept, status: updates.status });
+    } catch (error) {
+      console.error('❌ Erro ao responder troca no Supabase:', error);
+      
+      // Fallback - apenas atualizar local
+      setSwapRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? { 
+              ...req, 
+              status: accept ? 'accepted' : 'rejected',
+              respondedAt: new Date().toISOString(),
+              respondedBy: req.targetName
+            }
+          : req
+      ));
     }
   };
 
