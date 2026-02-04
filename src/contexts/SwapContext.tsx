@@ -279,7 +279,11 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     console.log('🔍 Entradas encontradas:', {
       originalEntry: originalEntry ? `${request.originalDate}: ${JSON.stringify(originalEntry)}` : 'NÃO ENCONTRADA',
-      targetEntry: targetEntry ? `${request.targetDate}: ${JSON.stringify(targetEntry)}` : 'NÃO ENCONTRADA'
+      targetEntry: targetEntry ? `${request.targetDate}: ${JSON.stringify(targetEntry)}` : 'NÃO ENCONTRADA',
+      totalOriginalEntries: originalMonthSchedule.entries.length,
+      totalTargetEntries: targetMonthSchedule.entries.length,
+      originalDates: originalMonthSchedule.entries.map(e => e.date).slice(0, 5),
+      targetDates: targetMonthSchedule.entries.map(e => e.date).slice(0, 5)
     });
     
     if (!originalEntry || !targetEntry) {
