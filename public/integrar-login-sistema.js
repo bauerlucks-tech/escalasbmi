@@ -256,7 +256,7 @@ class SystemAuthIntegration {
   // Criar tela de login
   createLoginScreen() {
     // Obter commit hash atual
-    const commitHash = '8f4faed'; // Hardcoded para evitar erro
+    const commitHash = '4befc43'; // Atualizado para commit mais recente
     
     // Remover tela de login anterior se existir
     const existingScreen = document.getElementById('auth-login-screen');
