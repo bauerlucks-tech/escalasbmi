@@ -505,6 +505,70 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           : req
       ));
 
+      // Função para notificar todos os participantes
+      const notifyAllParticipants = async (request: SwapRequest, adminName: string, success: boolean, error?: any) => {
+        if (success) {
+          // NOTIFICAÇÃO PARA O SOLICITANTE - Troca aprovada e publicada (DEPOIS de aplicada)
+          await SupabaseAPI.addAuditLog(
+            request.requesterId || 'unknown',
+            request.requesterName,
+            'SWAP_APPROVAL',
+            `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
+          );
+
+          // NOTIFICAÇÃO PARA O ACEITANTE - Troca aprovada e publicada (DEPOIS de aplicada)
+          await SupabaseAPI.addAuditLog(
+            request.targetId || 'unknown',
+            request.targetName,
+            'SWAP_APPROVAL',
+            `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
+          );
+        } else {
+          // NOTIFICAÇÃO DE FALHA
+          const errorMsg = error?.message || 'Erro desconhecido';
+          await SupabaseAPI.addAuditLog(
+            request.requesterId || 'unknown',
+            request.requesterName,
+            'SWAP_APPROVAL',
+            `❌ FALHA NA PUBLICAÇÃO: ${request.originalDate} ⇄ ${request.targetDate} - Erro: ${errorMsg}`
+          );
+          
+          await SupabaseAPI.addAuditLog(
+            request.targetId || 'unknown',
+            request.targetName,
+            'SWAP_APPROVAL',
+            `❌ FALHA NA PUBLICAÇÃO: ${request.originalDate} ⇄ ${request.targetDate} - Erro: ${errorMsg}`
+          );
+        }
+      };
+
+      // Apply the swap to the schedule FIRST - ANTES de notificar
+      if (request) {
+        console.log('🔄 Aplicando troca na escala ANTES das notificações...');
+        try {
+          await applySwapToSchedule({
+            ...request,
+            status: 'approved',
+            adminApproved: true,
+            adminApprovedAt: new Date().toISOString(),
+            adminApprovedBy: adminName
+          });
+          console.log('✅ Troca aplicada na escala com sucesso!');
+          
+          // SÓ notificar SE a troca foi aplicada com sucesso
+          await notifyAllParticipants(request, adminName, true);
+          
+        } catch (error) {
+          console.error('❌ Falha ao aplicar troca na escala:', error);
+          
+          // Notificar sobre falha
+          await notifyAllParticipants(request, adminName, false, error);
+          
+          // Não continuar com aprovação se falhou
+          throw error;
+        }
+      }
+
       // Log de auditoria - Aprovação admin
       if (request) {
         await SupabaseAPI.addAuditLog(
@@ -513,35 +577,6 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           'SWAP_APPROVAL',
           `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
         );
-
-        // NOTIFICAÇÃO PARA O SOLICITANTE - Troca aprovada e publicada
-        await SupabaseAPI.addAuditLog(
-          request.requesterId || 'unknown',
-          request.requesterName,
-          'SWAP_APPROVAL',
-          `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
-        );
-
-        // NOTIFICAÇÃO PARA O ACEITANTE - Troca aprovada e publicada
-        await SupabaseAPI.addAuditLog(
-          request.targetId || 'unknown',
-          request.targetName,
-          'SWAP_APPROVAL',
-          `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
-        );
-      }
-
-      // Apply the swap to the schedule when approved - ANTES de notificar
-      if (request) {
-        console.log('🔄 Aplicando troca na escala antes das notificações...');
-        await applySwapToSchedule({
-          ...request,
-          status: 'approved',
-          adminApproved: true,
-          adminApprovedAt: new Date().toISOString(),
-          adminApprovedBy: adminName
-        });
-        console.log('✅ Troca aplicada na escala com sucesso!');
       }
       
       console.log('✅ Troca aprovada no Supabase:', { requestId, adminName });
