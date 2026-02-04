@@ -68,21 +68,21 @@ const BackupPage: React.FC = () => {
   }
 
   // Load stored backups from localStorage
-  useEffect(() => {
-    const loadStoredBackups = () => {
-      const stored = localStorage.getItem('system_backups');
-      if (stored) {
-        try {
-          const backups = JSON.parse(stored);
-          setStoredBackups(backups.sort((a: StoredBackup, b: StoredBackup) => 
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          ));
-        } catch (error) {
-          console.error('Error loading stored backups:', error);
-        }
+  const loadStoredBackups = () => {
+    const stored = localStorage.getItem('system_backups');
+    if (stored) {
+      try {
+        const backups = JSON.parse(stored);
+        setStoredBackups(backups.sort((a: StoredBackup, b: StoredBackup) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ));
+      } catch (error) {
+        console.error('Error loading stored backups:', error);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     loadStoredBackups();
   }, []);
 

@@ -149,7 +149,7 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
       setError(null);
       
       // Convert to Supabase format
-      const supabaseUpdates: any = {};
+      const supabaseUpdates: Record<string, unknown> = {};
       if (updates.status) supabaseUpdates.status = updates.status;
       if (updates.approvedBy) supabaseUpdates.approved_by = updates.approvedBy;
       if (updates.approvedAt) supabaseUpdates.approved_at = updates.approvedAt;
@@ -279,7 +279,7 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
         const scheduleDate = `${dayNum.toString().padStart(2, '0')}/${monthNum.toString().padStart(2, '0')}/${yearNum}`;
         
         // Get schedule for this month
-        const monthSchedules = await SupabaseAPI.getMonthSchedules(monthNum, yearNum);
+        const monthSchedules = await SupabaseAPI.getMonthSchedules();
         const schedule = monthSchedules.find(s => s.month === monthNum && s.year === yearNum);
         
         if (schedule) {

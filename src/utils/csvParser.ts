@@ -107,7 +107,7 @@ export function normalizeDate(dateStr: string, month: number, year: number): str
   
   // Try to parse different date formats
   // Format: DD/MM/YYYY or DD-MM-YYYY
-  let match = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  let match = dateStr.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})$/);
   if (match) {
     const day = match[1].padStart(2, '0');
     const m = match[2].padStart(2, '0');
@@ -116,7 +116,7 @@ export function normalizeDate(dateStr: string, month: number, year: number): str
   }
   
   // Format: YYYY-MM-DD or YYYY/MM/DD
-  match = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  match = dateStr.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
   if (match) {
     const day = match[3].padStart(2, '0');
     const m = match[2].padStart(2, '0');
