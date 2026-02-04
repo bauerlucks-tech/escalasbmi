@@ -16,7 +16,7 @@ interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }
-
+///
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { currentUser, logout, isAdmin, isSuperAdmin } = useAuth();
   const { getPendingCount, getPendingAdminApproval } = useSwap();
@@ -82,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                   ATIVO
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground">Sistema de Escalas</p>
+              <p className="text-xs text-muted-foreground">Sistemas de Escalas</p>
               <div className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-muted rounded text-xs text-muted-foreground">
                 v2.0
               </div>
