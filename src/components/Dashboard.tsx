@@ -42,10 +42,11 @@ const Dashboard: React.FC = () => {
         return <OperatorHelp />;
       case 'admin':
         return <AdminPanel setActiveTab={setActiveTab} />;
-      case 'vacations':
-        return currentUser?.role === 'administrador' ? <VacationAdminView /> : <VacationRequestView />;
       case 'audit':
         return <AuditLogsView />;
+      // Férias desativadas temporariamente
+      // case 'vacations':
+      //   return currentUser?.role === 'administrador' ? <VacationAdminView /> : <VacationRequestView />;
       case 'test':
         return (
           <div className="text-center py-12">

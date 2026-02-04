@@ -233,7 +233,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const applySwapToSchedule = (request: SwapRequest) => {
+  const applySwapToSchedule = async (request: SwapRequest) => {
     // Get the month and year for both dates
     const originalDate = new Date(request.originalDate);
     const targetDate = new Date(request.targetDate);
@@ -313,15 +313,16 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return entry;
     });
 
-    // Update both months in storage
-    const originalSuccess = updateMonthScheduleFunc(originalMonth, originalYear, updatedOriginalSchedule);
-    const targetSuccess = updateMonthScheduleFunc(targetMonth, targetYear, updatedTargetSchedule);
+    // Update both months in Supabase storage
+    console.log('🔄 Atualizando escalas no Supabase...');
+    const originalSuccess = await updateMonthScheduleFunc(originalMonth, originalYear, updatedOriginalSchedule);
+    const targetSuccess = await updateMonthScheduleFunc(targetMonth, targetYear, updatedTargetSchedule);
     
     if (originalSuccess && targetSuccess) {
-      console.log('✅ Ambas as escalas mensais atualizadas com sucesso!');
+      console.log('✅ Ambas as escalas mensais atualizadas com sucesso no Supabase!');
       
-      // Forçar refresh dos schedules para pegar os dados atualizados
-      refreshSchedules();
+      // Forçar refresh dos schedules para pegar os dados atualizados do Supabase
+      await refreshSchedules();
       
       // Atualizar scheduleData após refresh para garantir dados atualizados
       setTimeout(() => {
@@ -340,7 +341,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }, 200);
       
     } else {
-      console.error('❌ Falha ao atualizar escalas mensais');
+      console.error('❌ Falha ao atualizar escalas mensais no Supabase');
     }
   };
 
@@ -449,6 +450,14 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           'SWAP_RESPONSE',
           `Resposta à solicitação de troca: ${accept ? 'ACEITA' : 'REJEITADA'} - ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName}`
         );
+
+        // NOTIFICAÇÃO PARA O SOLICITANTE sobre a resposta
+        await SupabaseAPI.addAuditLog(
+          request.requesterId || 'unknown',
+          request.requesterName,
+          'SWAP_RESPONSE',
+          `${accept ? '✅ TROCA ACEITA' : '❌ TROCA REJEITADA'}: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - ${accept ? 'Aguardando aprovação admin' : 'Solicitação rejeitada'}`
+        );
       }
       
       console.log('✅ Troca respondida no Supabase:', { requestId, accept, status: updates.status });
@@ -505,24 +514,34 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
         );
 
-        // NOTIFICAÇÃO PARA O SOLICITANTE
+        // NOTIFICAÇÃO PARA O SOLICITANTE - Troca aprovada e publicada
         await SupabaseAPI.addAuditLog(
           request.requesterId || 'unknown',
           request.requesterName,
-          'SWAP_REQUEST',
-          `✅ TROCA APROVADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName}`
+          'SWAP_APPROVAL',
+          `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
+        );
+
+        // NOTIFICAÇÃO PARA O ACEITANTE - Troca aprovada e publicada
+        await SupabaseAPI.addAuditLog(
+          request.targetId || 'unknown',
+          request.targetName,
+          'SWAP_APPROVAL',
+          `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
         );
       }
 
-      // Apply the swap to the schedule when approved
+      // Apply the swap to the schedule when approved - ANTES de notificar
       if (request) {
-        applySwapToSchedule({
+        console.log('🔄 Aplicando troca na escala antes das notificações...');
+        await applySwapToSchedule({
           ...request,
           status: 'approved',
           adminApproved: true,
           adminApprovedAt: new Date().toISOString(),
           adminApprovedBy: adminName
         });
+        console.log('✅ Troca aplicada na escala com sucesso!');
       }
       
       console.log('✅ Troca aprovada no Supabase:', { requestId, adminName });
