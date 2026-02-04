@@ -271,17 +271,20 @@ class SystemAuthIntegration {
     const loginScreen = document.createElement('div');
     loginScreen.id = 'auth-login-screen';
     loginScreen.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #f8f9fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      z-index: 999999 !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: all !important;
     `;
     
     loginScreen.innerHTML = `
@@ -373,6 +376,23 @@ class SystemAuthIntegration {
     `;
     
     document.body.appendChild(loginScreen);
+    console.log('✅ Tela de login adicionada ao body:', loginScreen);
+    console.log('✅ Elemento existe no DOM:', document.getElementById('auth-login-screen'));
+    console.log('✅ Estilos aplicados:', loginScreen.style.cssText);
+    
+    // Forçar visibilidade adicional
+    setTimeout(() => {
+      const screen = document.getElementById('auth-login-screen');
+      if (screen) {
+        console.log('✅ Verificação pós-append - elemento encontrado');
+        screen.style.visibility = 'visible';
+        screen.style.opacity = '1';
+        screen.style.display = 'flex';
+        console.log('✅ Visibilidade forçada');
+      } else {
+        console.error('❌ Elemento não encontrado após append!');
+      }
+    }, 100);
     
     // Adicionar event listeners
     this.setupLoginEventListeners();
