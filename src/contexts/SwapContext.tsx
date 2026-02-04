@@ -100,6 +100,11 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
     
     loadSwapRequests();
+    
+    // Configurar intervalo para recarregar dados a cada 10 segundos
+    const interval = setInterval(loadSwapRequests, 10000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>(() => {
@@ -402,6 +407,36 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       // Atualizar estado local
       setSwapRequests(prev => [...prev, convertedRequest]);
+      
+      // Forçar refresh dos dados do Supabase para garantir sincronização
+      setTimeout(async () => {
+        try {
+          console.log('🔄 Forçando refresh dos dados do Supabase...');
+          const requests = await SupabaseAPI.getSwapRequests();
+          const convertedRequests = requests.map(req => ({
+            id: req.id,
+            requesterId: req.requester_id,
+            requesterName: req.requester_name,
+            targetId: req.target_id,
+            targetName: req.target_name,
+            originalDate: req.original_date,
+            originalShift: req.original_shift,
+            targetDate: req.target_date,
+            targetShift: req.target_shift,
+            status: req.status,
+            respondedAt: req.responded_at,
+            respondedBy: req.responded_by,
+            adminApproved: req.admin_approved,
+            adminApprovedAt: req.admin_approved_at,
+            adminApprovedBy: req.admin_approved_by,
+            createdAt: req.created_at,
+          }));
+          setSwapRequests(convertedRequests);
+          console.log('✅ Dados sincronizados após criação da solicitação');
+        } catch (error) {
+          console.error('❌ Erro ao sincronizar dados:', error);
+        }
+      }, 1000); // Aguardar 1 segundo para garantir que o Supabase processou
       
       // Log de auditoria
       await SupabaseAPI.addAuditLog(

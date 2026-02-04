@@ -10,7 +10,7 @@ import { ptBR } from 'date-fns/locale';
 
 const RequestsView: React.FC = () => {
   const { currentUser } = useAuth();
-  const { getRequestsForMe, respondToSwap, swapRequests, currentSchedules } = useSwap();
+  const { getRequestsForMe, respondToSwap, swapRequests, currentSchedules, refreshSchedules } = useSwap();
 
   if (!currentUser) return null;
 
@@ -27,6 +27,13 @@ const RequestsView: React.FC = () => {
     pendingRequestsDetails: pendingRequests,
     allMyIncomingDetails: allMyIncoming
   });
+
+  const handleRefresh = async () => {
+    console.log('🔄 Forçando refresh manual dos dados...');
+    await refreshSchedules();
+    // Forçar reload da página para garantir dados atualizados
+    window.location.reload();
+  };
 
   const getMiniCalendar = (dateStr: string, shift: string, isOriginal: boolean) => {
     const [day, month, year] = dateStr.split('/').map(Number);
@@ -143,11 +150,21 @@ const RequestsView: React.FC = () => {
             <Bell className="w-5 h-5 text-primary" />
             Solicitações Pendentes
           </h2>
-          {pendingRequests.length > 0 && (
-            <span className="px-2 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold">
-              {pendingRequests.length}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {pendingRequests.length > 0 && (
+              <span className="px-2 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                {pendingRequests.length}
+              </span>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRefresh}
+              className="text-xs"
+            >
+              🔄 Atualizar
+            </Button>
+          </div>
         </div>
 
         {pendingRequests.length === 0 ? (
