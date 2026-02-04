@@ -239,6 +239,8 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const applySwapToSchedule = async (request: SwapRequest) => {
+    console.log('🚀 INICIANDO applySwapToSchedule para:', request);
+    
     // Get the month and year for both dates
     const originalDate = new Date(request.originalDate);
     const targetDate = new Date(request.targetDate);
@@ -247,22 +249,42 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const targetMonth = targetDate.getMonth() + 1;
     const targetYear = targetDate.getFullYear();
     
+    console.log('📅 Datas processadas:', {
+      originalDate: request.originalDate,
+      targetDate: request.targetDate,
+      originalMonth,
+      originalYear,
+      targetMonth,
+      targetYear
+    });
+    
     // Find the correct month schedules
     const originalMonthSchedule = currentSchedules.find(s => s.month === originalMonth && s.year === originalYear);
     const targetMonthSchedule = currentSchedules.find(s => s.month === targetMonth && s.year === targetYear);
     
+    console.log('📋 Schedules encontrados:', {
+      originalSchedule: originalMonthSchedule ? `${originalMonth}/${originalYear}` : 'NÃO ENCONTRADO',
+      targetSchedule: targetMonthSchedule ? `${targetMonth}/${targetYear}` : 'NÃO ENCONTRADO',
+      totalSchedules: currentSchedules.length
+    });
+    
     if (!originalMonthSchedule || !targetMonthSchedule) {
-      console.warn('❌ Escalas mensais não encontradas para:', request.originalDate, request.targetDate);
-      return;
+      console.error('❌ Escalas mensais não encontradas para:', request.originalDate, request.targetDate);
+      throw new Error('Escalas mensais não encontradas');
     }
 
     // Find the entries for both dates in their respective month schedules
     const originalEntry = originalMonthSchedule.entries.find(e => e.date === request.originalDate);
     const targetEntry = targetMonthSchedule.entries.find(e => e.date === request.targetDate);
     
+    console.log('🔍 Entradas encontradas:', {
+      originalEntry: originalEntry ? `${request.originalDate}: ${JSON.stringify(originalEntry)}` : 'NÃO ENCONTRADA',
+      targetEntry: targetEntry ? `${request.targetDate}: ${JSON.stringify(targetEntry)}` : 'NÃO ENCONTRADA'
+    });
+    
     if (!originalEntry || !targetEntry) {
-      console.warn('❌ Entradas não encontradas para as datas:', request.originalDate, request.targetDate);
-      return;
+      console.error('❌ Entradas não encontradas para as datas:', request.originalDate, request.targetDate);
+      throw new Error('Entradas não encontradas para as datas');
     }
 
     // Determine which shift the requester has on their original date
@@ -278,9 +300,18 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ? 'meioPeriodo' 
         : 'fechamento');
 
+    console.log('🔄 Turnos identificados:', {
+      requesterShift,
+      targetShift,
+      originalEntryMeio: originalEntry.meioPeriodo,
+      originalEntryFech: originalEntry.fechamento,
+      targetEntryMeio: targetEntry.meioPeriodo,
+      targetEntryFech: targetEntry.fechamento
+    });
+
     if (!requesterShift) {
-      console.warn('❌ Turno do solicitante não encontrado:', request.requesterName);
-      return;
+      console.error('❌ Turno do solicitante não encontrado:', request.requesterName);
+      throw new Error('Turno do solicitante não encontrado na escala');
     }
 
     console.log('🔄 Aplicando troca:', {
@@ -320,33 +351,47 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Update both months in Supabase storage
     console.log('🔄 Atualizando escalas no Supabase...');
-    const originalSuccess = await updateMonthScheduleFunc(originalMonth, originalYear, updatedOriginalSchedule);
-    const targetSuccess = await updateMonthScheduleFunc(targetMonth, targetYear, updatedTargetSchedule);
-    
-    if (originalSuccess && targetSuccess) {
-      console.log('✅ Ambas as escalas mensais atualizadas com sucesso no Supabase!');
+    try {
+      const originalSuccess = await updateMonthScheduleFunc(originalMonth, originalYear, updatedOriginalSchedule);
+      const targetSuccess = await updateMonthScheduleFunc(targetMonth, targetYear, updatedTargetSchedule);
       
-      // Forçar refresh dos schedules para pegar os dados atualizados do Supabase
-      await refreshSchedules();
+      console.log('📊 Resultados das atualizações:', {
+        originalSuccess,
+        targetSuccess,
+        originalMonth: `${originalMonth}/${originalYear}`,
+        targetMonth: `${targetMonth}/${targetYear}`
+      });
       
-      // Atualizar scheduleData após refresh para garantir dados atualizados
-      setTimeout(() => {
-        // Buscar o schedule atualizado do mês correto
-        const updatedSchedule = getScheduleByMonth(originalMonth, originalYear);
-        if (updatedSchedule && updatedSchedule.entries) {
-          console.log('🔄 Atualizando scheduleData com dados mais recentes:', updatedSchedule.month, updatedSchedule.year);
-          setScheduleData(updatedSchedule.entries);
-        }
+      if (originalSuccess && targetSuccess) {
+        console.log('✅ Ambas as escalas mensais atualizadas com sucesso no Supabase!');
         
-        // Forçar atualização do localStorage para todos os usuários
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'escala_scheduleStorage',
-          newValue: localStorage.getItem('escala_scheduleStorage')
-        }));
-      }, 200);
-      
-    } else {
-      console.error('❌ Falha ao atualizar escalas mensais no Supabase');
+        // Forçar refresh dos schedules para pegar os dados atualizados do Supabase
+        console.log('🔄 Forçando refresh dos schedules...');
+        await refreshSchedules();
+        
+        // Atualizar scheduleData após refresh para garantir dados atualizados
+        setTimeout(() => {
+          // Buscar o schedule atualizado do mês correto
+          const updatedSchedule = getScheduleByMonth(originalMonth, originalYear);
+          if (updatedSchedule && updatedSchedule.entries) {
+            console.log('🔄 Atualizando scheduleData com dados mais recentes:', updatedSchedule.month, updatedSchedule.year);
+            setScheduleData(updatedSchedule.entries);
+          }
+          
+          // Forçar atualização do localStorage para todos os usuários
+          window.dispatchEvent(new StorageEvent('storage', {
+            key: 'escala_scheduleStorage',
+            newValue: localStorage.getItem('escala_scheduleStorage')
+          }));
+        }, 200);
+        
+      } else {
+        console.error('❌ Falha ao atualizar escalas mensais no Supabase');
+        throw new Error('Falha ao atualizar escalas no Supabase');
+      }
+    } catch (error) {
+      console.error('❌ Erro durante atualização das escalas:', error);
+      throw error;
     }
   };
 
