@@ -30,8 +30,8 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { id: 'schedule', label: 'Escala SBMIBZ', icon: Calendar },
     { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight },
     { id: 'requests', label: 'Solicitações', icon: Bell, badge: pendingCount },
-    // Férias desativadas temporariamente
-    // { id: 'vacations', label: 'Férias', icon: Plane },
+    // Férias ativadas
+    { id: 'vacations', label: 'Férias', icon: Plane },
   ];
 
   // Remove "Solicitar Troca" e "Solicitações" para o usuário RICARDO

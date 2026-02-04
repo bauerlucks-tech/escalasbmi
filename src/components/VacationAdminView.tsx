@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,32 +20,28 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { VacationRequest, VacationStatus, getPendingVacationRequests, getVacationRequests, updateVacationStatus } from '@/data/scheduleData';
+import { VacationRequest, VacationStatus } from '@/data/scheduleData';
 import { useAuth } from '@/contexts/AuthContext';
+import { useVacation } from '@/contexts/VacationContext';
 import { toast } from 'sonner';
 
 const VacationAdminView: React.FC = () => {
   const { currentUser } = useAuth();
-  const [pendingRequests, setPendingRequests] = useState<VacationRequest[]>([]);
-  const [allRequests, setAllRequests] = useState<VacationRequest[]>([]);
+  const { 
+    approveVacationRequest, 
+    rejectVacationRequest,
+    getPendingVacations,
+    vacationRequests,
+    loading 
+  } = useVacation();
+  
   const [selectedRequest, setSelectedRequest] = useState<VacationRequest | null>(null);
   const [rejectionReason, setRejectionReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  useEffect(() => {
-    loadRequests();
-  }, []);
-
-  const loadRequests = () => {
-    try {
-      const pending = getPendingVacationRequests();
-      const all = getVacationRequests();
-      setPendingRequests(pending);
-      setAllRequests(all);
-    } catch (error) {
-      console.error('Error loading vacation requests:', error);
-    }
-  };
+  // Get pending and all requests
+  const pendingRequests = getPendingVacations();
+  const allRequests = vacationRequests;
 
   const getStatusBadge = (status: VacationStatus) => {
     switch (status) {
@@ -78,19 +74,9 @@ const VacationAdminView: React.FC = () => {
 
     setIsProcessing(true);
     try {
-      const success = updateVacationStatus(
-        requestId,
-        'approved',
-        currentUser.name
-      );
-
-      if (success) {
-        toast.success('Solicitação de férias aprovada com sucesso!');
-        loadRequests();
-        setSelectedRequest(null);
-      } else {
-        toast.error('Erro ao aprovar solicitação');
-      }
+      await approveVacationRequest(requestId, currentUser.name);
+      toast.success('Solicitação de férias aprovada com sucesso!');
+      setSelectedRequest(null);
     } catch (error) {
       toast.error('Erro ao aprovar solicitação');
       console.error('Error approving vacation:', error);
@@ -109,21 +95,10 @@ const VacationAdminView: React.FC = () => {
 
     setIsProcessing(true);
     try {
-      const success = updateVacationStatus(
-        requestId,
-        'rejected',
-        currentUser.name,
-        rejectionReason
-      );
-
-      if (success) {
-        toast.success('Solicitação de férias rejeitada com sucesso!');
-        loadRequests();
-        setSelectedRequest(null);
-        setRejectionReason('');
-      } else {
-        toast.error('Erro ao rejeitar solicitação');
-      }
+      await rejectVacationRequest(requestId, currentUser.name, rejectionReason);
+      toast.success('Solicitação de férias rejeitada com sucesso!');
+      setSelectedRequest(null);
+      setRejectionReason('');
     } catch (error) {
       toast.error('Erro ao rejeitar solicitação');
       console.error('Error rejecting vacation:', error);
