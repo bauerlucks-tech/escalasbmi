@@ -17,6 +17,17 @@ const RequestsView: React.FC = () => {
   const pendingRequests = getRequestsForMe(currentUser.name);
   const allMyIncoming = swapRequests.filter(r => r.targetName === currentUser.name);
 
+  // Debug logging
+  console.log('🔍 RequestsView Debug:', {
+    currentUser: currentUser.name,
+    currentUserRole: currentUser.role,
+    allSwapRequests: swapRequests.length,
+    pendingRequests: pendingRequests.length,
+    allMyIncoming: allMyIncoming.length,
+    pendingRequestsDetails: pendingRequests,
+    allMyIncomingDetails: allMyIncoming
+  });
+
   const getMiniCalendar = (dateStr: string, shift: string, isOriginal: boolean) => {
     const [day, month, year] = dateStr.split('/').map(Number);
     const date = new Date(year, month - 1, day);

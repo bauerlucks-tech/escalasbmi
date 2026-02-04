@@ -347,6 +347,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const createSwapRequest = async (request: Omit<SwapRequest, 'id' | 'createdAt'>) => {
     try {
+      console.log('🔄 Creating swap request:', request);
+      
+      // Validate required fields
+      if (!request.requesterId || !request.requesterName || !request.targetId || !request.targetName ||
+          !request.originalDate || !request.targetDate || !request.originalShift || !request.targetShift) {
+        console.error('❌ Invalid swap request data:', request);
+        throw new Error('Dados da solicitação de troca inválidos');
+      }
+      
       // Converter formato local para formato Supabase
       const supabaseRequest = {
         requester_id: request.requesterId,
@@ -357,7 +366,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         original_shift: request.originalShift,
         target_date: request.targetDate,
         target_shift: request.targetShift,
-        status: request.status,
+        status: request.status || 'pending',
         responded_at: request.respondedAt,
         responded_by: request.respondedBy,
         admin_approved: request.adminApproved,
@@ -365,8 +374,11 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         admin_approved_by: request.adminApprovedBy
       };
       
+      console.log('📝 Enviando para Supabase:', supabaseRequest);
+      
       // Criar no Supabase
       const newRequest = await SupabaseAPI.createSwapRequest(supabaseRequest);
+      console.log('✅ Swap request created in Supabase:', newRequest);
       
       // Converter resposta de volta para formato local
       const convertedRequest = {
@@ -399,9 +411,10 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         `SOLICITAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
       );
       
+      console.log('✅ Swap request process completed successfully');
       return convertedRequest;
     } catch (error) {
-      console.error('Erro ao criar solicitação no Supabase:', error);
+      console.error('❌ Erro ao criar solicitação no Supabase:', error);
       
       // Fallback para localStorage
       const newRequest: SwapRequest = {
@@ -603,7 +616,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const getRequestsForMe = (userName: string) => {
-    return swapRequests.filter(req => req.targetName === userName && req.status === 'pending');
+    const requests = swapRequests.filter(req => req.targetName === userName && req.status === 'pending');
+    console.log('🔍 getRequestsForMe Debug:', {
+      userName,
+      totalSwapRequests: swapRequests.length,
+      pendingRequests: requests.length,
+      allRequestsForUser: swapRequests.filter(req => req.targetName === userName),
+      pendingRequestsDetails: requests
+    });
+    return requests;
   };
 
   const getPendingCount = (userName: string) => {

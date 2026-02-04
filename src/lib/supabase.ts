@@ -262,14 +262,31 @@ export class SupabaseAPI {
   }
 
   static async createSwapRequest(request: Omit<SwapRequestSupabase, 'id' | 'created_at'>): Promise<SwapRequestSupabase> {
-    const { data, error } = await supabase
-      .from('swap_requests')
-      .insert(request)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
+    try {
+      console.log('📝 Creating swap request with data:', request);
+      
+      const { data, error } = await supabase
+        .from('swap_requests')
+        .insert(request)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('❌ Supabase error creating swap request:', error);
+        throw new Error(`Erro ao criar solicitação de troca: ${error.message || 'Erro desconhecido'}`);
+      }
+      
+      if (!data) {
+        console.error('❌ No data returned from swap request creation');
+        throw new Error('Nenhum dado retornado ao criar solicitação de troca');
+      }
+      
+      console.log('✅ Swap request created successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('❌ Error in createSwapRequest:', error);
+      throw error;
+    }
   }
 
   static async updateSwapRequest(id: string, updates: Partial<SwapRequestSupabase>): Promise<SwapRequestSupabase> {
@@ -355,14 +372,31 @@ export class SupabaseAPI {
   }
 
   static async createVacationRequest(request: Omit<VacationRequest, 'id' | 'requested_at'>): Promise<VacationRequest> {
-    const { data, error } = await supabase
-      .from('vacation_requests')
-      .insert(request)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
+    try {
+      console.log('📝 Creating vacation request with data:', request);
+      
+      const { data, error } = await supabase
+        .from('vacation_requests')
+        .insert(request)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('❌ Supabase error creating vacation request:', error);
+        throw new Error(`Erro ao criar solicitação: ${error.message || 'Erro desconhecido'}`);
+      }
+      
+      if (!data) {
+        console.error('❌ No data returned from vacation request creation');
+        throw new Error('Nenhum dado retornado ao criar solicitação');
+      }
+      
+      console.log('✅ Vacation request created successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('❌ Error in createVacationRequest:', error);
+      throw error;
+    }
   }
 
   static async updateVacationRequest(id: string, updates: Partial<VacationRequest>): Promise<VacationRequest> {

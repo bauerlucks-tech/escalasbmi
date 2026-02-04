@@ -90,18 +90,28 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
         throw new Error('Período já possui férias aprovadas para outro operador');
       }
 
-      // Convert to Supabase format
+      // Convert to Supabase format with validation
       const supabaseRequest = {
-        operator_id: request.operatorId,
-        operator_name: request.operatorName,
+        operator_id: request.operatorId || '',
+        operator_name: request.operatorName || '',
         start_date: request.startDate,
         end_date: request.endDate,
         total_days: request.totalDays,
-        reason: request.reason,
+        reason: request.reason || null,
         status: request.status,
         month: request.month,
         year: request.year
       };
+
+      // Validate required fields
+      if (!supabaseRequest.operator_id || !supabaseRequest.operator_name || 
+          !supabaseRequest.start_date || !supabaseRequest.end_date || 
+          !supabaseRequest.status || supabaseRequest.total_days <= 0) {
+        console.error('❌ Invalid vacation request data:', supabaseRequest);
+        throw new Error('Dados da solicitação inválidos. Verifique todos os campos.');
+      }
+
+      console.log('📝 Enviando solicitação de férias:', supabaseRequest);
 
       // Create request in Supabase
       const newRequest = await SupabaseAPI.createVacationRequest(supabaseRequest);
