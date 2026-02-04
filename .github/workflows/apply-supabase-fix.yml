@@ -1,0 +1,171 @@
+# Workflow para aplicar correções automatizadas: centraliza Supabase, remove chaves hardcoded,
+# padroniza endpoints e corrige login. Execute manualmente (workflow_dispatch).
+name: Apply Supabase + Login Cleanup
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write  # necessário para criar branch e PR
+
+jobs:
+  apply-fixes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create branch
+        id: create_branch
+        run: |
+          BRANCH="fix/supabase-login-cleanup"
+          git checkout -b "$BRANCH"
+
+      - name: Add central Supabase client (src/lib/supabase.ts)
+        run: |
+          mkdir -p src/lib
+          cat > src/lib/supabase.ts <<'TS'
+          import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+          const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || '') as string;
+          const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '') as string;
+
+          if (!supabaseUrl || !supabaseAnonKey) {
+            console.warn(
+              '[supabase] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set. ' +
+              'Set environment variables in .env.local or in your hosting provider.'
+            );
+          }
+
+          export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+          export default supabase;
+          TS
+
+      - name: Add localStorage util (src/lib/localStorage.ts)
+        run: |
+          cat > src/lib/localStorage.ts <<'TS'
+          export type AppStorage = {
+            current?: any[]; // MonthSchedule[]
+            archived?: any[];
+            [key: string]: any;
+          };
+
+          const KEY = 'escala_scheduleStorage';
+
+          export function readScheduleStorage(): AppStorage {
+            const raw = localStorage.getItem(KEY);
+            if (!raw) return { current: [], archived: [] };
+            try {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                return { current: parsed, archived: [] };
+              }
+              return {
+                current: parsed.current || parsed,
+                archived: parsed.archived || []
+              };
+            } catch (e) {
+              console.warn('[localStorage] failed to parse scheduleStorage', e);
+              return { current: [], archived: [] };
+            }
+          }
+
+          export function writeScheduleStorage(data: AppStorage) {
+            localStorage.setItem(KEY, JSON.stringify(data));
+          }
+          TS
+
+      - name: Add Supabase Auth wrapper (src/auth/supabaseAuth.ts)
+        run: |
+          mkdir -p src/auth
+          cat > src/auth/supabaseAuth.ts <<'TS'
+          import supabase from '@/lib/supabase';
+
+          export async function signInWithPassword(email: string, password: string) {
+            const res = await supabase.auth.signInWithPassword({ email, password });
+            if (res.error) throw res.error;
+            return res.data;
+          }
+
+          export async function signOut() {
+            const res = await supabase.auth.signOut();
+            if (res.error) throw res.error;
+            return res;
+          }
+
+          export async function getSession() {
+            const res = await supabase.auth.getSession();
+            return res.data?.session || null;
+          }
+          TS
+
+      - name: Search & replace common hardcoded Supabase URL and keys and endpoints
+        run: |
+          # Safety: show files to be changed (for review in PR)
+          echo "Files with hardcoded supabase URL:"
+          git grep -n "lsxmwwwmgfjwnowlsmzf.supabase.co" || true
+
+          # Replace literal supabase URL -> import.meta.env placeholder in TS/JS/MD files
+          git ls-files | xargs -I{} bash -c 'if grep -q "lsxmwwwmgfjwnowlsmzf.supabase.co" "{}"; then
+            sed -E -i "s#https://lsxmwwwmgfjwnowlsmzf.supabase.co#\${VITE_SUPABASE_URL}#g" "{}"
+          fi' || true
+
+          # Replace occurrences of known long JWT-like strings (heuristic) with env placeholder
+          git ls-files | xargs -I{} bash -c 'if grep -q "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpX" "{}"; then
+            sed -E -i "s#eyJhbGciOiJIUzI1NiIsInR5cCI6IkpX[^\"'\\'']*#\${VITE_SUPABASE_ANON_KEY}#g" "{}"
+          fi' || true
+
+          # Replace REST path " /rest/v1/schedules" -> "/rest/v1/month_schedules"
+          git ls-files | xargs -I{} bash -c 'if grep -q "/rest/v1/schedules" "{}"; then
+            sed -E -i "s#/rest/v1/schedules#/rest/v1/month_schedules#g" "{}"
+          fi' || true
+
+          # Guard getEventListeners usages (DevTools-only) by wrapping with check
+          git ls-files | xargs -I{} bash -c 'if grep -q "getEventListeners" "{}"; then
+            sed -E -i "s/getEventListeners\\s*\\(/(typeof getEventListeners !== \\\"undefined\\\" ? getEventListeners(/g" "{}"
+          fi' || true
+
+          # Neutralize global window.fetch overwrites: comment them out and log a warning
+          # This is conservative: comments out patterns 'window.fetch = function' through next '};'
+          git ls-files | xargs -I{} bash -c 'awk '\''{print NR ":" $0}'\'' "{}" | grep -n "window.fetch[s]*\\s*=\\s*function" >/dev/null 2>&1
+          if [ $? -eq 0 ]; then
+            perl -0777 -pe '"'"'s/(window\.fetch\s*=\s*function\s*\([^\)]*\)\s*\{.*?\}\s*;)/\/\/ [AUTOFIX] disabled window.fetch override: $1/smg'"'"' -i "{}"
+          fi' || true
+
+      - name: Stage and commit changes
+        run: |
+          git add -A
+          git commit -m "chore(supabase): add central client + localStorage util + auth wrapper; auto-replace endpoints and placeholders" || echo "No changes to commit"
+
+      - name: Push branch
+        run: |
+          BRANCH="fix/supabase-login-cleanup"
+          git push --set-upstream origin "$BRANCH"
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          API="https://api.github.com/repos/${{ github.repository }}"
+          BRANCH="fix/supabase-login-cleanup"
+          PR_TITLE="fix: supabase + login cleanup (automated)"
+          PR_BODY="Automated changes:\n- Centralized Supabase client (src/lib/supabase.ts)\n- Added localStorage util (src/lib/localStorage.ts)\n- Added Supabase auth wrapper (src/auth/supabaseAuth.ts)\n- Replaced hardcoded Supabase URL and keys with env placeholders\n- Replaced /rest/v1/schedules -> /rest/v1/month_schedules\n- Disabled global fetch overrides and guarded DevTools-only calls\n\nPlease review carefully, rotate any exposed keys in Supabase dashboard and set VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY in your environment."
+          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -d "{\"title\":\"${PR_TITLE}\",\"head\":\"${BRANCH}\",\"base\":\"main\",\"body\":\"${PR_BODY}\"}" "$API/pulls" >/tmp/pr.json
+          jq -r '.html_url' /tmp/pr.json || cat /tmp/pr.json
+
+      - name: Output PR URL
+        run: |
+          PR_URL=$(cat /tmp/pr.json | jq -r '.html_url // empty')
+          if [ -n "$PR_URL" ]; then
+            echo "Pull request created: $PR_URL"
+          else
+            echo "No PR created (maybe none needed). See git log for details."
+          fi
