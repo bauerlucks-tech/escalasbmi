@@ -3,7 +3,7 @@
 
 class SystemAuthIntegration {
   constructor() {
-    this.authManager = new DirectAuthManager();
+    this.authManager = null; // Não criar instância aqui
     this.isInitialized = false;
   }
 
@@ -11,18 +11,35 @@ class SystemAuthIntegration {
   async initialize() {
     console.log('🔧 Inicializando integração de autenticação...');
     
-    // Carregar biblioteca Supabase se necessário
-    if (typeof window.DirectAuthManager === 'undefined') {
-      await this.loadAuthManager();
+    try {
+      console.log('🔍 Verificando DirectAuthManager...');
+      console.log('🔍 window.DirectAuthManager:', typeof window.DirectAuthManager);
+      
+      // Carregar biblioteca Supabase se necessário
+      if (typeof window.DirectAuthManager === 'undefined') {
+        console.log('🔍 Carregando DirectAuthManager...');
+        await this.loadAuthManager();
+        console.log('✅ DirectAuthManager carregado');
+      } else {
+        console.log('✅ DirectAuthManager já existe');
+      }
+      
+      console.log('🔍 Criando instância do authManager...');
+      this.authManager = new DirectAuthManager();
+      console.log('✅ authManager criado:', this.authManager);
+      
+      this.isInitialized = true;
+      console.log('✅ Sistema inicializado');
+      
+      // Verificar autenticação
+      console.log('🔍 Iniciando verificação de autenticação...');
+      await this.checkAuthentication();
+      
+      console.log('✅ Integração inicializada com sucesso');
+    } catch (error) {
+      console.error('❌ Erro na inicialização:', error);
+      console.error('❌ Stack:', error.stack);
     }
-    
-    this.authManager = new DirectAuthManager();
-    this.isInitialized = true;
-    
-    // Verificar autenticação
-    await this.checkAuthentication();
-    
-    console.log('✅ Integração inicializada');
   }
 
   // Carregar gerenciador de autenticação
@@ -128,17 +145,43 @@ class SystemAuthIntegration {
   async checkAuthentication() {
     console.log('🔍 Verificando autenticação...');
     
-    if (this.authManager.isLoggedIn()) {
-      const user = this.authManager.getCurrentUser();
-      console.log('✅ Usuário já logado:', user.name);
-      console.log('📋 Role:', user.role);
+    try {
+      console.log('🔍 Verificando se authManager existe...');
+      if (!this.authManager) {
+        console.error('❌ authManager não existe!');
+        return;
+      }
       
-      // Usuário está logado - mostrar sistema
-      this.showSystemInterface(user);
-    } else {
-      console.log('❌ Usuário não está logado');
+      console.log('🔍 Verificando método isLoggedIn...');
+      if (typeof this.authManager.isLoggedIn !== 'function') {
+        console.error('❌ isLoggedIn não é uma função!');
+        return;
+      }
       
-      // Usuário não está logado - mostrar tela de login
+      const isLoggedIn = this.authManager.isLoggedIn();
+      console.log('🔍 Resultado isLoggedIn:', isLoggedIn);
+      
+      if (isLoggedIn) {
+        console.log('🔍 Obtendo usuário atual...');
+        const user = this.authManager.getCurrentUser();
+        console.log('✅ Usuário já logado:', user);
+        console.log('📋 Role:', user?.role);
+        
+        if (user) {
+          // Usuário está logado - mostrar sistema
+          this.showSystemInterface(user);
+        } else {
+          console.error('❌ Usuário está null mesmo com isLoggedIn true!');
+          this.showLoginScreen();
+        }
+      } else {
+        console.log('❌ Usuário não está logado');
+        
+        // Usuário não está logado - mostrar tela de login
+        this.showLoginScreen();
+      }
+    } catch (error) {
+      console.error('❌ Erro em checkAuthentication:', error);
       this.showLoginScreen();
     }
   }
