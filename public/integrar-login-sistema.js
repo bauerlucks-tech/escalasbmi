@@ -416,6 +416,22 @@ class SystemAuthIntegration {
         
         setTimeout(() => {
           // Forçar reload completo para garantir que React recarregue com usuário correto
+          console.log('🔄 Disparando evento externalLogin para React...');
+          
+          // Disparar evento para React saber que usuário logou
+          try {
+            const event = new CustomEvent('externalLogin', {
+              detail: { 
+                user: result.user,
+                timestamp: new Date().toISOString()
+              }
+            });
+            window.dispatchEvent(event);
+            console.log('✅ Evento externalLogin disparado para React');
+          } catch (error) {
+            console.error('❌ Erro ao disparar evento externalLogin:', error);
+          }
+          
           console.log('🔄 Forçando reload completo...');
           window.location.reload();
         }, 1000);
