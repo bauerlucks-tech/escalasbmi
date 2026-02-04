@@ -13,7 +13,7 @@ import AuditLogsView from '@/components/AuditLogsView';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('schedule');
-  const { currentUser } = useAuth();
+  const { currentUser, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   // Redireciona RICARDO se tentar acessar as abas de troca ou solicitações
@@ -45,7 +45,7 @@ const Dashboard: React.FC = () => {
       case 'audit':
         return <AuditLogsView />;
       case 'vacations':
-        return currentUser?.role === 'administrador' ? <VacationAdminView /> : <VacationRequestView />;
+        return isAdmin(currentUser) ? <VacationAdminView /> : <VacationRequestView />;
       case 'test':
         return (
           <div className="text-center py-12">
