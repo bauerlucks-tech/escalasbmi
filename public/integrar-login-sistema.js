@@ -45,99 +45,96 @@ class SystemAuthIntegration {
   // Carregar gerenciador de autenticação
   async loadAuthManager() {
     return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'data:text/javascript;base64,' + btoa(`
-        class DirectAuthManager {
-          constructor() {
-            this.supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-            this.supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
-            this.currentUser = null;
-          }
+      // Definir DirectAuthManager diretamente no window
+      window.DirectAuthManager = class DirectAuthManager {
+        constructor() {
+          this.supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
+          this.supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+          this.currentUser = null;
+        }
 
-          async login(username, password) {
-            try {
-              const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
-                headers: {
-                  'apikey': this.supabaseServiceKey,
-                  'Authorization': 'Bearer ' + this.supabaseServiceKey,
-                  'Content-Type': 'application/json'
-                }
-              });
-              
-              const users = await response.json();
-              if (!users || users.length === 0) {
-                return { success: false, error: 'Usuário ou senha inválidos' };
+        async login(username, password) {
+          try {
+            const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
+              headers: {
+                'apikey': this.supabaseServiceKey,
+                'Authorization': 'Bearer ' + this.supabaseServiceKey,
+                'Content-Type': 'application/json'
               }
-              
-              const user = users[0];
-              this.currentUser = user;
-              localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
-              
-              return { success: true, user: user };
-            } catch (error) {
-              return { success: false, error: error.message };
-            }
-          }
-
-          isLoggedIn() {
-            if (!this.currentUser) {
-              const storedUser = localStorage.getItem('directAuth_currentUser');
-              if (storedUser) {
-                this.currentUser = JSON.parse(storedUser);
-              }
-            }
-            return this.currentUser !== null;
-          }
-
-          getCurrentUser() {
-            if (!this.currentUser) {
-              const storedUser = localStorage.getItem('directAuth_currentUser');
-              if (storedUser) {
-                this.currentUser = JSON.parse(storedUser);
-              }
-            }
-            return this.currentUser;
-          }
-
-          async logout() {
-            this.currentUser = null;
-            localStorage.removeItem('directAuth_currentUser');
-            localStorage.removeItem('reactCurrentUser');
-            localStorage.removeItem('escala_currentUser');
-            localStorage.removeItem('currentUser');
+            });
             
-            // Limpar cache de escalas para forçar recarregamento
-            localStorage.removeItem('escala_scheduleStorage');
-            localStorage.removeItem('escala_scheduleData');
-            localStorage.removeItem('escala_currentSchedules');
-            localStorage.removeItem('escala_archivedSchedules');
-            
-            console.log('🧹 Cache de escalas limpo');
-            
-            // Disparar evento para React
-            try {
-              const event = new CustomEvent('externalLogout', {
-                detail: { timestamp: new Date().toISOString() }
-              });
-              window.dispatchEvent(event);
-              console.log('🔄 Evento externalLogout disparado para React');
-            } catch (error) {
-              console.error('❌ Erro ao disparar evento logout:', error);
+            const users = await response.json();
+            if (!users || users.length === 0) {
+              return { success: false, error: 'Usuário ou senha inválidos' };
             }
             
-            // Forçar reload completo para limpar qualquer cache restante
-            console.log('🔄 Forçando reload completo...');
-            window.location.reload();
+            const user = users[0];
+            this.currentUser = user;
+            localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
             
-            return { success: true };
+            return { success: true, user };
+          } catch (error) {
+            console.error('Erro no login:', error);
+            return { success: false, error: 'Erro ao conectar com o servidor' };
           }
         }
-        
-        window.DirectAuthManager = DirectAuthManager;
-      `);
-      script.onload = resolve;
-      script.onerror = reject;
-      document.head.appendChild(script);
+
+        isLoggedIn() {
+          if (!this.currentUser) {
+            const storedUser = localStorage.getItem('directAuth_currentUser');
+            if (storedUser) {
+              this.currentUser = JSON.parse(storedUser);
+            }
+          }
+          return this.currentUser !== null;
+        }
+
+        getCurrentUser() {
+          if (!this.currentUser) {
+            const storedUser = localStorage.getItem('directAuth_currentUser');
+            if (storedUser) {
+              this.currentUser = JSON.parse(storedUser);
+            }
+          }
+          return this.currentUser;
+        }
+
+        async logout() {
+          this.currentUser = null;
+          localStorage.removeItem('directAuth_currentUser');
+          localStorage.removeItem('reactCurrentUser');
+          localStorage.removeItem('escala_currentUser');
+          localStorage.removeItem('currentUser');
+          
+          // Limpar cache de escalas
+          localStorage.removeItem('escala_scheduleStorage');
+          localStorage.removeItem('escala_scheduleData');
+          localStorage.removeItem('escala_currentSchedules');
+          localStorage.removeItem('escala_archivedSchedules');
+          
+          console.log('🧹 Cache de escalas limpo');
+          
+          // Disparar evento para React
+          try {
+            const event = new CustomEvent('externalLogout', {
+              detail: { timestamp: new Date().toISOString() }
+            });
+            window.dispatchEvent(event);
+            console.log('🔄 Evento externalLogout disparado para React');
+          } catch (error) {
+            console.error('❌ Erro ao disparar evento logout:', error);
+          }
+          
+          // Forçar reload completo
+          console.log('🔄 Forçando reload completo...');
+          window.location.reload();
+          
+          return { success: true };
+        }
+      };
+      
+      console.log('✅ DirectAuthManager definido diretamente');
+      resolve();
     });
   }
 
