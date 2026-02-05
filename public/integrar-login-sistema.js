@@ -101,12 +101,10 @@ class SystemAuthIntegration {
       // Definir DirectAuthManager diretamente no window
       window.DirectAuthManager = class DirectAuthManager {
         constructor() {
-          this.supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-          // SECURITY WARNING: This should be loaded from environment variables
-          // The service_role key has been revoked and must be rotated in Supabase dashboard
-          this.supabaseServiceKey = window.ENV?.SUPABASE_SERVICE_KEY || localStorage.getItem('temp_service_key') || '';
+          this.supabaseUrl = window.ENV?.SUPABASE_URL || 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
+          this.supabaseServiceKey = window.ENV?.SUPABASE_ANON_KEY || '';
           if (!this.supabaseServiceKey) {
-            console.warn('⚠️ SUPABASE_SERVICE_KEY not configured. Authentication will fail.');
+            console.warn('⚠️ SUPABASE_ANON_KEY not configured. Authentication will fail.');
           }
           this.currentUser = null;
         }
