@@ -113,8 +113,10 @@ class SystemAuthIntegration {
 
         async login(username, password) {
           try {
-            // SECURITY FIX: Use POST with body instead of GET with password in URL
-            const response = await fetch(this.supabaseUrl + '/rest/v1/rpc/login_user', {
+            console.log('🔑 Tentando login com Supabase Auth...');
+            
+            // Usar autenticação nativa do Supabase
+            const { data, error } = await fetch(this.supabaseUrl + '/auth/v1/token?grant_type=password', {
               method: 'POST',
               headers: {
                 'apikey': this.supabaseServiceKey,
@@ -122,23 +124,48 @@ class SystemAuthIntegration {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                p_username: username,
-                p_password: password
+                email: username + '@escalasbmi.com', // Converter email para formato válido
+                password: password
               })
-            });
-            
-            const users = await response.json();
-            if (!users || users.length === 0) {
-              return { success: false, error: 'Usuário ou senha inválidos' };
+            }).then(response => response.json());
+
+            if (error) {
+              console.error('❌ Erro na autenticação Supabase:', error);
+              return { success: false, error: 'Erro na autenticação: ' + error.message };
             }
-            
+
+            if (!data.session) {
+              console.error('❌ Sessão não encontrada:', data);
+              return { success: false, error: 'Falha na autenticação' };
+            }
+
+            // Buscar dados completos do usuário na tabela users
+            const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&email=eq.' + username + '&status=eq.ativo', {
+              method: 'GET',
+              headers: {
+                'apikey': this.supabaseServiceKey,
+                'Authorization': 'Bearer ' + this.supabaseServiceKey,
+                'Content-Type': 'application/json'
+              }
+            });
+
+            const users = await userResponse.json();
+            if (!users || users.length === 0) {
+              console.error('❌ Usuário não encontrado na tabela users:', username);
+              return { success: false, error: 'Usuário não encontrado' };
+            }
+
             const user = users[0];
+            user.session = data.session; // Adicionar sessão ao objeto usuário
+            
             this.currentUser = user;
             localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
             
+            console.log('✅ Login bem-sucedido:', user.name);
             return { success: true, user };
+            
           } catch (error) {
-            console.error('Erro no login:', error);
+            console.error('❌ Erro no login:', error);
             return { success: false, error: 'Erro ao conectar com o servidor' };
           }
         }
