@@ -68,9 +68,15 @@ class SystemAuthIntegration {
     console.log('📱 Mostrando conteúdo principal com transição suave...');
     const rootElement = document.querySelector('#root');
     if (rootElement) {
+      // Primeiro remover display: none se existir
+      rootElement.style.display = '';
+      // Aplicar transição suave
       rootElement.style.transition = 'opacity 0.3s ease-in-out';
       rootElement.style.visibility = 'visible';
       rootElement.style.opacity = '1';
+      console.log('✅ Elemento #root mostrado com transição suave');
+    } else {
+      console.warn('❌ Elemento #root não encontrado');
     }
   }
 
@@ -278,7 +284,7 @@ class SystemAuthIntegration {
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
       transition: all 0.3s ease !important;
     `;
-    header.innerHTML = `<span data-version-display="header">v2.0 (4befc43)</span>`;
+    header.innerHTML = `<span data-version-display="header">v2.0</span>`;
     
     // Adicionar hover effect
     header.addEventListener('mouseenter', () => {
@@ -383,7 +389,7 @@ class SystemAuthIntegration {
       if (element.dataset.versionDisplay === 'login') {
         element.innerHTML = `Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>`;
       } else if (element.dataset.versionDisplay === 'header') {
-        element.textContent = `v2.0 (${commitHash})`;
+        element.textContent = `v2.0`; // Mostrar apenas v2.0 sem o hash
       }
     });
   }
