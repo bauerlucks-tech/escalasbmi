@@ -320,6 +320,17 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     // Find the entries for both dates in their respective month schedules
+    console.log('🔍 Buscando entradas específicas:', {
+      dataOriginal: request.originalDate,
+      dataAlvo: request.targetDate,
+      totalOriginalEntries: originalMonthSchedule.entries.length,
+      totalTargetEntries: targetMonthSchedule.entries.length
+    });
+    
+    // Debug: mostrar primeiras 5 entradas de cada schedule
+    console.log('📋 Primeiras entradas - Original:', originalMonthSchedule.entries.slice(0, 5).map(e => ({ date: e.date, meioPeriodo: e.meioPeriodo })));
+    console.log('📋 Primeiras entradas - Alvo:', targetMonthSchedule.entries.slice(0, 5).map(e => ({ date: e.date, meioPeriodo: e.meioPeriodo })));
+    
     const originalEntry = originalMonthSchedule.entries.find(e => e.date === request.originalDate);
     const targetEntry = targetMonthSchedule.entries.find(e => e.date === request.targetDate);
     
