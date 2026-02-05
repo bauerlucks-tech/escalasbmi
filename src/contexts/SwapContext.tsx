@@ -331,8 +331,28 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     console.log('📋 Primeiras entradas - Original:', originalMonthSchedule.entries.slice(0, 5).map(e => ({ date: e.date, meioPeriodo: e.meioPeriodo })));
     console.log('📋 Primeiras entradas - Alvo:', targetMonthSchedule.entries.slice(0, 5).map(e => ({ date: e.date, meioPeriodo: e.meioPeriodo })));
     
-    const originalEntry = originalMonthSchedule.entries.find(e => e.date === request.originalDate);
-    const targetEntry = targetMonthSchedule.entries.find(e => e.date === request.targetDate);
+    const originalEntry = originalMonthSchedule.entries.find(e => {
+      console.log('🔍 Comparando original:', {
+        dataNoSchedule: e.date,
+        dataNoRequest: request.originalDate,
+        tipoDataNoSchedule: typeof e.date,
+        tipoDataNoRequest: typeof request.originalDate,
+        saoIguais: e.date === request.originalDate,
+        comparacaoTrim: e.date.trim() === request.originalDate.trim()
+      });
+      return e.date === request.originalDate;
+    });
+    const targetEntry = targetMonthSchedule.entries.find(e => {
+      console.log('🔍 Comparando alvo:', {
+        dataNoSchedule: e.date,
+        dataNoRequest: request.targetDate,
+        tipoDataNoSchedule: typeof e.date,
+        tipoDataNoRequest: typeof request.targetDate,
+        saoIguais: e.date === request.targetDate,
+        comparacaoTrim: e.date.trim() === request.targetDate.trim()
+      });
+      return e.date === request.targetDate;
+    });
     
     console.log('🔍 Entradas encontradas:', {
       originalEntry: originalEntry ? `${request.originalDate}: ${JSON.stringify(originalEntry)}` : 'NÃO ENCONTRADA',
