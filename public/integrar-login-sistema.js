@@ -236,6 +236,9 @@ class SystemAuthIntegration {
       loginScreen.remove();
     }
     
+    // Adicionar header com versão no canto superior esquerdo
+    this.addVersionHeader();
+    
     // Sincronizar com AuthContext do React
     this.syncWithReactUser(user);
     
@@ -246,6 +249,54 @@ class SystemAuthIntegration {
     this.connectReactLogoutButton();
     
     // NÃO adicionar header ou barra - apenas mostrar sistema
+  }
+
+  // Adicionar header com versão no canto superior esquerdo
+  addVersionHeader() {
+    // Remover header anterior se existir
+    const existingHeader = document.getElementById('version-header');
+    if (existingHeader) {
+      existingHeader.remove();
+    }
+    
+    // Criar header com versão
+    const header = document.createElement('div');
+    header.id = 'version-header';
+    header.style.cssText = `
+      position: fixed !important;
+      top: 10px !important;
+      left: 10px !important;
+      z-index: 1000 !important;
+      background: rgba(15, 23, 42, 0.9) !important;
+      color: #fff !important;
+      padding: 8px 12px !important;
+      border-radius: 8px !important;
+      font-size: 12px !important;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace !important;
+      backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+      transition: all 0.3s ease !important;
+    `;
+    header.innerHTML = `<span data-version-display="header">v2.0 (4befc43)</span>`;
+    
+    // Adicionar hover effect
+    header.addEventListener('mouseenter', () => {
+      header.style.transform = 'scale(1.05)';
+      header.style.boxShadow = '0 8px 12px -2px rgba(0, 0, 0, 0.2)';
+    });
+    
+    header.addEventListener('mouseleave', () => {
+      header.style.transform = 'scale(1)';
+      header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+    });
+    
+    document.body.appendChild(header);
+    
+    // Atualizar versão dinamicamente
+    this.updateVersionDisplay();
+    
+    console.log('✅ Header de versão adicionado no canto superior esquerdo');
   }
 
   // Sincronizar usuário com AuthContext do React
@@ -285,10 +336,62 @@ class SystemAuthIntegration {
     }
   }
 
+  // Obter commit hash atual dinamicamente
+  getCurrentCommitHash() {
+    try {
+      // Tentar obter do sistema de build
+      if (typeof window !== 'undefined' && window.__COMMIT_HASH__) {
+        return window.__COMMIT_HASH__;
+      }
+      
+      // Tentar obter da API do GitHub
+      return this.fetchLatestCommit();
+    } catch (error) {
+      console.warn('Não foi possível obter hash do commit:', error);
+      return '4befc43'; // Fallback
+    }
+  }
+
+  // Buscar último commit do GitHub
+  async fetchLatestCommit() {
+    try {
+      const response = await fetch('https://api.github.com/repos/bauerlucks-tech/escalasbmi/commits/main', {
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'EscalasBMI-System'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.sha.substring(0, 7); // Primeiros 7 caracteres
+    } catch (error) {
+      console.warn('Erro ao buscar commit do GitHub:', error);
+      return '4befc43'; // Fallback
+    }
+  }
+
+  // Atualizar versão dinamicamente
+  async updateVersionDisplay() {
+    const commitHash = await this.getCurrentCommitHash();
+    const versionElements = document.querySelectorAll('[data-version-display]');
+    
+    versionElements.forEach(element => {
+      if (element.dataset.versionDisplay === 'login') {
+        element.innerHTML = `Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>`;
+      } else if (element.dataset.versionDisplay === 'header') {
+        element.textContent = `v2.0 (${commitHash})`;
+      }
+    });
+  }
+
   // Criar tela de login
   createLoginScreen() {
-    // Obter commit hash atual
-    const commitHash = '4befc43'; // Atualizado para commit mais recente
+    // Obter commit hash atual (será atualizado dinamicamente)
+    const commitHash = '4befc43'; // Placeholder inicial
     
     // Remover tela de login anterior se existir
     const existingScreen = document.getElementById('auth-login-screen');
@@ -395,7 +498,7 @@ class SystemAuthIntegration {
               </p>
             </div>
             <div style="text-align: center;">
-              <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem;">
+              <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem;" data-version-display="login">
                 Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>
               </p>
             </div>
@@ -408,6 +511,9 @@ class SystemAuthIntegration {
     console.log('✅ Tela de login adicionada ao body:', loginScreen);
     console.log('✅ Elemento existe no DOM:', document.getElementById('auth-login-screen'));
     console.log('✅ Estilos aplicados:', loginScreen.style.cssText);
+    
+    // Atualizar versão dinamicamente
+    this.updateVersionDisplay();
     
     // Forçar visibilidade adicional
     setTimeout(() => {
@@ -775,6 +881,10 @@ class SystemAuthIntegration {
       
       const userHeader = document.getElementById('auth-user-header');
       if (userHeader) userHeader.remove();
+      
+      // Remover header de versão
+      const versionHeader = document.getElementById('version-header');
+      if (versionHeader) versionHeader.remove();
       
       // Criar tela de login
       this.showLoginScreen();
