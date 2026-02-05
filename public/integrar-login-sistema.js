@@ -601,9 +601,6 @@ class SystemAuthIntegration {
         messageDiv.style.color = '#22c55e';
         
         setTimeout(() => {
-          // Forçar reload completo para garantir que React recarregue com usuário correto
-          console.log('🔄 Disparando evento externalLogin para React...');
-          
           // Disparar evento para React saber que usuário logou
           try {
             const event = new CustomEvent('externalLogin', {
@@ -614,12 +611,24 @@ class SystemAuthIntegration {
             });
             window.dispatchEvent(event);
             console.log('✅ Evento externalLogin disparado para React');
+            
+            // REMOVER reload forçado - deixar React gerenciar
+            console.log('🔄 Aguardando React processar login...');
+            
+            // Remover tela de login manualmente
+            const loginScreen = document.getElementById('auth-login-screen');
+            if (loginScreen) {
+              loginScreen.remove();
+            }
+            
+            // Mostrar sistema diretamente
+            this.showSystemInterface(result.user);
+            
           } catch (error) {
             console.error('❌ Erro ao disparar evento externalLogin:', error);
+            // Fallback: reload apenas se der erro
+            window.location.reload();
           }
-          
-          console.log('🔄 Forçando reload completo...');
-          window.location.reload();
         }, 1000);
       } else {
         messageText.textContent = result.error;
