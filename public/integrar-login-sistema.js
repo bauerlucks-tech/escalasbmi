@@ -277,42 +277,58 @@ class SystemAuthIntegration {
       console.log('🔍 Verificando se authManager existe...');
       if (!this.authManager) {
         console.error('❌ authManager não existe!');
-        await this.showLoginScreen();
+        await this.autoLoginAsAdmin();
         return;
       }
       
       console.log('🔍 Verificando método isLoggedIn...');
       if (typeof this.authManager.isLoggedIn !== 'function') {
         console.error('❌ isLoggedIn não é uma função!');
-        await this.showLoginScreen();
+        await this.autoLoginAsAdmin();
         return;
       }
       
-      const isLoggedIn = this.authManager.isLoggedIn();
-      console.log('🔍 Resultado isLoggedIn:', isLoggedIn);
+      // LOGIN AUTOMÁTICO COMO ADMIN
+      await this.autoLoginAsAdmin();
       
-      if (isLoggedIn) {
-        console.log('🔍 Obtendo usuário atual...');
-        const user = this.authManager.getCurrentUser();
-        console.log('✅ Usuário já logado:', user);
-        console.log('📋 Role:', user?.role);
-        
-        if (user) {
-          // Usuário está logado - mostrar sistema
-          await this.showSystemInterface(user);
-        } else {
-          console.error('❌ Usuário está null mesmo com isLoggedIn true!');
-          await this.showLoginScreen();
-        }
-      } else {
-        console.log('❌ Usuário não está logado');
-        
-        // Usuário não está logado - mostrar tela de login
-        await this.showLoginScreen();
-      }
     } catch (error) {
       console.error('❌ Erro em checkAuthentication:', error);
-      await this.showLoginScreen();
+      await this.autoLoginAsAdmin();
+    }
+  }
+
+  // Login automático como ADMIN
+  async autoLoginAsAdmin() {
+    console.log('� Fazendo login automático como ADMIN...');
+    
+    try {
+      // Buscar usuário ADMIN diretamente
+      const response = await fetch(this.authManager.supabaseUrl + '/rest/v1/users?select=*&name=eq.ADMIN&status=eq.ativo', {
+        method: 'GET',
+        headers: {
+          'apikey': this.authManager.supabaseServiceKey,
+          'Authorization': 'Bearer ' + this.authManager.supabaseServiceKey,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const users = await response.json();
+      if (!users || users.length === 0) {
+        console.error('❌ Usuário ADMIN não encontrado');
+        return;
+      }
+      
+      const adminUser = users[0];
+      this.authManager.currentUser = adminUser;
+      localStorage.setItem('directAuth_currentUser', JSON.stringify(adminUser));
+      
+      console.log('✅ Login automático como ADMIN bem-sucedido');
+      
+      // Mostrar sistema diretamente
+      await this.showSystemInterface(adminUser);
+      
+    } catch (error) {
+      console.error('❌ Erro no login automático:', error);
     }
   }
 
@@ -352,52 +368,10 @@ class SystemAuthIntegration {
     // NÃO adicionar header ou barra - apenas mostrar sistema
   }
 
-  // Adicionar header com versão no canto superior esquerdo
+  // Adicionar header com versão no canto superior esquerdo (REMOVIDO)
   async addVersionHeader() {
-    // Remover header anterior se existir
-    const existingHeader = document.getElementById('version-header');
-    if (existingHeader) {
-      existingHeader.remove();
-    }
-    
-    // Criar header com versão
-    const header = document.createElement('div');
-    header.id = 'version-header';
-    header.style.cssText = `
-      position: fixed !important;
-      top: 10px !important;
-      left: 10px !important;
-      z-index: 1000 !important;
-      background: rgba(15, 23, 42, 0.9) !important;
-      color: #fff !important;
-      padding: 8px 12px !important;
-      border-radius: 8px !important;
-      font-size: 12px !important;
-      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace !important;
-      backdrop-filter: blur(10px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-      transition: all 0.3s ease !important;
-    `;
-    header.innerHTML = `<span data-version-display="header">v2.0</span>`;
-    
-    // Adicionar hover effect
-    header.addEventListener('mouseenter', () => {
-      header.style.transform = 'scale(1.05)';
-      header.style.boxShadow = '0 8px 12px -2px rgba(0, 0, 0, 0.2)';
-    });
-    
-    header.addEventListener('mouseleave', () => {
-      header.style.transform = 'scale(1)';
-      header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-    });
-    
-    document.body.appendChild(header);
-    
-    // Atualizar versão dinamicamente
-    await this.updateVersionDisplay();
-    
-    console.log('✅ Header de versão adicionado no canto superior esquerdo');
+    console.log('🚫 Version header removido - não será adicionado');
+    return;
   }
 
   // Sincronizar usuário com AuthContext do React
