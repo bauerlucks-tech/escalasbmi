@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { VacationRequest, VacationStatus } from '@/data/scheduleData';
 import { SupabaseAPI } from '@/lib/supabase';
 import { useAuth } from './AuthContext';
+import { useSwap } from './SwapContext';
 
 interface VacationContextType {
   vacationRequests: VacationRequest[];
@@ -38,6 +39,7 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { currentUser } = useAuth();
+  const { currentSchedules } = useSwap(); // Get schedules from SwapContext
 
   // Load vacation requests from Supabase
   const refreshVacations = async () => {
@@ -389,14 +391,47 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
   };
 
   const getOperatorWithLeastDays = (month: number, year: number, excludeOperatorId?: string): string | null => {
-    // This is a simplified version - in a real implementation, you would:
-    // 1. Get all operators
-    // 2. Count days worked in the month
-    // 3. Exclude the specified operator
-    // 4. Return the operator with least days
-    
-    // For now, return a placeholder
-    return 'SUBSTITUTO';
+    try {
+      // Get all operators from the system
+      const operators = ['LUCAS', 'CARLOS', 'ROSANA', 'HENRIQUE', 'KELLY', 'GUILHERME'];
+      
+      // Get schedule for this month
+      const monthSchedules = currentSchedules.find(s => s.month === month && s.year === year);
+      if (!monthSchedules) return null;
+      
+      // Count working days for each operator (excluding the one on vacation)
+      const operatorDays: { [key: string]: number } = {};
+      
+      operators.forEach(op => {
+        if (op === excludeOperatorId) return; // Skip the operator on vacation
+        
+        let days = 0;
+        monthSchedules.entries.forEach(entry => {
+          if (entry.meioPeriodo === op || entry.fechamento === op) {
+            days++;
+          }
+        });
+        
+        operatorDays[op] = days;
+      });
+      
+      // Find operator with least days
+      let minDays = Infinity;
+      let bestOperator = null;
+      
+      Object.entries(operatorDays).forEach(([operator, days]) => {
+        if (days < minDays) {
+          minDays = days;
+          bestOperator = operator;
+        }
+      });
+      
+      console.log('📊 Contagem de dias dos operadores:', { month, year, excludeOperatorId, operatorDays, bestOperator });
+      return bestOperator;
+    } catch (error) {
+      console.error('❌ Erro ao calcular operador com menos dias:', error);
+      return null;
+    }
   };
 
   const value: VacationContextType = {
