@@ -44,6 +44,40 @@ interface SwapContextType {
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
 
+// Função de teste global para debugging
+(window as any).testSwapFunction = async () => {
+  console.log('🧪 INICIANDO TESTE MANUAL DA FUNÇÃO DE TROCA...');
+  
+  try {
+    // Buscar escalas do Supabase
+    const allSchedules = await SupabaseAPI.getMonthSchedules();
+    console.log('📋 Total de schedules encontrados:', allSchedules.length);
+    
+    // Verificar escalas de dezembro
+    const decemberSchedule = allSchedules.find(s => s.month === 12 && s.year === 2026);
+    console.log('📅 Escala dezembro 2026:', decemberSchedule ? 'ENCONTRADA' : 'NÃO ENCONTRADA');
+    
+    if (decemberSchedule) {
+      console.log('📋 Primeiras 5 datas:', decemberSchedule.entries.slice(0, 5).map(e => e.date));
+      console.log('📋 Últimas 5 datas:', decemberSchedule.entries.slice(-5).map(e => e.date));
+      
+      // Verificar datas específicas
+      const day30 = decemberSchedule.entries.find(e => e.date === '30/12/2026');
+      const day31 = decemberSchedule.entries.find(e => e.date === '31/12/2026');
+      
+      console.log('🔍 30/12/2026:', day30 ? day30.meioPeriodo : 'NÃO ENCONTRADO');
+      console.log('🔍 31/12/2026:', day31 ? day31.meioPeriodo : 'NÃO ENCONTRADO');
+    }
+    
+    console.log('✅ TESTE CONCLUÍDO COM SUCESSO');
+    return { success: true, schedules: allSchedules.length };
+    
+  } catch (error) {
+    console.error('❌ ERRO NO TESTE:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([]);
 
