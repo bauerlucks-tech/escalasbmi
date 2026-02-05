@@ -47,7 +47,7 @@ class SystemAuthIntegration {
       console.error('❌ Erro na inicialização:', error);
       console.error('❌ Stack:', error.stack);
       // Em caso de erro, mostrar tela de login
-      this.showLoginScreen();
+      await this.showLoginScreen();
       this.authChecked = true;
     }
   }
@@ -198,36 +198,36 @@ class SystemAuthIntegration {
         
         if (user) {
           // Usuário está logado - mostrar sistema
-          this.showSystemInterface(user);
+          await this.showSystemInterface(user);
         } else {
           console.error('❌ Usuário está null mesmo com isLoggedIn true!');
-          this.showLoginScreen();
+          await this.showLoginScreen();
         }
       } else {
         console.log('❌ Usuário não está logado');
         
         // Usuário não está logado - mostrar tela de login
-        this.showLoginScreen();
+        await this.showLoginScreen();
       }
     } catch (error) {
       console.error('❌ Erro em checkAuthentication:', error);
-      this.showLoginScreen();
+      await this.showLoginScreen();
     }
   }
 
   // Mostrar tela de login
-  showLoginScreen() {
+  async showLoginScreen() {
     console.log('🖥️ Mostrando tela de login...');
     
     // Esconder conteúdo principal
     this.hideMainContent();
     
     // Criar tela de login
-    this.createLoginScreen();
+    await this.createLoginScreen();
   }
 
   // Mostrar interface do sistema
-  showSystemInterface(user) {
+  async showSystemInterface(user) {
     console.log(`📱 Mostrando interface do sistema para: ${user.name}`);
     
     // Remover tela de login se existir
@@ -237,7 +237,7 @@ class SystemAuthIntegration {
     }
     
     // Adicionar header com versão no canto superior esquerdo
-    this.addVersionHeader();
+    await this.addVersionHeader();
     
     // Sincronizar com AuthContext do React
     this.syncWithReactUser(user);
@@ -252,7 +252,7 @@ class SystemAuthIntegration {
   }
 
   // Adicionar header com versão no canto superior esquerdo
-  addVersionHeader() {
+  async addVersionHeader() {
     // Remover header anterior se existir
     const existingHeader = document.getElementById('version-header');
     if (existingHeader) {
@@ -294,7 +294,7 @@ class SystemAuthIntegration {
     document.body.appendChild(header);
     
     // Atualizar versão dinamicamente
-    this.updateVersionDisplay();
+    await this.updateVersionDisplay();
     
     console.log('✅ Header de versão adicionado no canto superior esquerdo');
   }
@@ -337,7 +337,7 @@ class SystemAuthIntegration {
   }
 
   // Obter commit hash atual dinamicamente
-  getCurrentCommitHash() {
+  async getCurrentCommitHash() {
     try {
       // Tentar obter do sistema de build
       if (typeof window !== 'undefined' && window.__COMMIT_HASH__) {
@@ -345,7 +345,7 @@ class SystemAuthIntegration {
       }
       
       // Tentar obter da API do GitHub
-      return this.fetchLatestCommit();
+      return await this.fetchLatestCommit();
     } catch (error) {
       console.warn('Não foi possível obter hash do commit:', error);
       return '4befc43'; // Fallback
@@ -389,7 +389,7 @@ class SystemAuthIntegration {
   }
 
   // Criar tela de login
-  createLoginScreen() {
+  async createLoginScreen() {
     // Obter commit hash atual (será atualizado dinamicamente)
     const commitHash = '4befc43'; // Placeholder inicial
     
@@ -513,7 +513,7 @@ class SystemAuthIntegration {
     console.log('✅ Estilos aplicados:', loginScreen.style.cssText);
     
     // Atualizar versão dinamicamente
-    this.updateVersionDisplay();
+    await this.updateVersionDisplay();
     
     // Forçar visibilidade adicional
     setTimeout(() => {
