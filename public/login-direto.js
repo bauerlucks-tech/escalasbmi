@@ -4,7 +4,12 @@
 class DirectAuthManager {
   constructor() {
     this.supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-    this.supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+    // SECURITY WARNING: This should be loaded from environment variables
+    // The service_role key has been revoked and must be rotated in Supabase dashboard
+    this.supabaseServiceKey = window.ENV?.SUPABASE_SERVICE_KEY || localStorage.getItem('temp_service_key') || '';
+    if (!this.supabaseServiceKey) {
+      console.warn('⚠️ SUPABASE_SERVICE_KEY not configured. Authentication will fail.');
+    }
     this.currentUser = null;
   }
 
@@ -13,14 +18,18 @@ class DirectAuthManager {
     console.log('🔑 Fazendo login direto:', username);
     
     try {
-      // Buscar usuário usando Service Key (contorna RLS)
-      const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
-        method: 'GET',
+      // SECURITY FIX: Use POST with body instead of GET with password in URL
+      const response = await fetch(this.supabaseUrl + '/rest/v1/rpc/login_user', {
+        method: 'POST',
         headers: {
           'apikey': this.supabaseServiceKey,
           'Authorization': 'Bearer ' + this.supabaseServiceKey,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          p_username: username,
+          p_password: password
+        })
       });
       
       if (!response.ok) {
@@ -68,7 +77,7 @@ class DirectAuthManager {
       
     } catch (error) {
       console.error('❌ Erro no login:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -133,7 +142,7 @@ class DirectAuthManager {
       
     } catch (error) {
       console.error('❌ Erro no logout:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -142,7 +151,13 @@ class DirectAuthManager {
     if (!this.currentUser) {
       const storedUser = localStorage.getItem('directAuth_currentUser');
       if (storedUser) {
-        this.currentUser = JSON.parse(storedUser);
+        try {
+          this.currentUser = JSON.parse(storedUser);
+        } catch (e) {
+          console.error('Failed to parse stored user:', e);
+          localStorage.removeItem('directAuth_currentUser');
+          return false;
+        }
       }
     }
     return this.currentUser !== null;
@@ -153,7 +168,13 @@ class DirectAuthManager {
     if (!this.currentUser) {
       const storedUser = localStorage.getItem('directAuth_currentUser');
       if (storedUser) {
-        this.currentUser = JSON.parse(storedUser);
+        try {
+          this.currentUser = JSON.parse(storedUser);
+        } catch (e) {
+          console.error('Failed to parse stored user:', e);
+          localStorage.removeItem('directAuth_currentUser');
+          return null;
+        }
       }
     }
     return this.currentUser;
@@ -183,7 +204,12 @@ async function configurarSenhasDireto() {
   console.log('========================================');
   
   try {
-    const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+    // SECURITY FIX: Get key from environment or secure storage instead of hardcoding
+    const serviceKey = window.ENV?.SUPABASE_SERVICE_KEY || localStorage.getItem('temp_service_key');
+    if (!serviceKey) {
+      console.error('❌ SUPABASE_SERVICE_KEY not configured');
+      return { updated: 0, errors: 1, total: 0 };
+    }
     const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
     
     // Buscar usuários atuais
@@ -245,7 +271,7 @@ async function configurarSenhasDireto() {
           errors++;
         }
       } catch (error) {
-        console.log('❌ Erro ao atualizar ' + user.name + ': ' + error.message);
+        console.log('❌ Erro ao atualizar ' + user.name + ': ' + (error instanceof Error ? error.message : String(error)));
         errors++;
       }
     }

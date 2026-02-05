@@ -134,11 +134,12 @@ jobs:
           fi' || true
 
           # Neutralize global window.fetch overwrites: comment them out and log a warning
-          # This is conservative: comments out patterns 'window.fetch = function' through next '};'
-          git ls-files | xargs -I{} bash -c 'awk '\''{print NR ":" $0}'\'' "{}" | grep -n "window.fetch[s]*\\s*=\\s*function" >/dev/null 2>&1
-          if [ $? -eq 0 ]; then
-            perl -0777 -pe '"'"'s/(window\.fetch\s*=\s*function\s*\([^\)]*\)\s*\{.*?\}\s*;)/\/\/ [AUTOFIX] disabled window.fetch override: $1/smg'"'"' -i "{}"
-          fi' || true
+          # Fixed: proper iteration over files
+          for file in $(git ls-files); do
+            if grep -q 'window\.fetch\s*=' "$file" 2>/dev/null; then
+              perl -0777 -i -pe 's/(window\.fetch\s*=\s*function\s*\([^)]*\)\s*\{.*?\}\s*;)/\/\/ [AUTOFIX] disabled: $1/smg' "$file" || true
+            fi
+          done
 
       - name: Stage and commit changes
         run: |

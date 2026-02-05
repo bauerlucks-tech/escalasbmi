@@ -87,18 +87,29 @@ class SystemAuthIntegration {
       window.DirectAuthManager = class DirectAuthManager {
         constructor() {
           this.supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-          this.supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+          // SECURITY WARNING: This should be loaded from environment variables
+          // The service_role key has been revoked and must be rotated in Supabase dashboard
+          this.supabaseServiceKey = window.ENV?.SUPABASE_SERVICE_KEY || localStorage.getItem('temp_service_key') || '';
+          if (!this.supabaseServiceKey) {
+            console.warn('⚠️ SUPABASE_SERVICE_KEY not configured. Authentication will fail.');
+          }
           this.currentUser = null;
         }
 
         async login(username, password) {
           try {
-            const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
+            // SECURITY FIX: Use POST with body instead of GET with password in URL
+            const response = await fetch(this.supabaseUrl + '/rest/v1/rpc/login_user', {
+              method: 'POST',
               headers: {
                 'apikey': this.supabaseServiceKey,
                 'Authorization': 'Bearer ' + this.supabaseServiceKey,
                 'Content-Type': 'application/json'
-              }
+              },
+              body: JSON.stringify({
+                p_username: username,
+                p_password: password
+              })
             });
             
             const users = await response.json();
@@ -121,7 +132,13 @@ class SystemAuthIntegration {
           if (!this.currentUser) {
             const storedUser = localStorage.getItem('directAuth_currentUser');
             if (storedUser) {
-              this.currentUser = JSON.parse(storedUser);
+              try {
+                this.currentUser = JSON.parse(storedUser);
+              } catch (e) {
+                console.error('Failed to parse stored user:', e);
+                localStorage.removeItem('directAuth_currentUser');
+                return false;
+              }
             }
           }
           return this.currentUser !== null;
@@ -131,7 +148,13 @@ class SystemAuthIntegration {
           if (!this.currentUser) {
             const storedUser = localStorage.getItem('directAuth_currentUser');
             if (storedUser) {
-              this.currentUser = JSON.parse(storedUser);
+              try {
+                this.currentUser = JSON.parse(storedUser);
+              } catch (e) {
+                console.error('Failed to parse stored user:', e);
+                localStorage.removeItem('directAuth_currentUser');
+                return null;
+              }
             }
           }
           return this.currentUser;
@@ -184,12 +207,14 @@ class SystemAuthIntegration {
       console.log('🔍 Verificando se authManager existe...');
       if (!this.authManager) {
         console.error('❌ authManager não existe!');
+        await this.showLoginScreen();
         return;
       }
       
       console.log('🔍 Verificando método isLoggedIn...');
       if (typeof this.authManager.isLoggedIn !== 'function') {
         console.error('❌ isLoggedIn não é uma função!');
+        await this.showLoginScreen();
         return;
       }
       
