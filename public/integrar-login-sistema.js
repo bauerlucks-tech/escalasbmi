@@ -618,6 +618,12 @@ class SystemAuthIntegration {
         setTimeout(() => {
           // Disparar evento para React saber que usuário logou
           try {
+            // Verificar se result.user existe antes de acessar
+            if (!result.user) {
+              console.error('❌ result.user is undefined:', result);
+              throw new Error('Usuário não encontrado no resultado do login');
+            }
+            
             const event = new CustomEvent('externalLogin', {
               detail: { 
                 user: result.user,
