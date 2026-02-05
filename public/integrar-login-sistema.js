@@ -68,13 +68,28 @@ class SystemAuthIntegration {
     console.log('📱 Mostrando conteúdo principal com transição suave...');
     const rootElement = document.querySelector('#root');
     if (rootElement) {
-      // Primeiro remover display: none se existir
+      // REMOVER todos os estilos de esconder
       rootElement.style.display = '';
-      // Aplicar transição suave
-      rootElement.style.transition = 'opacity 0.3s ease-in-out';
       rootElement.style.visibility = 'visible';
       rootElement.style.opacity = '1';
+      rootElement.style.position = '';
+      rootElement.style.top = '';
+      rootElement.style.left = '';
+      rootElement.style.width = '';
+      rootElement.style.height = '';
+      rootElement.style.zIndex = '';
+      
+      // Forçar reflow e aplicar transição
+      rootElement.style.transition = 'opacity 0.3s ease-in-out';
+      rootElement.style.opacity = '1';
+      
       console.log('✅ Elemento #root mostrado com transição suave');
+      console.log('🔍 Estilos atuais:', {
+        display: rootElement.style.display,
+        visibility: rootElement.style.visibility,
+        opacity: rootElement.style.opacity,
+        position: rootElement.style.position
+      });
     } else {
       console.warn('❌ Elemento #root não encontrado');
     }
