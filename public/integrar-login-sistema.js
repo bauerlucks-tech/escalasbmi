@@ -5,11 +5,15 @@ class SystemAuthIntegration {
   constructor() {
     this.authManager = null; // Não criar instância aqui
     this.isInitialized = false;
+    this.authChecked = false; // Nova flag para controlar piscamento
   }
 
   // Inicializar sistema
   async initialize() {
     console.log('🔧 Inicializando integração de autenticação...');
+    
+    // Ocultar conteúdo inicialmente para evitar piscamento
+    this.hideMainContentInitially();
     
     try {
       console.log('🔍 Verificando DirectAuthManager...');
@@ -35,10 +39,38 @@ class SystemAuthIntegration {
       console.log('🔍 Iniciando verificação de autenticação...');
       await this.checkAuthentication();
       
+      // Marcar que autenticação foi verificada
+      this.authChecked = true;
+      
       console.log('✅ Integração inicializada com sucesso');
     } catch (error) {
       console.error('❌ Erro na inicialização:', error);
       console.error('❌ Stack:', error.stack);
+      // Em caso de erro, mostrar tela de login
+      this.showLoginScreen();
+      this.authChecked = true;
+    }
+  }
+
+  // Ocultar conteúdo inicialmente para evitar piscamento
+  hideMainContentInitially() {
+    console.log('🔄 Ocultando conteúdo inicialmente...');
+    const rootElement = document.querySelector('#root');
+    if (rootElement) {
+      rootElement.style.visibility = 'hidden';
+      rootElement.style.opacity = '0';
+      rootElement.style.transition = 'none';
+    }
+  }
+
+  // Mostrar conteúdo com transição suave
+  showMainContentSmooth() {
+    console.log('📱 Mostrando conteúdo principal com transição suave...');
+    const rootElement = document.querySelector('#root');
+    if (rootElement) {
+      rootElement.style.transition = 'opacity 0.3s ease-in-out';
+      rootElement.style.visibility = 'visible';
+      rootElement.style.opacity = '1';
     }
   }
 
@@ -207,8 +239,8 @@ class SystemAuthIntegration {
     // Sincronizar com AuthContext do React
     this.syncWithReactUser(user);
     
-    // Mostrar conteúdo principal
-    this.showMainContent();
+    // Mostrar conteúdo principal com transição suave
+    this.showMainContentSmooth();
     
     // Conectar ao botão CORRETO do React
     this.connectReactLogoutButton();
@@ -537,6 +569,12 @@ class SystemAuthIntegration {
   // Mostrar conteúdo principal
   showMainContent() {
     console.log('📱 Mostrando conteúdo principal...');
+    
+    // Usar a função suave se a autenticação foi verificada
+    if (this.authChecked) {
+      this.showMainContentSmooth();
+      return;
+    }
     
     // Mostrar apenas o elemento #root (React app)
     const rootElement = document.querySelector('#root');
