@@ -1,6 +1,8 @@
-import { createRoot } from "react-dom/client";
+import { createRoot, Root } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+
+let appRoot: Root | null = null;
 
 // Verificar se usuário está logado antes de renderizar React
 const checkAuthAndRender = () => {
@@ -9,8 +11,11 @@ const checkAuthAndRender = () => {
   if (currentUser) {
     console.log('✅ Usuário logado, renderizando React');
     const root = document.getElementById("root");
-    if (root) {
-      createRoot(root).render(<App />);
+    if (root && !appRoot) {
+      appRoot = createRoot(root);
+      appRoot.render(<App />);
+    } else if (appRoot) {
+      appRoot.render(<App />);
     }
   } else {
     console.log('❌ Usuário não logado, aguardando login...');
@@ -30,8 +35,8 @@ window.addEventListener('externalLogin', () => {
 // Ouvir evento de logout do sistema externo
 window.addEventListener('externalLogout', () => {
   console.log('🔄 Evento externalLogout recebido, limpando React');
-  const root = document.getElementById("root");
-  if (root) {
-    root.innerHTML = ''; // Limpar conteúdo React
+  if (appRoot) {
+    appRoot.unmount();
+    appRoot = null;
   }
 });

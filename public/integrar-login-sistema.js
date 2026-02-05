@@ -6,6 +6,7 @@ class SystemAuthIntegration {
     this.authManager = null; // Não criar instância aqui
     this.isInitialized = false;
     this.authChecked = false; // Nova flag para controlar piscamento
+    this.loginEventDispatched = false; // Prevenir múltiplos eventos
   }
 
   // Inicializar sistema
@@ -678,6 +679,12 @@ class SystemAuthIntegration {
               throw new Error('Usuário não encontrado no resultado do login');
             }
             
+            // Prevenir múltiplos eventos
+            if (this.loginEventDispatched) {
+              console.log('⚠️ Evento de login já foi disparado, ignorando...');
+              return;
+            }
+            
             const event = new CustomEvent('externalLogin', {
               detail: { 
                 user: result.user,
@@ -685,6 +692,7 @@ class SystemAuthIntegration {
               }
             });
             window.dispatchEvent(event);
+            this.loginEventDispatched = true;
             console.log('✅ Evento externalLogin disparado para React');
             
             // REMOVER reload forçado - deixar React gerenciar
