@@ -16,6 +16,7 @@ import {
 } from '@/data/scheduleData';
 import { logSwapRequest, logSwapResponse, logSwapApproval, logScheduleImport } from '@/data/auditLogs';
 import { SupabaseAPI, SwapRequestSupabase } from '@/lib/supabase';
+import { getUserUUID, getAdminUUID } from '@/config/userMapping';
 
 interface SwapContextType {
   swapRequests: SwapRequest[];
@@ -74,7 +75,7 @@ const SwapContext = createContext<SwapContextType | undefined>(undefined);
     
   } catch (error) {
     console.error('❌ ERRO NO TESTE:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 };
 
@@ -136,8 +137,9 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     loadSwapRequests();
     
-    // Configurar intervalo para recarregar dados a cada 10 segundos
-    const interval = setInterval(loadSwapRequests, 10000);
+    // Configurar intervalo para recarregar dados a cada 30 segundos (otimizado)
+    // 10s era muito agressivo e causava performance issues
+    const interval = setInterval(loadSwapRequests, 30000);
     
     return () => clearInterval(interval);
   }, []);
@@ -507,17 +509,9 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Dados da solicitação de troca inválidos');
       }
       
-      // Mapear nomes para UUIDs - usando IDs reais do Supabase
-      const userUUIDs: { [key: string]: string } = {
-        'LUCAS': '3826fb9b-439b-49e2-bfb5-a85e6d3aba23',
-        'CARLOS': 'fd38b592-2986-430e-98be-d9d104d90442',
-        'ROSANA': 'd793d805-3468-4bc4-b7bf-a722b570ec98',
-        'HENRIQUE': '2e7e953f-5b4e-44e9-bc69-d463a92fa99a',
-        'KELLY': '9a91c13a-cf3a-4a08-af02-986163974acc'
-      };
-      
-      const requesterUUID = userUUIDs[request.requesterName] || request.requesterId;
-      const targetUUID = userUUIDs[request.targetName] || request.targetId;
+      // Mapear nomes para UUIDs usando configuração centralizada
+      const requesterUUID = getUserUUID(request.requesterName);
+      const targetUUID = getUserUUID(request.targetName);
       
       // Converter formato local para formato Supabase
       const supabaseRequest = {
@@ -751,7 +745,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Log de auditoria - Aprovação admin
       if (request) {
         await SupabaseAPI.addAuditLog(
-          'fd2513b2-3260-4ad2-97b1-6f5fbb88c192', // ID do admin RICARDO
+          getAdminUUID(), // UUID do admin da configuração
           adminName, 
           'SWAP_APPROVAL',
           `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
@@ -955,31 +949,6 @@ export const useSwap = () => {
   return context;
 };
 
-// Função de teste para debugging - exposta globalmente
-if (typeof window !== 'undefined') {
-  (window as any).testApplySwap = async () => {
-    console.log('🧪 INICIANDO TESTE MANUAL applySwapToSchedule');
-    try {
-      const { applySwapToSchedule } = useSwap();
-      await applySwapToSchedule({
-        id: '59590e15-adfe-4171-a3b0-8f8483d22bc6',
-        requesterId: '3826fb9b-439b-49e2-bfb5-a85e6d3aba23',
-        requesterName: 'LUCAS',
-        targetId: 'fd38b592-2986-430e-98be-d9d104d90442',
-        targetName: 'CARLOS',
-        originalDate: '16/09/2026',
-        originalShift: 'meioPeriodo',
-        targetDate: '15/09/2026',
-        targetShift: 'meioPeriodo',
-        status: 'approved',
-        adminApproved: true,
-        adminApprovedAt: new Date().toISOString(),
-        adminApprovedBy: 'TESTE',
-        createdAt: new Date().toISOString()
-      });
-      console.log('✅ TESTE MANUAL CONCLUÍDO COM SUCESSO');
-    } catch (error) {
-      console.error('❌ ERRO NO TESTE MANUAL:', error);
-    }
-  };
-}
+// Função de teste para debugging - REMOVIDA por violar Rules of Hooks
+// useSwap() não pode ser chamado condicionalmente fora do React
+// Para testes, use o console diretamente ou crie um componente de teste

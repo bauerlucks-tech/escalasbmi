@@ -191,11 +191,11 @@ const RequestsView: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground ml-10">
                       <Calendar className="w-4 h-4" />
-                      <span>Vou ceder: Dia {request.originalDate.split('/')[0]} de {getMonthName(parseInt(request.originalDate.split('/')[1]))} ({request.originalShift === 'meioPeriodo' ? 'MP' : 'FE'})</span>
+                      <span>Você vai ceder: Dia {request.targetDate.split('/')[0]} de {getMonthName(parseInt(request.targetDate.split('/')[1]))} ({request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'})</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground ml-10">
                       <ArrowRight className="w-4 h-4" />
-                      <span>Vou assumir: Dia {request.targetDate.split('/')[0]} de {getMonthName(parseInt(request.targetDate.split('/')[1]))} ({request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'})</span>
+                      <span>Você vai assumir: Dia {request.originalDate.split('/')[0]} de {getMonthName(parseInt(request.originalDate.split('/')[1]))} ({request.originalShift === 'meioPeriodo' ? 'MP' : 'FE'})</span>
                     </div>
                     
                     {/* Mini Calendar View */}
