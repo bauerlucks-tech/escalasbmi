@@ -114,47 +114,55 @@ class SystemAuthIntegration {
             console.log('🔑 Tentando login com Supabase Auth...');
             
             // Método 1: Autenticação nativa do Supabase
-            const { data, error } = await fetch(this.supabaseUrl + '/auth/v1/token?grant_type=password', {
-              method: 'POST',
-              headers: {
-                'apikey': this.supabaseServiceKey,
-                'Authorization': 'Bearer ' + this.supabaseServiceKey,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                email: username + '@escalasbmi.com',
-                password: password
-              })
-            }).then(response => response.json());
-
-            // Se autenticação nativa funcionar
-            if (!error && data.session) {
-              console.log('✅ Autenticação nativa funcionou, buscando dados do usuário...');
-              
-              // Buscar dados completos do usuário
-              const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&email=eq.' + username + '&status=eq.ativo', {
-                method: 'GET',
+            try {
+              const response = await fetch(this.supabaseUrl + '/auth/v1/token?grant_type=password', {
+                method: 'POST',
                 headers: {
                   'apikey': this.supabaseServiceKey,
                   'Authorization': 'Bearer ' + this.supabaseServiceKey,
                   'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({
+                  email: username + '@escalasbmi.com',
+                  password: password
+                })
               });
+              
+              const data = await response.json();
+              
+              if (response.ok && data.session) {
+                console.log('✅ Autenticação nativa funcionou, buscando dados do usuário...');
+                
+                // Buscar dados completos do usuário
+                const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&status=eq.ativo', {
+                  method: 'GET',
+                  headers: {
+                    'apikey': this.supabaseServiceKey,
+                    'Authorization': 'Bearer ' + this.supabaseServiceKey,
+                    'Content-Type': 'application/json'
+                  }
+                });
 
-              const users = await userResponse.json();
-              if (!users || users.length === 0) {
-                console.error('❌ Usuário não encontrado na tabela users:', username);
-                return { success: false, error: 'Usuário não encontrado' };
+                const users = await userResponse.json();
+                if (!users || users.length === 0) {
+                  console.error('❌ Usuário não encontrado na tabela users:', username);
+                  return { success: false, error: 'Usuário não encontrado' };
+                }
+
+                const user = users[0];
+                user.session = data.session; // Adicionar sessão ao objeto usuário
+                
+                this.currentUser = user;
+                localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
+                
+                console.log('✅ Login bem-sucedido:', user.name);
+                return { success: true, user };
+              } else {
+                console.log('❌ Autenticação nativa falhou:', data);
+                throw new Error('Auth failed');
               }
-
-              const user = users[0];
-              user.session = data.session; // Adicionar sessão ao objeto usuário
-              
-              this.currentUser = user;
-              localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
-              
-              console.log('✅ Login bem-sucedido:', user.name);
-              return { success: true, user };
+            } catch (authError) {
+              console.log('🔄 Autenticação nativa falhou, tentando fallback...');
             }
             
             // Método 2: Fallback direto (sem RLS)
@@ -169,6 +177,8 @@ class SystemAuthIntegration {
             });
             
             const users = await response.json();
+            console.log('🔍 Resposta do fallback:', users);
+            
             if (!users || users.length === 0) {
               console.error('❌ Fallback também falhou:', username);
               return { success: false, error: 'Usuário ou senha inválidos' };
