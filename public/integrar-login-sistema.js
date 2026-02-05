@@ -130,7 +130,7 @@ class SystemAuthIntegration {
       window.DirectAuthManager = class DirectAuthManager {
         constructor() {
           this.supabaseUrl = window.ENV?.SUPABASE_URL || 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-          this.supabaseServiceKey = window.ENV?.SUPABASE_ANON_KEY || '';
+          this.supabaseServiceKey = window.ENV?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MjMzNjQsImV4cCI6MjA4NTQ5OTM2NH0.EarBTpSeSO9JcA_6jH6wmz0l_iVwg8pVO7_ASWXkOK8';
           if (!this.supabaseServiceKey) {
             console.warn('⚠️ SUPABASE_ANON_KEY not configured. Authentication will fail.');
           }
@@ -548,7 +548,8 @@ class SystemAuthIntegration {
   // Carregar React com login moderno
   async loadModernLoginReact() {
     try {
-      // Importar e renderizar componente React
+      // Importar React e ReactDOM
+      const React = await import('react').then(m => m.default || m);
       const { createRoot } = await import('react-dom/client');
       const ModernLoginScreen = await import('../src/components/ModernLoginScreen.tsx');
       
@@ -585,6 +586,9 @@ class SystemAuthIntegration {
     // Mostrar sistema principal
     await this.showSystemInterface(user);
   }
+
+  // Criar tela de login (fallback)
+  async createLoginScreen() {
     // Obter versão dinâmica atual
     const currentVersion = this.currentVersion;
     const commitHash = this.getCommitHash();
