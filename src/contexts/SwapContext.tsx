@@ -25,6 +25,7 @@ interface SwapContextType {
   createSwapRequest: (request: Omit<SwapRequest, 'id' | 'createdAt'>) => void;
   respondToSwap: (requestId: string, accept: boolean) => void;
   adminApproveSwap: (requestId: string, adminName: string) => void;
+  applySwapToSchedule: (request: SwapRequest) => Promise<void>;
   getMyRequests: (userId: string) => SwapRequest[];
   getRequestsForMe: (userName: string) => SwapRequest[];
   getPendingCount: (userName: string) => number;
@@ -686,6 +687,52 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           'SWAP_APPROVAL',
           `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
         );
+        
+        // Apply swap to schedule DEPOIS de aprovar no banco
+        console.log('🔄 Aplicando troca na escala após aprovação admin...');
+        try {
+          await applySwapToSchedule({
+            ...request,
+            status: 'approved',
+            adminApproved: true,
+            adminApprovedAt: new Date().toISOString(),
+            adminApprovedBy: adminName
+          });
+          console.log('✅ Troca aplicada na escala com sucesso!');
+          
+          // Notificar sucesso
+          await SupabaseAPI.addAuditLog(
+            request.requesterId || 'unknown',
+            request.requesterName,
+            'SWAP_APPROVAL',
+            `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
+          );
+          
+          await SupabaseAPI.addAuditLog(
+            request.targetId || 'unknown',
+            request.targetName,
+            'SWAP_APPROVAL',
+            `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
+          );
+          
+        } catch (error) {
+          console.error('❌ Falha ao aplicar troca na escala:', error);
+          
+          // Notificar falha
+          await SupabaseAPI.addAuditLog(
+            request.requesterId || 'unknown',
+            request.requesterName,
+            'SWAP_APPROVAL',
+            `❌ FALHA NA PUBLICAÇÃO: ${request.originalDate} ⇄ ${request.targetDate} - Erro: ${error}`
+          );
+          
+          await SupabaseAPI.addAuditLog(
+            request.targetId || 'unknown',
+            request.targetName,
+            'SWAP_APPROVAL',
+            `❌ FALHA NA PUBLICAÇÃO: ${request.originalDate} ⇄ ${request.targetDate} - Erro: ${error}`
+          );
+        }
       }
       
       console.log('✅ Troca aprovada no Supabase:', { requestId, adminName });
@@ -810,6 +857,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       createSwapRequest,
       respondToSwap,
       adminApproveSwap,
+      applySwapToSchedule,
       getMyRequests,
       getRequestsForMe,
       getPendingCount,
@@ -837,3 +885,32 @@ export const useSwap = () => {
   }
   return context;
 };
+
+// Função de teste para debugging - exposta globalmente
+if (typeof window !== 'undefined') {
+  (window as any).testApplySwap = async () => {
+    console.log('🧪 INICIANDO TESTE MANUAL applySwapToSchedule');
+    try {
+      const { applySwapToSchedule } = useSwap();
+      await applySwapToSchedule({
+        id: '59590e15-adfe-4171-a3b0-8f8483d22bc6',
+        requesterId: '3826fb9b-439b-49e2-bfb5-a85e6d3aba23',
+        requesterName: 'LUCAS',
+        targetId: 'fd38b592-2986-430e-98be-d9d104d90442',
+        targetName: 'CARLOS',
+        originalDate: '16/09/2026',
+        originalShift: 'meioPeriodo',
+        targetDate: '15/09/2026',
+        targetShift: 'meioPeriodo',
+        status: 'approved',
+        adminApproved: true,
+        adminApprovedAt: new Date().toISOString(),
+        adminApprovedBy: 'TESTE',
+        createdAt: new Date().toISOString()
+      });
+      console.log('✅ TESTE MANUAL CONCLUÍDO COM SUCESSO');
+    } catch (error) {
+      console.error('❌ ERRO NO TESTE MANUAL:', error);
+    }
+  };
+}
