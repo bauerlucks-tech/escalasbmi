@@ -259,15 +259,26 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       targetYear
     });
     
-    // Find the correct month schedules
-    const originalMonthSchedule = currentSchedules.find(s => s.month === originalMonth && s.year === originalYear);
-    const targetMonthSchedule = currentSchedules.find(s => s.month === targetMonth && s.year === targetYear);
+    // Buscar escalas diretamente do Supabase para garantir que temos os dados mais recentes
+    let originalMonthSchedule, targetMonthSchedule;
     
-    console.log('📋 Schedules encontrados:', {
-      originalSchedule: originalMonthSchedule ? `${originalMonth}/${originalYear}` : 'NÃO ENCONTRADO',
-      targetSchedule: targetMonthSchedule ? `${targetMonth}/${targetYear}` : 'NÃO ENCONTRADO',
-      totalSchedules: currentSchedules.length
-    });
+    try {
+      console.log('🔍 Buscando escalas do Supabase...');
+      const allSchedules = await SupabaseAPI.getMonthSchedules();
+      console.log('📋 Total de schedules encontrados:', allSchedules.length);
+      
+      originalMonthSchedule = allSchedules.find(s => s.month === originalMonth && s.year === originalYear);
+      targetMonthSchedule = allSchedules.find(s => s.month === targetMonth && s.year === targetYear);
+      
+      console.log('📋 Schedules encontrados no Supabase:', {
+        originalSchedule: originalMonthSchedule ? `${originalMonth}/${originalYear}` : 'NÃO ENCONTRADO',
+        targetSchedule: targetMonthSchedule ? `${targetMonth}/${targetYear}` : 'NÃO ENCONTRADO',
+        totalSchedules: allSchedules.length
+      });
+    } catch (error) {
+      console.error('❌ Erro ao buscar schedules do Supabase:', error);
+      throw new Error('Erro ao buscar escalas do Supabase');
+    }
     
     if (!originalMonthSchedule || !targetMonthSchedule) {
       console.error('❌ Escalas mensais não encontradas para:', request.originalDate, request.targetDate);
