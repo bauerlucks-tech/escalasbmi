@@ -276,21 +276,41 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const applySwapToSchedule = async (request: SwapRequest) => {
     console.log('🚀 INICIANDO applySwapToSchedule para:', request);
     
-    // Get the month and year for both dates
-    const originalDate = new Date(request.originalDate);
-    const targetDate = new Date(request.targetDate);
-    const originalMonth = originalDate.getMonth() + 1;
-    const originalYear = originalDate.getFullYear();
-    const targetMonth = targetDate.getMonth() + 1;
-    const targetYear = targetDate.getFullYear();
+    // CORREÇÃO: Usar parsing manual para datas no formato DD/MM/YYYY
+    // Em vez de new Date() que interpreta como MM/DD/YYYY
+    const parseDateBR = (dateStr: string) => {
+      const parts = dateStr.split('/');
+      if (parts.length !== 3) {
+        throw new Error(`Formato de data inválido: ${dateStr}. Esperado: DD/MM/YYYY`);
+      }
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10); // Mês já é 1-based (1-12)
+      const year = parseInt(parts[2], 10);
+      
+      if (isNaN(day) || isNaN(month) || isNaN(year)) {
+        throw new Error(`Data inválida: ${dateStr}`);
+      }
+      
+      return { day, month, year };
+    };
     
-    console.log('📅 Datas processadas:', {
+    // Parse das datas
+    const originalDateParsed = parseDateBR(request.originalDate);
+    const targetDateParsed = parseDateBR(request.targetDate);
+    
+    const originalMonth = originalDateParsed.month;
+    const originalYear = originalDateParsed.year;
+    const targetMonth = targetDateParsed.month;
+    const targetYear = targetDateParsed.year;
+    
+    console.log('📅 Datas processadas (CORRETO):', {
       originalDate: request.originalDate,
       targetDate: request.targetDate,
       originalMonth,
       originalYear,
       targetMonth,
-      targetYear
+      targetYear,
+      metodo: 'parseDateBR (DD/MM/YYYY)'
     });
     
     // Buscar escalas diretamente do Supabase para garantir que temos os dados mais recentes
@@ -731,7 +751,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // Log de auditoria - Aprovação admin
       if (request) {
         await SupabaseAPI.addAuditLog(
-          'admin', // ID do admin (genérico)
+          'fd2513b2-3260-4ad2-97b1-6f5fbb88c192', // ID do admin RICARDO
           adminName, 
           'SWAP_APPROVAL',
           `APROVAÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
