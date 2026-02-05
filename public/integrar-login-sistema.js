@@ -304,23 +304,42 @@ class SystemAuthIntegration {
       console.log('🔍 Verificando se authManager existe...');
       if (!this.authManager) {
         console.error('❌ authManager não existe!');
-        await this.autoLoginAsAdmin();
+        await this.showModernLoginScreen();
         return;
       }
       
       console.log('🔍 Verificando método isLoggedIn...');
       if (typeof this.authManager.isLoggedIn !== 'function') {
         console.error('❌ isLoggedIn não é uma função!');
-        await this.autoLoginAsAdmin();
+        await this.showModernLoginScreen();
         return;
       }
       
-      // LOGIN AUTOMÁTICO COMO ADMIN
-      await this.autoLoginAsAdmin();
+      const isLoggedIn = this.authManager.isLoggedIn();
+      console.log('🔍 Resultado isLoggedIn:', isLoggedIn);
       
+      if (isLoggedIn) {
+        console.log('🔍 Obtendo usuário atual...');
+        const user = this.authManager.getCurrentUser();
+        console.log('✅ Usuário já logado:', user);
+        console.log('📋 Role:', user?.role);
+        
+        if (user) {
+          // Usuário está logado - mostrar sistema
+          await this.showSystemInterface(user);
+        } else {
+          console.error('❌ Usuário está null mesmo com isLoggedIn true!');
+          await this.showModernLoginScreen();
+        }
+      } else {
+        console.log('❌ Usuário não está logado');
+        
+        // Usuário não está logado - mostrar tela de login MODERNA
+        await this.showModernLoginScreen();
+      }
     } catch (error) {
       console.error('❌ Erro em checkAuthentication:', error);
-      await this.autoLoginAsAdmin();
+      await this.showModernLoginScreen();
     }
   }
 
@@ -490,8 +509,82 @@ class SystemAuthIntegration {
     });
   }
 
-  // Criar tela de login
-  async createLoginScreen() {
+  // Criar tela de login moderna
+  async createModernLoginScreen() {
+    // Remover tela de login anterior se existir
+    const existingScreen = document.getElementById('auth-login-screen');
+    if (existingScreen) {
+      existingScreen.remove();
+    }
+    
+    // Criar container para React
+    const loginContainer = document.createElement('div');
+    loginContainer.id = 'modern-login-container';
+    loginContainer.style.cssText = `
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      z-index: 999999 !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: all !important;
+    `;
+    
+    document.body.appendChild(loginContainer);
+    
+    // Carregar componente React de login moderno
+    this.loadModernLoginReact();
+    
+    console.log('✅ Container de login moderno criado');
+  }
+
+  // Carregar React com login moderno
+  async loadModernLoginReact() {
+    try {
+      // Importar e renderizar componente React
+      const { createRoot } = await import('react-dom/client');
+      const ModernLoginScreen = await import('../src/components/ModernLoginScreen.tsx');
+      
+      const container = document.getElementById('modern-login-container');
+      if (container) {
+        const root = createRoot(container);
+        root.render(
+          React.createElement(ModernLoginScreen.default, {
+            onLoginSuccess: (user) => {
+              console.log('✅ Login moderno bem-sucedido:', user);
+              this.handleModernLoginSuccess(user);
+            }
+          })
+        );
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar login moderno:', error);
+      // Fallback para login antigo
+      this.createLoginScreen();
+    }
+  }
+
+  // Handle sucesso do login moderno
+  async handleModernLoginSuccess(user) {
+    // Salvar usuário
+    localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
+    
+    // Remover container de login
+    const container = document.getElementById('modern-login-container');
+    if (container) {
+      container.remove();
+    }
+    
+    // Mostrar sistema principal
+    await this.showSystemInterface(user);
+  }
     // Obter versão dinâmica atual
     const currentVersion = this.currentVersion;
     const commitHash = this.getCommitHash();
