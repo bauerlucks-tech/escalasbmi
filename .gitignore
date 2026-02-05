@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 .vercel
 .env*.local
+
+# Secrets - never commit
+public/env.js
+*.secret
+*.key
