@@ -679,15 +679,15 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
           );
         } else {
-          // NOTIFICAÇÃO DE FALHA
-          const errorMsg = error?.message || 'Erro desconhecido';
+          // NOTIFICAÇÃO PARA O SOLICITANTE - Falha ao publicar troca
+          const errorMsg = error?.message || 'Desconhecido';
           await SupabaseAPI.addAuditLog(
             request.requesterId || 'unknown',
             request.requesterName,
             'SWAP_APPROVAL',
             `❌ FALHA NA PUBLICAÇÃO: ${request.originalDate} ⇄ ${request.targetDate} - Erro: ${errorMsg}`
           );
-          
+          // NOTIFICAÇÃO PARA O ACEITANTE - Falha ao publicar troca
           await SupabaseAPI.addAuditLog(
             request.targetId || 'unknown',
             request.targetName,
@@ -696,33 +696,6 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           );
         }
       };
-
-      // Apply the swap to the schedule FIRST - ANTES de notificar
-      if (request) {
-        console.log('🔄 Aplicando troca na escala ANTES das notificações...');
-        try {
-          await applySwapToSchedule({
-            ...request,
-            status: 'approved',
-            adminApproved: true,
-            adminApprovedAt: new Date().toISOString(),
-            adminApprovedBy: adminName
-          });
-          console.log('✅ Troca aplicada na escala com sucesso!');
-          
-          // SÓ notificar SE a troca foi aplicada com sucesso
-          await notifyAllParticipants(request, adminName, true);
-          
-        } catch (error) {
-          console.error('❌ Falha ao aplicar troca na escala:', error);
-          
-          // Notificar sobre falha
-          await notifyAllParticipants(request, adminName, false, error);
-          
-          // Não continuar com aprovação se falhou
-          throw error;
-        }
-      }
 
       // Log de auditoria - Aprovação admin
       if (request) {
