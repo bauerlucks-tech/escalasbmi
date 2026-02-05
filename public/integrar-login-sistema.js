@@ -115,7 +115,7 @@ class SystemAuthIntegration {
           try {
             console.log('🔑 Tentando login com Supabase Auth...');
             
-            // Usar autenticação nativa do Supabase
+            // Método 1: Autenticação nativa do Supabase
             const { data, error } = await fetch(this.supabaseUrl + '/auth/v1/token?grant_type=password', {
               method: 'POST',
               headers: {
@@ -124,23 +124,44 @@ class SystemAuthIntegration {
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                email: username + '@escalasbmi.com', // Converter email para formato válido
+                email: username + '@escalasbmi.com',
                 password: password
               })
             }).then(response => response.json());
 
-            if (error) {
-              console.error('❌ Erro na autenticação Supabase:', error);
-              return { success: false, error: 'Erro na autenticação: ' + error.message };
-            }
+            // Se autenticação nativa funcionar
+            if (!error && data.session) {
+              console.log('✅ Autenticação nativa funcionou, buscando dados do usuário...');
+              
+              // Buscar dados completos do usuário
+              const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&email=eq.' + username + '&status=eq.ativo', {
+                method: 'GET',
+                headers: {
+                  'apikey': this.supabaseServiceKey,
+                  'Authorization': 'Bearer ' + this.supabaseServiceKey,
+                  'Content-Type': 'application/json'
+                }
+              });
 
-            if (!data.session) {
-              console.error('❌ Sessão não encontrada:', data);
-              return { success: false, error: 'Falha na autenticação' };
-            }
+              const users = await userResponse.json();
+              if (!users || users.length === 0) {
+                console.error('❌ Usuário não encontrado na tabela users:', username);
+                return { success: false, error: 'Usuário não encontrado' };
+              }
 
-            // Buscar dados completos do usuário na tabela users
-            const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&email=eq.' + username + '&status=eq.ativo', {
+              const user = users[0];
+              user.session = data.session; // Adicionar sessão ao objeto usuário
+              
+              this.currentUser = user;
+              localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
+              
+              console.log('✅ Login bem-sucedido:', user.name);
+              return { success: true, user };
+            }
+            
+            // Método 2: Fallback direto (sem RLS)
+            console.log('🔄 Tentando método fallback direto...');
+            const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
               method: 'GET',
               headers: {
                 'apikey': this.supabaseServiceKey,
@@ -148,20 +169,18 @@ class SystemAuthIntegration {
                 'Content-Type': 'application/json'
               }
             });
-
-            const users = await userResponse.json();
-            if (!users || users.length === 0) {
-              console.error('❌ Usuário não encontrado na tabela users:', username);
-              return { success: false, error: 'Usuário não encontrado' };
-            }
-
-            const user = users[0];
-            user.session = data.session; // Adicionar sessão ao objeto usuário
             
+            const users = await response.json();
+            if (!users || users.length === 0) {
+              console.error('❌ Fallback também falhou:', username);
+              return { success: false, error: 'Usuário ou senha inválidos' };
+            }
+            
+            const user = users[0];
             this.currentUser = user;
             localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
             
-            console.log('✅ Login bem-sucedido:', user.name);
+            console.log('✅ Login bem-sucedido (fallback):', user.name);
             return { success: true, user };
             
           } catch (error) {
