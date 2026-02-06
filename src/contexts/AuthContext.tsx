@@ -67,32 +67,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    // Verificar se há usuário do login externo PRIMEIRO
-    const externalUser = localStorage.getItem('reactCurrentUser');
-    if (externalUser) {
-      try {
-        const parsed = JSON.parse(externalUser);
-        console.log('🔄 Carregando usuário externo no AuthContext:', parsed.name);
-        return parsed;
-      } catch (error) {
-        console.error('❌ Erro ao carregar usuário externo:', error);
-      }
-    }
-    
-    // Verificar usuário salvo normalmente
-    const saved = localStorage.getItem('escala_currentUser');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        ...parsed,
-        role: parsed.role || (parsed.isAdmin ? 'administrador' : 'operador'),
-        status: parsed.status || 'ativo',
-      };
-    }
+    // Desabilitar auto-login - sempre começar sem usuário logado
+    // Usuário deve fazer login manualmente através da tela StitchLoginScreen
     return null;
   });
 
-  // Verificar usuário externo periodicamente
+  // Verificar usuário externo periodicamente - DESATIVADO para forçar login manual
+  // O usuário deve sempre passar pela tela de login Stitch
+  /*
   useEffect(() => {
     const checkExternalUser = () => {
       const externalUser = localStorage.getItem('reactCurrentUser');
@@ -132,6 +114,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       clearTimeout(timeout);
     };
   }, [currentUser, users]);
+  */
 
   // Computed lists
   const activeUsers = users.filter(u => u.status === 'ativo');

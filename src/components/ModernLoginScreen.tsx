@@ -81,13 +81,13 @@ export function ModernLoginScreen({ onLoginSuccess }: ModernLoginScreenProps) {
         <Card className="border-0 shadow-2xl bg-white/10 backdrop-blur-xl">
           <CardHeader className="text-center space-y-2 pb-6">
             <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-              <Shield className="w-8 h-8 text-blue-400" />
+              <span className="text-3xl">🚁</span>
             </div>
             <CardTitle className="text-2xl font-bold text-white">
-              Operações Aéreas Offshore
+              Área Branca Maricá-RJ
             </CardTitle>
             <CardDescription className="text-gray-300">
-              Sistema de Gestão de Escalas - Área Branca SBMI
+              SBMI - Campo de Búzios
             </CardDescription>
           </CardHeader>
           
