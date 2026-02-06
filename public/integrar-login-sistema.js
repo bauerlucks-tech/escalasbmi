@@ -631,9 +631,6 @@ class SystemAuthIntegration {
             <p style="margin: 0; color: rgba(255, 255, 255, 0.65); font-size: 1rem; line-height: 1.5;">
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
-            <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v2.0.052104</span>
-            </div>
           </div>
 
           <!-- Login Form -->
@@ -647,18 +644,19 @@ class SystemAuthIntegration {
                 <select
                   id="auth-username"
                   required
-                  style="width: 100%; padding-left: 3rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 0.75rem; color: #fff; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;"
+                  style="width: 100%; padding-left: 3rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(59, 130, 246, 0.6); border-radius: 0.75rem; color: #fff; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; cursor: pointer; box-shadow: rgba(59, 130, 246, 0.15) 0px 0px 0px 4px, rgba(0, 0, 0, 0.1) 0px 4px 6px -1px; transform: translateY(-1px);"
                 >
                   <option value="" disabled selected>Selecione seu nome</option>
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="CARLOS">CARLOS</option>
-                  <option value="GUILHERME">GUILHERME</option>
-                  <option value="HENRIQUE">HENRIQUE</option>
-                  <option value="KELLY">KELLY</option>
-                  <option value="LUCAS">LUCAS</option>
-                  <option value="RICARDO">RICARDO</option>
-                  <option value="ROSANA">ROSANA</option>
+                  <option value="ADMIN" style="background: #1e293b; color: #fff;">ADMIN</option>
+                  <option value="CARLOS" style="background: #1e293b; color: #fff;">CARLOS</option>
+                  <option value="GUILHERME" style="background: #1e293b; color: #fff;">GUILHERME</option>
+                  <option value="HENRIQUE" style="background: #1e293b; color: #fff;">HENRIQUE</option>
+                  <option value="KELLY" style="background: #1e293b; color: #fff;">KELLY</option>
+                  <option value="LUCAS" style="background: #1e293b; color: #fff;">LUCAS</option>
+                  <option value="RICARDO" style="background: #1e293b; color: #fff;">RICARDO</option>
+                  <option value="ROSANA" style="background: #1e293b; color: #fff;">ROSANA</option>
                 </select>
+                <span style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; pointer-events: none; transition: transform 0.3s ease;">▼</span>
               </div>
             </div>
 
