@@ -627,12 +627,12 @@ class SystemAuthIntegration {
             <div style="display: inline-flex; align-items: center; justify-content: center; width: 5rem; height: 5rem; border-radius: 1.25rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%); margin-bottom: 1.5rem; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.25);">
               <span style="font-size: 3rem;">🚁</span>
             </div>
-            <h1 style="margin: 0; color: #fff; font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.025em;">Operações Aéreas Offshore</h1>
+            <h1 style="margin: 0; color: #fff; font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.025em;">Área Branca Maricá-RJ - SBMI - Campo de Búzios</h1>
             <p style="margin: 0; color: rgba(255, 255, 255, 0.65); font-size: 1rem; line-height: 1.5;">
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
             <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v${currentVersion}</span>
+              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v2.0.052104</span>
             </div>
           </div>
 
@@ -644,13 +644,21 @@ class SystemAuthIntegration {
               </label>
               <div style="position: relative;">
                 <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.25rem; height: 1.25rem; color: rgba(255, 255, 255, 0.55); font-size: 1.1rem;">👤</span>
-                <input
+                <select
                   id="auth-username"
-                  type="text"
-                  placeholder="Digite seu nome de usuário"
                   required
                   style="width: 100%; padding-left: 3rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 0.75rem; color: #fff; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;"
-                />
+                >
+                  <option value="" disabled selected>Selecione seu nome</option>
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="CARLOS">CARLOS</option>
+                  <option value="GUILHERME">GUILHERME</option>
+                  <option value="HENRIQUE">HENRIQUE</option>
+                  <option value="KELLY">KELLY</option>
+                  <option value="LUCAS">LUCAS</option>
+                  <option value="RICARDO">RICARDO</option>
+                  <option value="ROSANA">ROSANA</option>
+                </select>
               </div>
             </div>
 
