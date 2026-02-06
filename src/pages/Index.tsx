@@ -1,9 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { StitchLoginScreen } from '@/components/StitchLoginScreen';
+import { StitchOperatorView } from '@/components/StitchOperatorView';
 import Dashboard from '@/components/Dashboard';
+import { useNavigate } from 'react-router-dom';
 
 const Index: React.FC = () => {
-  // Sempre mostrar Dashboard - nosso sistema de login externo controla o acesso
-  return <Dashboard />;
+  const { currentUser, login, logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const [showDashboard, setShowDashboard] = useState(false);
+
+  // Se não estiver autenticado, mostrar tela de login do Stitch
+  if (!currentUser) {
+    return (
+      <StitchLoginScreen 
+        onLoginSuccess={(user) => {
+          // Login através do AuthContext - tenta com senha padrão
+          const success = login(user.name, 'admin123');
+          if (!success) {
+            // Se falhar, tenta outras senhas comuns
+            login(user.name, 'senha123') || login(user.name, '1234');
+          }
+        }} 
+      />
+    );
+  }
+
+  // Se estiver autenticado mas não no dashboard, mostrar Operator View
+  if (!showDashboard) {
+    return (
+      <StitchOperatorView
+        user={{ name: currentUser.name, role: currentUser.role }}
+        onRequestSwap={() => setShowDashboard(true)}
+        onViewRequests={() => setShowDashboard(true)}
+        onRequestVacation={() => setShowDashboard(true)}
+        onAdmin={() => setShowDashboard(true)}
+        onBackup={() => navigate('/backup')}
+        onAudit={() => setShowDashboard(true)}
+      />
+    );
+  }
+
+  // Mostrar dashboard principal
+  return (
+    <div className="min-h-screen">
+      <div className="bg-gradient-to-r from-[#221013] to-[#3d1519] p-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setShowDashboard(false)}
+              className="text-white hover:text-gray-300 transition-colors flex items-center gap-2"
+            >
+              ← Voltar ao Menu
+            </button>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-300">{currentUser.name}</span>
+            <button 
+              onClick={logout}
+              className="text-sm text-red-400 hover:text-red-300 transition-colors"
+            >
+              Sair
+            </button>
+          </div>
+        </div>
+      </div>
+      <Dashboard />
+    </div>
+  );
 };
 
 export default Index;
