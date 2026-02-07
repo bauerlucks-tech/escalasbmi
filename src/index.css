@@ -179,9 +179,9 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-[#221013] text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    background: var(--gradient-sky);
+    background: linear-gradient(135deg, #221013 0%, #3d1519 50%, #710917 100%);
     min-height: 100vh;
   }
 

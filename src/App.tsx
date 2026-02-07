@@ -13,10 +13,6 @@ import BackupPage from "./pages/BackupPage";
 import CSVImportPage from "./pages/CSVImportPage";
 import NotFound from "./pages/NotFound";
 
-// Clear any persisted user sessions to force login screen
-localStorage.removeItem('escala_currentUser');
-localStorage.removeItem('reactCurrentUser');
-
 const queryClient = new QueryClient();
 
 const App = () => (

@@ -13,6 +13,10 @@ const Index: React.FC = () => {
 
   // Se não estiver autenticado, mostrar tela de login do Stitch
   if (!currentUser) {
+    // Limpar possíveis resíduos de login antigo
+    if (localStorage.getItem('directAuth_currentUser')) {
+      localStorage.removeItem('directAuth_currentUser');
+    }
     return (
       <StitchLoginScreen 
         onLoginSuccess={() => {
