@@ -60,7 +60,7 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
 
   const fillTestData = () => {
     setSelectedUser('ADMIN');
-    setPassword('admin123');
+    setPassword('1234');
     toast.info('Dados de teste preenchidos');
   };
 
