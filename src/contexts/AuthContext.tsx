@@ -67,8 +67,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
   
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    // Desabilitar auto-login - sempre começar sem usuário logado
-    // Usuário deve fazer login manualmente através da tela StitchLoginScreen
+    const saved = localStorage.getItem('escala_currentUser');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Erro ao restaurar sessão:', e);
+        return null;
+      }
+    }
     return null;
   });
 

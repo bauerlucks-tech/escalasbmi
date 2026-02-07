@@ -36,23 +36,43 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
     setLoading(true);
 
     try {
-      const success = login(selectedUser, password);
+      const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
+      const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+
+      console.log('🔑 Tentando login real via Supabase para:', selectedUser);
       
-      if (success) {
-        const user = users.find(u => u.name === selectedUser);
-        if (user) {
+      // Tentar login via RPC ou consulta direta (conforme sua estrutura)
+      const response = await fetch(`${supabaseUrl}/rest/v1/users?select=*&name=eq.${selectedUser}&password=eq.${password}&status=eq.ativo`, {
+        method: 'GET',
+        headers: {
+          'apikey': serviceKey,
+          'Authorization': `Bearer ${serviceKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const usersFromDb = await response.json();
+
+      if (response.ok && usersFromDb.length > 0) {
+        const user = usersFromDb[0];
+        console.log('✅ Login real bem-sucedido:', user.name);
+        
+        // Sincronizar com AuthContext (o contexto já salva no localStorage)
+        const success = login(user.name, user.password);
+        
+        if (success) {
           toast.success(`Bem-vindo, ${user.name}!`);
           onLoginSuccess(user);
         }
       } else {
-        setError('Senha inválida');
-        toast.error('Senha inválida');
+        setError('Usuário ou senha inválidos');
+        toast.error('Usuário ou senha inválidos');
       }
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Erro ao conectar com o servidor';
+      const errorMsg = err instanceof Error ? err.message : 'Erro ao conectar com o servidor de autenticação';
       setError(errorMsg);
       toast.error(errorMsg);
-      console.error('Error during login:', err);
+      console.error('Error during real login:', err);
     } finally {
       setLoading(false);
     }
