@@ -11,8 +11,12 @@ import VacationAdminView from '@/components/VacationAdminView';
 import OperatorHelp from '@/components/OperatorHelp';
 import AuditLogsView from '@/components/AuditLogsView';
 
-const Dashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('schedule');
+interface DashboardProps {
+  initialTab?: string;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ initialTab = 'schedule' }) => {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const { currentUser, isAdmin } = useAuth();
   const navigate = useNavigate();
 

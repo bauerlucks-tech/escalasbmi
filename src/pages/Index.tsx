@@ -6,37 +6,39 @@ import Dashboard from '@/components/Dashboard';
 import { useNavigate } from 'react-router-dom';
 
 const Index: React.FC = () => {
-  const { currentUser, login, logout, isAdmin } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [showDashboard, setShowDashboard] = useState(false);
+  const [initialTab, setInitialTab] = useState('schedule');
 
   // Se não estiver autenticado, mostrar tela de login do Stitch
   if (!currentUser) {
     return (
       <StitchLoginScreen 
-        onLoginSuccess={(user) => {
-          // Login através do AuthContext - tenta com senha padrão
-          const success = login(user.name, 'admin123');
-          if (!success) {
-            // Se falhar, tenta outras senhas comuns
-            login(user.name, 'senha123') || login(user.name, '1234');
-          }
+        onLoginSuccess={() => {
+          console.log('Login realizado com sucesso, atualizando visualização');
         }} 
       />
     );
   }
+
+  // Função para abrir o dashboard em uma aba específica
+  const openDashboardAt = (tab: string) => {
+    setInitialTab(tab);
+    setShowDashboard(true);
+  };
 
   // Se estiver autenticado mas não no dashboard, mostrar Operator View
   if (!showDashboard) {
     return (
       <StitchOperatorView
         user={{ name: currentUser.name, role: currentUser.role }}
-        onRequestSwap={() => setShowDashboard(true)}
-        onViewRequests={() => setShowDashboard(true)}
-        onRequestVacation={() => setShowDashboard(true)}
-        onAdmin={() => setShowDashboard(true)}
+        onRequestSwap={() => openDashboardAt('swap')}
+        onViewRequests={() => openDashboardAt('requests')}
+        onRequestVacation={() => openDashboardAt('vacations')}
+        onAdmin={() => openDashboardAt('admin')}
         onBackup={() => navigate('/backup')}
-        onAudit={() => setShowDashboard(true)}
+        onAudit={() => openDashboardAt('audit')}
       />
     );
   }
@@ -65,7 +67,7 @@ const Index: React.FC = () => {
           </div>
         </div>
       </div>
-      <Dashboard />
+      <Dashboard initialTab={initialTab} />
     </div>
   );
 };

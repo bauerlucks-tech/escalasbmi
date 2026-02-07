@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Alert, AlertDescription } from './ui/alert';
-import { AlertCircle, Loader2, Shield, User, ChevronDown } from 'lucide-react';
+import { AlertCircle, Loader2, Shield, User, ChevronDown, TestTube } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -48,13 +48,20 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
         setError('Senha inválida');
         toast.error('Senha inválida');
       }
-    } catch (err: any) {
-      setError('Erro ao conectar com o servidor');
-      toast.error('Erro ao conectar com o servidor');
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Erro ao conectar com o servidor';
+      setError(errorMsg);
+      toast.error(errorMsg);
       console.error('Error during login:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fillTestData = () => {
+    setSelectedUser('ADMIN');
+    setPassword('admin123');
+    toast.info('Dados de teste preenchidos');
   };
 
   return (
@@ -174,8 +181,16 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
               </Button>
             </form>
 
-            <div className="text-center text-gray-400 text-xs pt-4 border-t border-white/10">
-              <p>Credenciais de teste: <span className="font-mono bg-white/10 px-2 py-1 rounded text-white">ADMIN / admin123</span></p>
+            <div className="text-center text-gray-400 text-[10px] pt-4 border-t border-white/10 flex flex-col gap-3">
+              <button 
+                type="button"
+                onClick={fillTestData}
+                className="flex items-center justify-center gap-1.5 py-1 px-3 mx-auto rounded-full bg-white/5 border border-white/10 text-[10px] text-gray-400 hover:bg-white/10 hover:text-white transition-all"
+              >
+                <TestTube className="w-3 h-3" />
+                Preencher para Teste
+              </button>
+              <p>© 2026 Escalas BMI - SBMI Campo de Búzios</p>
             </div>
           </CardContent>
         </Card>
