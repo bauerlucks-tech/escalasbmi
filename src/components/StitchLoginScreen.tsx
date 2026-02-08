@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Alert, AlertDescription } from './ui/alert';
-import { AlertCircle, Loader2, Shield, User, ChevronDown, TestTube } from 'lucide-react';
+import { AlertCircle, Loader2, Shield, User, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -21,8 +21,40 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const [selectedUser, setSelectedUser] = useState<string>('ADMIN');
-  const { login, users } = useAuth();
+  const [selectedUser, setSelectedUser] = useState<string>('');
+  const [availableUsers, setAvailableUsers] = useState<UserType[]>([]);
+  const { supabaseLogin } = useAuth();
+
+  // Buscar usuários do Supabase ao montar o componente
+  React.useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+        
+        const response = await fetch(`${supabaseUrl}/rest/v1/users?select=*&role=eq.operador&status=eq.ativo&order=name`, {
+          method: 'GET',
+          headers: {
+            'apikey': serviceKey,
+            'Authorization': `Bearer ${serviceKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const usersFromDb = await response.json();
+          setAvailableUsers(usersFromDb);
+          if (usersFromDb.length > 0 && !selectedUser) {
+            setSelectedUser(usersFromDb[0].name);
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao buscar usuários:', err);
+      }
+    };
+
+    fetchUsers();
+  }, [selectedUser]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,33 +68,38 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
     setLoading(true);
 
     try {
-      const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-      const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+      console.log('🔑 Tentando login via Supabase para:', selectedUser);
 
-      console.log('🔑 Tentando login real via Supabase para:', selectedUser);
-      
-      // Tentar login via RPC ou consulta direta (conforme sua estrutura)
-      const response = await fetch(`${supabaseUrl}/rest/v1/users?select=*&name=eq.${selectedUser}&password=eq.${password}&status=eq.ativo`, {
-        method: 'GET',
-        headers: {
-          'apikey': serviceKey,
-          'Authorization': `Bearer ${serviceKey}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      // Apenas login via Supabase
+      const supabaseSuccess = await supabaseLogin(selectedUser, password);
 
-      const usersFromDb = await response.json();
-
-      if (response.ok && usersFromDb.length > 0) {
-        const user = usersFromDb[0];
-        console.log('✅ Login real bem-sucedido:', user.name);
-        
-        // Sincronizar com AuthContext (o contexto já salva no localStorage)
-        const success = login(user.name, user.password);
-        
-        if (success) {
+      if (supabaseSuccess) {
+        const user = availableUsers.find(u => u.name.toUpperCase() === selectedUser.toUpperCase());
+        if (user) {
           toast.success(`Bem-vindo, ${user.name}!`);
           onLoginSuccess(user);
+        } else {
+          // Buscar usuário completo do Supabase
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+          
+          const response = await fetch(`${supabaseUrl}/rest/v1/users?select=*&name=eq.${selectedUser}&status=eq.ativo`, {
+            method: 'GET',
+            headers: {
+              'apikey': serviceKey,
+              'Authorization': `Bearer ${serviceKey}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const usersFromDb = await response.json();
+            if (usersFromDb.length > 0) {
+              const userFromDb = usersFromDb[0];
+              toast.success(`Bem-vindo, ${userFromDb.name}!`);
+              onLoginSuccess(userFromDb);
+            }
+          }
         }
       } else {
         setError('Usuário ou senha inválidos');
@@ -76,12 +113,6 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillTestData = () => {
-    setSelectedUser('ADMIN');
-    setPassword('1234');
-    toast.info('Dados de teste preenchidos');
   };
 
   return (
@@ -138,9 +169,9 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
                       outline: 'none'
                     }}
                   >
-                    {users.map((user) => (
+                    {availableUsers.map((user) => (
                       <option key={user.name} value={user.name} style={{ background: '#2d1316', color: '#fff' }}>
-                        {user.name} ({user.role})
+                        {user.name}
                       </option>
                     ))}
                   </select>
@@ -201,15 +232,7 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
               </Button>
             </form>
 
-            <div className="text-center text-gray-400 text-[10px] pt-4 border-t border-white/10 flex flex-col gap-3">
-              <button 
-                type="button"
-                onClick={fillTestData}
-                className="flex items-center justify-center gap-1.5 py-1 px-3 mx-auto rounded-full bg-white/5 border border-white/10 text-[10px] text-gray-400 hover:bg-white/10 hover:text-white transition-all"
-              >
-                <TestTube className="w-3 h-3" />
-                Preencher para Teste
-              </button>
+            <div className="text-center text-gray-400 text-[10px] pt-4 border-t border-white/10">
               <p>© 2026 Escalas BMI - SBMI Campo de Búzios</p>
             </div>
           </CardContent>

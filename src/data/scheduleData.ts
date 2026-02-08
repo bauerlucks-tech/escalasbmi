@@ -8,6 +8,7 @@ export interface ScheduleEntry {
 export type UserRole = 'operador' | 'administrador' | 'super_admin';
 export type UserStatus = 'ativo' | 'arquivado';
 export type VacationStatus = 'pending' | 'approved' | 'rejected';
+export type SwapStatus = 'pending' | 'approved' | 'rejected';
 
 export interface VacationRequest {
   id: string;

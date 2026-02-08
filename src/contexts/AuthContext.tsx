@@ -8,6 +8,7 @@ interface AuthContextType {
   activeUsers: User[];
   operators: User[];
   login: (name: string, password: string) => boolean;
+  supabaseLogin: (name: string, password: string) => Promise<boolean>;
   logout: () => void;
   resetPassword: (userId: string, newPassword: string) => void;
   updateUserRole: (userId: string, role: UserRole) => void;
@@ -182,6 +183,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const supabaseLogin = async (name: string, password: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('name', name)
+        .eq('password', password)
+        .eq('status', 'ativo')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116 means no rows found
+
+      if (data) {
+        setCurrentUser(data);
+        logLogin(data.id, data.name, true);
+        return true;
+      } else {
+        logLogin('unknown', name, false, 'Usuário não encontrado ou inativo (Supabase)');
+        return false;
+      }
+    } catch (error) {
+      console.error('Erro no login via Supabase:', error);
+      logLogin('unknown', name, false, `Erro de conexão com Supabase: ${error instanceof Error ? error.message : String(error)}`);
+      return false;
+    }
+  };
+
   const logout = () => {
     if (currentUser) {
       // Log de auditoria - Logout
@@ -287,6 +315,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       activeUsers,
       operators,
       login,
+      supabaseLogin,
       logout,
       resetPassword,
       updateUserRole,

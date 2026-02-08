@@ -123,71 +123,36 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
     }
   };
 
-  const checkCurrentUser = async () => {
-    try {
-      const user = await SupabaseAPI.getCurrentUser();
-      if (user) {
-        // Buscar dados completos do usuário
-        const userData = await SupabaseAPI.getUserById(user.id);
-        setCurrentUser(userData || null);
-      }
-    } catch (error) {
-      console.error('Erro ao verificar usuário atual:', error);
-    }
-  };
-
-  // Funções de Autenticação
-  const signIn = async (email: string, password: string) => {
-    try {
-      // Para login com nome de usuário, precisamos buscar o email
-      const user = users.find(u => u.name === email);
-      if (!user) {
-        throw new Error('Usuário não encontrado');
-      }
-      
-      // Simular login (em produção, usar autenticação real)
-      setCurrentUser(user);
-      
-      toast({
-        title: "✅ Login realizado",
-        description: `Bem-vindo, ${user.name}!`,
-      });
-      
-      await createAuditLog({
-        user_name: user.name,
-        action: 'LOGIN',
-        details: `Login do usuário ${user.name}`
-      });
-    } catch (error) {
-      console.error('Erro no login:', error);
-      toast({
-        title: "❌ Erro no login",
-        description: error.message,
-        variant: "destructive"
-      });
-      throw error;
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      if (currentUser) {
-        await createAuditLog({
-          user_name: currentUser.name,
-          action: 'LOGOUT',
-          details: `Logout do usuário ${currentUser.name}`
-        });
-      }
-      
-      setCurrentUser(null);
-      
-      toast({
-        title: "👋 Logout realizado",
-        description: "Você saiu do sistema",
-      });
-    } catch (error) {
-      console.error('Erro no logout:', error);
-    }
+  const value: SupabaseContextType = {
+    // Dados
+    users,
+    schedules,
+    swapRequests,
+    vacationRequests,
+    auditLogs,
+    currentUser,
+    
+    // Estados
+    loading,
+    
+    // Funções
+    getUsers,
+    createUser,
+    updateUser,
+    getSchedules,
+    getScheduleByMonth,
+    createSchedule,
+    updateSchedule,
+    replaceSchedule,
+    getSwapRequests,
+    createSwapRequest,
+    updateSwapRequest,
+    applySwapToSchedule,
+    getVacationRequests,
+    createVacationRequest,
+    updateVacationRequest,
+    createAuditLog,
+    getAuditLogs,
   };
 
   // Funções de Usuários
@@ -563,6 +528,73 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
     updateVacationRequest,
     createAuditLog,
     getAuditLogs,
+  };
+
+  const checkCurrentUser = async () => {
+    try {
+      const user = await SupabaseAPI.getCurrentUser();
+      if (user) {
+        // Buscar dados completos do usuário
+        const userData = await SupabaseAPI.getUserById(user.id);
+        setCurrentUser(userData || null);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar usuário atual:', error);
+    }
+  };
+
+  // Funções de Autenticação
+  const signIn = async (email: string, password: string) => {
+    try {
+      // Para login com nome de usuário, precisamos buscar o email
+      const user = users.find(u => u.name === email);
+      if (!user) {
+        throw new Error('Usuário não encontrado');
+      }
+      
+      // Simular login (em produção, usar autenticação real)
+      setCurrentUser(user);
+      
+      toast({
+        title: "✅ Login realizado",
+        description: `Bem-vindo, ${user.name}!`, 
+      });
+      
+      await createAuditLog({
+        user_name: user.name,
+        action: 'LOGIN',
+        details: `Login do usuário ${user.name}`
+      });
+    } catch (error) {
+      console.error('Erro no login:', error);
+      toast({
+        title: "❌ Erro no login",
+        description: error.message,
+        variant: "destructive"
+      });
+      throw error;
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      if (currentUser) {
+        await createAuditLog({
+          user_name: currentUser.name,
+          action: 'LOGOUT',
+          details: `Logout do usuário ${currentUser.name}`
+        });
+      }
+      
+      setCurrentUser(null);
+      
+      toast({
+        title: "👋 Logout realizado",
+        description: "Você saiu do sistema",
+      });
+    } catch (error) {
+      console.error('Erro no logout:', error);
+    }
   };
 
   return (

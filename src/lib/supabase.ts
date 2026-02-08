@@ -5,8 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 import { SwapRequest } from '@/data/scheduleData';
 
 // Configuração do Supabase
-const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MjMzNjQsImV4cCI6MjA4NTQ5OTM2NH0.EarBTpSeSO9JcA_6jH6wmz0l_iVwg8pVO7_ASWXkOK8';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Criar cliente Supabase
 export const supabase = createClient(supabaseUrl, supabaseKey);
