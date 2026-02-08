@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole, UserStatus, initialUsers } from '@/data/scheduleData';
 import { logLogin, logLogout, logPasswordChange, logUserManagement, logAdminLogin } from '@/data/auditLogs';
-import { supabase } from '@/lib/supabase';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -186,17 +185,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const supabaseLogin = async (name: string, password: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('name', name)
-        .eq('password', password)
-        .eq('status', 'ativo')
-        .single();
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+      
+      const response = await fetch(`${supabaseUrl}/rest/v1/users?select=*&name=eq.${name}&password=eq.${password}&status=eq.ativo`, {
+        method: 'GET',
+        headers: {
+          'apikey': serviceKey,
+          'Authorization': `Bearer ${serviceKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 means no rows found
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
-      if (data) {
+      const usersFromDb = await response.json();
+
+      if (usersFromDb.length > 0) {
+        const data = usersFromDb[0];
+        
         // Converter para o formato User do contexto
         const user: User = {
           id: data.id,
