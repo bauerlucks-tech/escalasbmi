@@ -7,33 +7,6 @@ class SystemAuthIntegration {
     this.isInitialized = false;
     this.authChecked = false; // Nova flag para controlar piscamento
     this.loginEventDispatched = false; // Prevenir múltiplos eventos
-    this.currentVersion = this.generateVersion(); // Versão dinâmica
-  }
-
-  // Gerar versão no formato 2.0.DDHH (dia + hora + minutos)
-  generateVersion() {
-    const now = new Date();
-    const day = now.getDate().toString().padStart(2, '0');
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    
-    // Formato: 2.0.DDHH (ex: 2.0.0515 para dia 5, hora 15)
-    return `2.0.${day}${hours}${minutes}`;
-  }
-
-  // Obter commit hash atual (fallback)
-  getCommitHash() {
-    try {
-      // Tentar obter do sistema de build
-      if (typeof window !== 'undefined' && window.__COMMIT_HASH__) {
-        return window.__COMMIT_HASH__;
-      }
-      
-      // Fallback para deploy atual
-      return '9e7a7fe'; // Commit atual
-    } catch (error) {
-      return 'unknown';
-    }
   }
 
   // Inicializar sistema
@@ -478,23 +451,22 @@ class SystemAuthIntegration {
 
   // Atualizar versão dinamicamente
   async updateVersionDisplay() {
-    const commitHash = this.getCommitHash();
+    const commitHash = await this.getCurrentCommitHash();
     const versionElements = document.querySelectorAll('[data-version-display]');
     
     versionElements.forEach(element => {
       if (element.dataset.versionDisplay === 'login') {
-        element.innerHTML = `Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">${this.currentVersion}</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>`;
+        element.innerHTML = `Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>`;
       } else if (element.dataset.versionDisplay === 'header') {
-        element.textContent = `v${this.currentVersion}`; // Mostrar versão dinâmica
+        element.textContent = `v2.0`; // Mostrar apenas v2.0 sem o hash
       }
     });
   }
 
   // Criar tela de login
   async createLoginScreen() {
-    // Obter versão dinâmica atual
-    const currentVersion = this.currentVersion;
-    const commitHash = this.getCommitHash();
+    // Obter commit hash atual (será atualizado dinamicamente)
+    const commitHash = '4befc43'; // Placeholder inicial
     
     // Remover tela de login anterior se existir
     const existingScreen = document.getElementById('auth-login-screen');
@@ -535,7 +507,7 @@ class SystemAuthIntegration {
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
             <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v${currentVersion}</span>
+              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v2.0</span>
             </div>
           </div>
 
@@ -602,7 +574,7 @@ class SystemAuthIntegration {
             </div>
             <div style="text-align: center;">
               <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem;" data-version-display="login">
-                Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">${currentVersion}</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>
+                Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>
               </p>
             </div>
           </div>
