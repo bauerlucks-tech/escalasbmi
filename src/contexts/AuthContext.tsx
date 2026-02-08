@@ -197,7 +197,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (error && error.code !== 'PGRST116') throw error; // PGRST116 means no rows found
 
       if (data) {
-        setCurrentUser(data);
+        // Converter para o formato User do contexto
+        const user: User = {
+          id: data.id,
+          name: data.name,
+          password: data.password,
+          role: data.role as UserRole,
+          status: data.status as UserStatus,
+          profileImage: data.profile_image,
+          hideFromSchedule: data.hide_from_schedule
+        };
+        
+        setCurrentUser(user);
         logLogin(data.id, data.name, true);
         return true;
       } else {

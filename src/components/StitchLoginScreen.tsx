@@ -74,31 +74,25 @@ export function StitchLoginScreen({ onLoginSuccess }: StitchLoginScreenProps) {
       const supabaseSuccess = await supabaseLogin(selectedUser, password);
 
       if (supabaseSuccess) {
-        const user = availableUsers.find(u => u.name.toUpperCase() === selectedUser.toUpperCase());
-        if (user) {
-          toast.success(`Bem-vindo, ${user.name}!`);
-          onLoginSuccess(user);
-        } else {
-          // Buscar usuário completo do Supabase
-          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-          const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
-          
-          const response = await fetch(`${supabaseUrl}/rest/v1/users?select=*&name=eq.${selectedUser}&status=eq.ativo`, {
-            method: 'GET',
-            headers: {
-              'apikey': serviceKey,
-              'Authorization': `Bearer ${serviceKey}`,
-              'Content-Type': 'application/json'
-            }
-          });
+        // Buscar usuário completo do Supabase para passar ao callback
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+        
+        const response = await fetch(`${supabaseUrl}/rest/v1/users?select=*&name=eq.${selectedUser}&status=eq.ativo`, {
+          method: 'GET',
+          headers: {
+            'apikey': serviceKey,
+            'Authorization': `Bearer ${serviceKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
 
-          if (response.ok) {
-            const usersFromDb = await response.json();
-            if (usersFromDb.length > 0) {
-              const userFromDb = usersFromDb[0];
-              toast.success(`Bem-vindo, ${userFromDb.name}!`);
-              onLoginSuccess(userFromDb);
-            }
+        if (response.ok) {
+          const usersFromDb = await response.json();
+          if (usersFromDb.length > 0) {
+            const userFromDb = usersFromDb[0];
+            toast.success(`Bem-vindo, ${userFromDb.name}!`);
+            onLoginSuccess(userFromDb);
           }
         }
       } else {
