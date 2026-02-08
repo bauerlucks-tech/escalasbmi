@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole, UserStatus, initialUsers } from '@/data/scheduleData';
 import { logLogin, logLogout, logPasswordChange, logUserManagement, logAdminLogin } from '@/data/auditLogs';
+import { supabase } from '@/lib/supabase';
 
 interface AuthContextType {
   currentUser: User | null;
