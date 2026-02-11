@@ -19,31 +19,6 @@ const NotificationCenter: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
-    // Load notifications from localStorage
-    const saved = localStorage.getItem('escala_notifications');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setNotifications(parsed.map((n: any) => ({
-        ...n,
-        timestamp: new Date(n.timestamp)
-      })));
-    }
-
-    // Check for new notifications every 30 seconds
-    const interval = setInterval(checkForNewNotifications, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    // Update unread count
-    const count = notifications.filter(n => !n.read).length;
-    setUnreadCount(count);
-    
-    // Save to localStorage
-    localStorage.setItem('escala_notifications', JSON.stringify(notifications));
-  }, [notifications]);
-
   const checkForNewNotifications = () => {
     // Check for pending swap requests
     const swapsData = localStorage.getItem('escala_swapRequests');
@@ -104,6 +79,31 @@ const NotificationCenter: React.FC = () => {
     setNotifications(prev => [newNotification, ...prev].slice(0, 50)); // Keep only last 50
   };
 
+  useEffect(() => {
+    // Update unread count
+    const count = notifications.filter(n => !n.read).length;
+    setUnreadCount(count);
+    
+    // Save to localStorage
+    localStorage.setItem('escala_notifications', JSON.stringify(notifications));
+  }, [notifications]);
+
+  useEffect(() => {
+    // Load notifications from localStorage
+    const saved = localStorage.getItem('escala_notifications');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setNotifications(parsed.map((n: any) => ({
+        ...n,
+        timestamp: new Date(n.timestamp)
+      })));
+    }
+
+    // Check for new notifications every 30 seconds
+    const interval = setInterval(checkForNewNotifications, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const markAsRead = (id: string) => {
     setNotifications(prev => 
       prev.map(n => n.id === id ? { ...n, read: true } : n)
@@ -114,6 +114,8 @@ const NotificationCenter: React.FC = () => {
     setNotifications(prev => 
       prev.map(n => ({ ...n, read: true }))
     );
+    // Force immediate update of unread count
+    setUnreadCount(0);
   };
 
   const removeNotification = (id: string) => {
@@ -151,12 +153,12 @@ const NotificationCenter: React.FC = () => {
       {/* Notification Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        className="relative p-2 rounded-lg hover:bg-muted transition-colors"
         title="Notificações"
       >
-        <Bell className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}

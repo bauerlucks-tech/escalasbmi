@@ -498,7 +498,7 @@ class SystemAuthIntegration {
   // Criar tela de login
   async createLoginScreen() {
     // Obter commit hash atual (será atualizado dinamicamente)
-    const commitHash = '4befc43'; // Placeholder inicial
+    const commitHash = await this.getCurrentCommitHash();
     
     // Remover tela de login anterior se existir
     const existingScreen = document.getElementById('auth-login-screen');
@@ -539,7 +539,7 @@ class SystemAuthIntegration {
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
             <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-              <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">v2.0</span>
+              <span id="auth-version-display" data-version-display="login" style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span></span>
             </div>
           </div>
 
@@ -564,7 +564,6 @@ class SystemAuthIntegration {
                   <option value="KELLY" style="background: #1e293b; color: #fff;">KELLY</option>
                   <option value="GUILHERME" style="background: #1e293b; color: #fff;">GUILHERME</option>
                   <option value="RICARDO" style="background: #1e293b; color: #fff;">RICARDO</option>
-                  <option value="ADMIN" style="background: #1e293b; color: #fff;">ADMIN</option>
                 </select>
               </div>
             </div>

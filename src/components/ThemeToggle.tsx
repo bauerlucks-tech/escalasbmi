@@ -37,7 +37,7 @@ const ThemeToggle: React.FC = () => {
       variant="ghost"
       size="sm"
       onClick={toggleTheme}
-      className="relative group bg-white dark:bg-dark-700 shadow-lg dark:shadow-gray-900/50 rounded-full p-2 hover:shadow-xl transition-all duration-300 hover:scale-105"
+      className="relative group hover:bg-muted transition-colors rounded-full p-2"
       title={`Tema atual: ${getLabel()}`}
     >
       <div className="flex items-center gap-2">
