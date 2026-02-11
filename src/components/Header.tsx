@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
 import { PartnerLogos } from '@/components/logos/CompanyLogos';
-import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database, TestTube, FileText, BarChart3 } from 'lucide-react';
+import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database, TestTube, FileText, BarChart3, Activity } from 'lucide-react';
 import UserSettings from '@/components/UserSettings';
 import OperatorHelp from '@/components/OperatorHelp';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -64,6 +64,18 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   // Adicionar aba de Calendário para todos os usuários
   if (currentUser) {
     tabs.push({ id: 'calendar', label: 'Calendário', icon: Calendar });
+  }
+
+  // Adicionar abas avançadas para Admins e Super Admins
+  if (currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))) {
+    tabs.push({ id: 'analytics', label: 'Analytics', icon: BarChart3 });
+    tabs.push({ id: 'widgets', label: 'Widgets', icon: Settings });
+    tabs.push({ id: 'performance', label: 'Performance', icon: Activity });
+  }
+
+  // Adicionar aba de Animações apenas em desenvolvimento
+  if (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development') {
+    tabs.push({ id: 'animations', label: 'Animações', icon: Settings });
   }
 
   // Adicionar aba de Testes apenas no branch de teste

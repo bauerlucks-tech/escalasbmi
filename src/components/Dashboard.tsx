@@ -13,6 +13,10 @@ import AuditLogsView from '@/components/AuditLogsView';
 import ReportsDashboard from '@/components/ReportsDashboard';
 import PWAInstaller from '@/components/PWAInstaller';
 import CalendarIntegration from '@/components/CalendarIntegration';
+import AdvancedAnalytics from '@/components/AdvancedAnalytics';
+import WidgetDashboard from '@/components/WidgetDashboard';
+import PerformanceMonitor from '@/components/PerformanceMonitor';
+import AnimationEngine from '@/components/AnimationEngine';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('schedule');
@@ -53,6 +57,14 @@ const Dashboard: React.FC = () => {
         return <ReportsDashboard />;
       case 'calendar':
         return <CalendarIntegration />;
+      case 'analytics':
+        return <AdvancedAnalytics />;
+      case 'widgets':
+        return <WidgetDashboard />;
+      case 'performance':
+        return <PerformanceMonitor />;
+      case 'animations':
+        return <AnimationEngine />;
       case 'test':
         return (
           <div className="text-center py-12">
