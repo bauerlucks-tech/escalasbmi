@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write  # necessário para criar branch e PR
+  pull-requests: write  # necessário para criar PR via API
 
 jobs:
   apply-fixes:
