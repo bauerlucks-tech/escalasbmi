@@ -166,21 +166,15 @@ class SystemAuthIntegration {
               console.log('🔄 Autenticação nativa falhou, tentando fallback...');
             }
             
-            // Método 2: Fallback direto (sem RLS) - usando POST body para segurança
+            // Método 2: Fallback direto (sem RLS) - usando GET com filtro de nome
             console.log('🔄 Tentando método fallback direto...');
             const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&status=eq.ativo', {
-              method: 'POST',
+              method: 'GET',
               headers: {
                 'apikey': this.supabaseServiceKey,
                 'Authorization': 'Bearer ' + this.supabaseServiceKey,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-              },
-              body: JSON.stringify({ 
-                password: password,
-                // Adicionar timestamp para evitar cache
-                _timestamp: Date.now()
-              })
+                'Content-Type': 'application/json'
+              }
             });
             
             const users = await response.json();
@@ -192,6 +186,12 @@ class SystemAuthIntegration {
             }
             
             const user = users[0];
+            
+            // Validar senha
+            if (user.password !== password) {
+              console.error('❌ Senha incorreta para o usuário:', username);
+              return { success: false, error: 'Usuário ou senha inválidos' };
+            }
             this.currentUser = user;
             localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
             
@@ -551,13 +551,21 @@ class SystemAuthIntegration {
               </label>
               <div style="position: relative;">
                 <span style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.25rem; height: 1.25rem; color: rgba(255, 255, 255, 0.55); font-size: 1.1rem;">👤</span>
-                <input
+                <select
                   id="auth-username"
-                  type="text"
-                  placeholder="Digite seu nome de usuário"
                   required
-                  style="width: 100%; padding-left: 3rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 0.75rem; color: #fff; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;"
-                />
+                  style="width: 100%; padding-left: 3rem; padding-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; background: rgba(255, 255, 255, 0.04); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 0.75rem; color: #fff; font-size: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; cursor: pointer;"
+                >
+                  <option value="" style="background: #1e293b; color: #fff;">Selecione seu nome</option>
+                  <option value="LUCAS" style="background: #1e293b; color: #fff;">LUCAS</option>
+                  <option value="CARLOS" style="background: #1e293b; color: #fff;">CARLOS</option>
+                  <option value="ROSANA" style="background: #1e293b; color: #fff;">ROSANA</option>
+                  <option value="HENRIQUE" style="background: #1e293b; color: #fff;">HENRIQUE</option>
+                  <option value="KELLY" style="background: #1e293b; color: #fff;">KELLY</option>
+                  <option value="GUILHERME" style="background: #1e293b; color: #fff;">GUILHERME</option>
+                  <option value="RICARDO" style="background: #1e293b; color: #fff;">RICARDO</option>
+                  <option value="ADMIN" style="background: #1e293b; color: #fff;">ADMIN</option>
+                </select>
               </div>
             </div>
 
@@ -593,7 +601,10 @@ class SystemAuthIntegration {
           <!-- User hints -->
           <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
             <p style="margin: 0; color: rgba(255, 255, 255, 0.55); font-size: 0.875rem; text-align: center; line-height: 1.4;">
-              Credenciais de teste: <span style="font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">ADMIN / admin123</span>
+              Senha para todos os usuários: <span style="font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace; color: #60a5fa; background: rgba(96, 165, 250, 0.1); padding: 0.25rem 0.5rem; border-radius: 0.25rem;">1234</span>
+            </p>
+            <p style="margin: 0.5rem 0 0 0; color: rgba(255, 255, 255, 0.45); font-size: 0.75rem; text-align: center;">
+              Selecione seu nome na lista acima e digite a senha
             </p>
           </div>
 
