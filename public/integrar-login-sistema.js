@@ -653,6 +653,14 @@ class SystemAuthIntegration {
     const messageDiv = document.getElementById('auth-login-message');
     const messageText = document.getElementById('auth-login-message-text');
     
+    // Adicionar listener para atalho de admin (Ctrl+Shift+A)
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        this.showAdminLogin();
+      }
+    });
+    
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       
@@ -665,6 +673,12 @@ class SystemAuthIntegration {
         messageDiv.style.background = 'rgba(239, 68, 68, 0.1)';
         messageDiv.style.border = '1px solid rgba(239, 68, 68, 0.2)';
         messageDiv.style.color = '#ef4444';
+        return;
+      }
+      
+      // Verificar se é login de admin especial
+      if (username === 'ADMIN' && password === 'bmi@2025!admin') {
+        this.loginAsAdmin();
         return;
       }
       
@@ -1036,6 +1050,58 @@ class SystemAuthIntegration {
     } catch (error) {
       console.error('❌ Erro no logout:', error);
     }
+  }
+
+  // Mostrar interface de login admin
+  showAdminLogin() {
+    const loginScreen = document.getElementById('auth-login-screen');
+    if (!loginScreen) return;
+    
+    const select = document.getElementById('auth-username');
+    const passwordField = document.getElementById('auth-password');
+    const messageDiv = document.getElementById('auth-login-message');
+    const messageText = document.getElementById('auth-login-message-text');
+    
+    // Adicionar opção ADMIN ao select
+    const adminOption = document.createElement('option');
+    adminOption.value = 'ADMIN';
+    adminOption.textContent = 'ADMIN';
+    adminOption.style.cssText = 'background: #dc2626; color: #fff; font-weight: bold;';
+    select.appendChild(adminOption);
+    select.value = 'ADMIN';
+    
+    // Limpar campos
+    passwordField.value = '';
+    messageDiv.style.display = 'none';
+    
+    // Mostrar mensagem discreta
+    console.log('🔐 Modo admin ativado');
+  }
+
+  // Login como admin
+  loginAsAdmin() {
+    const adminUser = {
+      name: 'Administrador',
+      role: 'admin',
+      operator: 'ADMIN',
+      permissions: ['read', 'write', 'delete', 'admin'],
+      loginTime: new Date().toISOString()
+    };
+    
+    // Salvar no localStorage
+    localStorage.setItem('auth_user', JSON.stringify(adminUser));
+    localStorage.setItem('auth_verified', 'true');
+    localStorage.setItem('auth_login_time', new Date().toISOString());
+    
+    console.log('🔐 Login admin realizado com sucesso');
+    
+    // Mostrar interface do sistema
+    this.showSystemInterface(adminUser);
+    
+    // Disparar evento para React
+    window.dispatchEvent(new CustomEvent('externalLogin', {
+      detail: { user: adminUser, isAdmin: true }
+    }));
   }
 }
 
