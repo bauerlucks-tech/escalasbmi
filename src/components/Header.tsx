@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { HelicopterDetailedIcon, HelipadIcon } from '@/components/icons/OffshoreIcons';
 import { PartnerLogos } from '@/components/logos/CompanyLogos';
-import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database, TestTube, FileText } from 'lucide-react';
+import { LogOut, Shield, Bell, Calendar, ArrowLeftRight, Settings, Plane, User, HelpCircle, Database, TestTube, FileText, BarChart3 } from 'lucide-react';
 import UserSettings from '@/components/UserSettings';
 import OperatorHelp from '@/components/OperatorHelp';
 import ThemeToggle from '@/components/ThemeToggle';
 import TestPanel from '@/components/TestPanel';
 import NotificationCenter from '@/components/NotificationCenter';
+import DarkModeToggle from '@/components/DarkModeToggle';
+import ReportsDashboard from '@/components/ReportsDashboard';
 
 interface HeaderProps {
   activeTab: string;
@@ -52,6 +54,16 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   if (currentUser && isSuperAdmin(currentUser)) {
     tabs.push({ id: 'backup', label: 'Backup', icon: Database });
     tabs.push({ id: 'audit', label: 'Auditoria', icon: FileText });
+  }
+
+  // Adicionar aba de Relatórios para Admins e Super Admins
+  if (currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))) {
+    tabs.push({ id: 'reports', label: 'Relatórios', icon: BarChart3 });
+  }
+
+  // Adicionar aba de Calendário para todos os usuários
+  if (currentUser) {
+    tabs.push({ id: 'calendar', label: 'Calendário', icon: Calendar });
   }
 
   // Adicionar aba de Testes apenas no branch de teste
@@ -99,6 +111,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             {/* User Actions */}
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <DarkModeToggle />
               <NotificationCenter />
               <UserSettings trigger={
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">

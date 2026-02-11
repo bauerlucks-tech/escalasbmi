@@ -10,6 +10,9 @@ import VacationRequestView from '@/components/VacationRequestView';
 import VacationAdminView from '@/components/VacationAdminView';
 import OperatorHelp from '@/components/OperatorHelp';
 import AuditLogsView from '@/components/AuditLogsView';
+import ReportsDashboard from '@/components/ReportsDashboard';
+import PWAInstaller from '@/components/PWAInstaller';
+import CalendarIntegration from '@/components/CalendarIntegration';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('schedule');
@@ -46,6 +49,10 @@ const Dashboard: React.FC = () => {
         return <AuditLogsView />;
       case 'vacations':
         return isAdmin(currentUser) ? <VacationAdminView /> : <VacationRequestView />;
+      case 'reports':
+        return <ReportsDashboard />;
+      case 'calendar':
+        return <CalendarIntegration />;
       case 'test':
         return (
           <div className="text-center py-12">
@@ -73,6 +80,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <PWAInstaller />
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className="container mx-auto px-4 py-6">
         {renderContent()}
