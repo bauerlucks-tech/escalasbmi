@@ -50,22 +50,7 @@ const BackupPage: React.FC = () => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const yearImportInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Check if user is Super Admin
-  if (!isSuperAdmin(currentUser)) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-96">
-          <CardHeader className="text-center">
-            <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <CardTitle className="text-xl">Acesso Restrito</CardTitle>
-            <CardDescription>
-              Apenas Super Admin pode acessar esta página.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+  const hasAccess = isSuperAdmin(currentUser);
 
   // Load stored backups from localStorage
   const loadStoredBackups = () => {
@@ -85,6 +70,29 @@ const BackupPage: React.FC = () => {
   useEffect(() => {
     loadStoredBackups();
   }, []);
+
+  useEffect(() => {
+    if (!hasAccess) {
+      toast.error('Apenas Super Admin pode acessar esta página.');
+      navigate('/');
+    }
+  }, [hasAccess, navigate]);
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-96">
+          <CardHeader className="text-center">
+            <Shield className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <CardTitle className="text-xl">Acesso Restrito</CardTitle>
+            <CardDescription>
+              Apenas Super Admin pode acessar esta página.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 
   // Auto backup at 01:00 with improved reliability
   // SISTEMA DE BACKUP AUTOMÁTICO DESATIVADO

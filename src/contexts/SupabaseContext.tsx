@@ -2,7 +2,7 @@
 // Gerenciar estado do sistema com Supabase
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { SupabaseAPI, User, MonthSchedule, SwapRequest, VacationRequest, AuditLog } from '@/lib/supabase';
+import { SupabaseAPI, User, MonthSchedule, SwapRequestSupabase as SwapRequest, VacationRequest, AuditLog } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
 interface SupabaseContextType {

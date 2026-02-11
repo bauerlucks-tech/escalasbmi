@@ -285,7 +285,7 @@ const CSVImportContent: React.FC = () => {
       }));
 
       // Importar usando a função existente do sistema
-      const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true, existingMonth ? true : false);
+      const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true);
       
       if (result.success) {
         const action = existingMonth ? 'substituído' : 'importado';
@@ -359,7 +359,7 @@ const CSVImportContent: React.FC = () => {
           const isExisting = currentSchedules.some(s => s.month === month.month && s.year === month.year);
           
           // Importar usando a função existente do sistema
-          const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true, isExisting);
+          const result = importNewSchedule(month.month, month.year, scheduleData, currentUser.name, true);
           
           if (result.success) {
             successCount++;

@@ -18,6 +18,8 @@ type ShiftType = 'meioPeriodo' | 'fechamento';
 const SwapRequestView: React.FC = () => {
   const { currentUser, users } = useAuth();
   const { createSwapRequest, getMyRequests, currentSchedules, switchToSchedule } = useSwap();
+  const currentUserId = currentUser?.id ?? '';
+  const currentUserName = currentUser?.name ?? '';
   
   // Step 0: Select month for original shift
   const [selectedMonth, setSelectedMonth] = useState<{month: number, year: number} | null>(null);
@@ -36,9 +38,7 @@ const SwapRequestView: React.FC = () => {
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [selectedTargetShift, setSelectedTargetShift] = useState<ShiftType | 'ambos' | null>(null);
 
-  if (!currentUser) return null;
-
-  const myRequests = getMyRequests(currentUser.id);
+  const myRequests = currentUser ? getMyRequests(currentUserId) : [];
 
   // Helper function to convert date string (DD/MM/YYYY) to timestamp
   const convertDateToTime = (dateStr: string): number => {
@@ -81,20 +81,20 @@ const SwapRequestView: React.FC = () => {
   // Get available operators (other active users) - DEFINIR PRIMEIRO
   const availableOperators = useMemo(() => {
     return users.filter(u => 
-      u.id !== currentUser.id && 
+      u.id !== currentUserId && 
       u.status === 'ativo' && 
       u.role === 'operador' &&
       !u.hideFromSchedule
     );
-  }, [users, currentUser.id]);
+  }, [users, currentUserId]);
 
   // Get days where user is scheduled (from today onwards)
   const myScheduledDays = useMemo(() => {
     return currentScheduleData.filter(entry => 
-      (entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name) &&
+      (entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName) &&
       isDateTodayOrFuture(entry.date)
     );
-  }, [currentScheduleData, currentUser.name]);
+  }, [currentScheduleData, currentUserName]);
 
   // Get all available days (from today onwards) to select target day
   const availableDays = useMemo(() => {
@@ -129,8 +129,8 @@ const SwapRequestView: React.FC = () => {
 
   const getMyShiftsForDay = (entry: ScheduleEntry): ShiftType[] => {
     const shifts: ShiftType[] = [];
-    if (entry.meioPeriodo === currentUser.name) shifts.push('meioPeriodo');
-    if (entry.fechamento === currentUser.name) shifts.push('fechamento');
+    if (entry.meioPeriodo === currentUserName) shifts.push('meioPeriodo');
+    if (entry.fechamento === currentUserName) shifts.push('fechamento');
     return shifts;
   };
 
@@ -151,6 +151,8 @@ const SwapRequestView: React.FC = () => {
 
   const selectedMyEntry = selectedMyDay ? getScheduleByDate(selectedMyDay, false) : null;
   const selectedTargetEntry = selectedTargetDay ? getScheduleByDate(selectedTargetDay, true) : null;
+
+  if (!currentUser) return null;
 
   const handleSubmit = async () => {
     if (!selectedMyDay || !selectedMyShift || !selectedOperator || !selectedTargetDay || !selectedTargetShift) {

@@ -11,6 +11,8 @@ const ScheduleView: React.FC = () => {
   const { currentUser, operators } = useAuth();
   const { scheduleData, currentSchedules, switchToSchedule } = useSwap();
 
+  const currentUserName = currentUser?.name ?? '';
+
   // State for viewing different months - sempre começa com o mês atual
   const [viewingMonth, setViewingMonth] = useState(() => startOfMonth(new Date()));
 
@@ -64,11 +66,11 @@ const ScheduleView: React.FC = () => {
     return currentSchedules.some(s => s.month === month && s.year === year);
   }, [currentSchedules, prevMonth]);
 
-  if (!currentUser) return null;
-
-  const mySchedule = viewingMonthData.filter(
-    entry => entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
-  );
+  const mySchedule = currentUser
+    ? viewingMonthData.filter(
+        entry => entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName
+      )
+    : [];
 
   // Parse dates for comparison
   const parseDate = (dateStr: string) => parse(dateStr, 'dd/MM/yyyy', new Date());
@@ -112,9 +114,11 @@ const ScheduleView: React.FC = () => {
   }, [availableMonths]);
 
   // Get user's schedule across all months
-  const myAllSchedule = allScheduleData.filter(
-    entry => entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name
-  );
+  const myAllSchedule = currentUser
+    ? allScheduleData.filter(
+        entry => entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName
+      )
+    : [];
 
   // Sort all schedule data
   const sortedAllSchedule = [...myAllSchedule].sort((a, b) =>
@@ -139,7 +143,9 @@ const ScheduleView: React.FC = () => {
   
   const allDates = getAllDatesAcrossMonths();
   const myAllDates = new Set(myAllSchedule.map(s => s.date));
-  const daysOff = allDates.filter(d => !myAllDates.has(d) && isAfter(parseDate(d), today));
+  const daysOff = currentUser
+    ? allDates.filter(d => !myAllDates.has(d) && isAfter(parseDate(d), today))
+    : [];
   const nextDayOff = daysOff.length > 0 ? daysOff[0] : null;
 
   // Calculate consecutive days off until next work day
@@ -165,7 +171,7 @@ const ScheduleView: React.FC = () => {
 
       if (scheduleForMonth) {
         const entry = scheduleForMonth.entries.find(e => e.date === dateStr);
-        hasWork = entry && (entry.meioPeriodo === currentUser.name || entry.fechamento === currentUser.name);
+        hasWork = !!(entry && currentUser && (entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName));
       }
 
       if (hasWork) {
@@ -184,6 +190,8 @@ const ScheduleView: React.FC = () => {
   };
 
   const { count: daysOffCount, nextWorkDate } = calculateDaysOffUntilNextWork();
+
+  if (!currentUser) return null;
 
   // Calendar setup for viewing month
   const daysInMonth = getDaysInMonth(viewingMonth);
