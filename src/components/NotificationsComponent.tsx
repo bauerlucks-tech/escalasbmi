@@ -19,77 +19,6 @@ const NotificationCenter: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const checkForNewNotifications = () => {
-    // Check for pending swap requests
-    const swapsData = localStorage.getItem('escala_swapRequests');
-    const swaps = swapsData ? JSON.parse(swapsData) : [];
-    const pendingSwaps = swaps.filter((s: any) => s.status === 'pending');
-
-    // Check for pending vacation requests
-    const vacationsData = localStorage.getItem('escala_vacationRequests');
-    const vacations = vacationsData ? JSON.parse(vacationsData) : [];
-    const pendingVacations = vacations.filter((v: any) => v.status === 'pending');
-
-    // Get current notifications to avoid stale closure
-    setNotifications(currentNotifications => {
-      // Add notifications for new pending requests
-      pendingSwaps.forEach((swap: any) => {
-        const existingNotification = currentNotifications.find(n => 
-          n.message.includes(swap.id) && n.type === 'warning'
-        );
-        
-        if (!existingNotification) {
-          const newNotification = {
-            id: Date.now().toString() + Math.random(),
-            type: 'warning' as const,
-            title: 'Nova Solicitação de Troca',
-            message: `${swap.requesterName} solicitou troca com ${swap.targetName}`,
-            timestamp: new Date(),
-            read: false,
-            action: {
-              label: 'Ver Detalhes',
-              onClick: () => window.location.hash = '#swap'
-            }
-          };
-          currentNotifications = [newNotification, ...currentNotifications];
-        }
-      });
-
-      pendingVacations.forEach((vacation: any) => {
-        const existingNotification = currentNotifications.find(n => 
-          n.message.includes(vacation.id) && n.type === 'info'
-        );
-        
-        if (!existingNotification) {
-          const newNotification = {
-            id: Date.now().toString() + Math.random(),
-            type: 'info' as const,
-            title: 'Nova Solicitação de Férias',
-            message: `${vacation.operatorName} solicitou férias de ${vacation.startDate} a ${vacation.endDate}`,
-            timestamp: new Date(),
-            read: false,
-            action: {
-              label: 'Ver Detalhes',
-              onClick: () => window.location.hash = '#vacations'
-            }
-          };
-          currentNotifications = [newNotification, ...currentNotifications];
-        }
-      });
-
-      return currentNotifications.slice(0, 50); // Keep only last 50
-    });
-  };
-
-  useEffect(() => {
-    // Update unread count
-    const count = notifications.filter(n => !n.read).length;
-    setUnreadCount(count);
-    
-    // Save to localStorage
-    localStorage.setItem('escala_notifications', JSON.stringify(notifications));
-  }, [notifications]);
-
   useEffect(() => {
     // Load notifications from localStorage
     const saved = localStorage.getItem('escala_notifications');
@@ -100,16 +29,26 @@ const NotificationCenter: React.FC = () => {
         timestamp: new Date(n.timestamp)
       })));
     }
-
-    // Check for new notifications every 30 seconds
-    const interval = setInterval(checkForNewNotifications, 30000);
-    return () => clearInterval(interval);
   }, []);
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+  useEffect(() => {
+    // Update unread count
+    const count = notifications.filter(n => !n.read).length;
+    setUnreadCount(count);
+    
+    // Save to localStorage
+    localStorage.setItem('escala_notifications', JSON.stringify(notifications));
+  }, [notifications]);
+
+  const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+    const newNotification: Notification = {
+      ...notification,
+      id: Date.now().toString() + Math.random(),
+      timestamp: new Date(),
+      read: false
+    };
+
+    setNotifications(prev => [newNotification, ...prev].slice(0, 50)); // Keep only last 50
   };
 
   const markAllAsRead = () => {
@@ -126,6 +65,55 @@ const NotificationCenter: React.FC = () => {
 
   const clearAll = () => {
     setNotifications([]);
+  };
+
+  const checkForNewNotifications = () => {
+    // Check for pending swap requests
+    const swapsData = localStorage.getItem('escala_swapRequests');
+    const swaps = swapsData ? JSON.parse(swapsData) : [];
+    const pendingSwaps = swaps.filter((s: any) => s.status === 'pending');
+
+    // Check for pending vacation requests
+    const vacationsData = localStorage.getItem('escala_vacationRequests');
+    const vacations = vacationsData ? JSON.parse(vacationsData) : [];
+    const pendingVacations = vacations.filter((v: any) => v.status === 'pending');
+
+    // Add notifications for new pending requests
+    pendingSwaps.forEach((swap: any) => {
+      const existingNotification = notifications.find(n => 
+        n.message.includes(swap.id) && n.type === 'warning'
+      );
+      
+      if (!existingNotification) {
+        addNotification({
+          type: 'warning',
+          title: 'Nova Solicitação de Troca',
+          message: `${swap.requesterName} solicitou troca com ${swap.targetName}`,
+          action: {
+            label: 'Ver Detalhes',
+            onClick: () => window.location.hash = '#swap'
+          }
+        });
+      }
+    });
+
+    pendingVacations.forEach((vacation: any) => {
+      const existingNotification = notifications.find(n => 
+        n.message.includes(vacation.id) && n.type === 'info'
+      );
+      
+      if (!existingNotification) {
+        addNotification({
+          type: 'info',
+          title: 'Nova Solicitação de Férias',
+          message: `${vacation.operatorName} solicitou férias de ${vacation.startDate} a ${vacation.endDate}`,
+          action: {
+            label: 'Ver Detalhes',
+            onClick: () => window.location.hash = '#vacations'
+          }
+        });
+      }
+    });
   };
 
   const getIcon = (type: Notification['type']) => {
@@ -173,6 +161,12 @@ const NotificationCenter: React.FC = () => {
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="font-semibold text-gray-900 dark:text-white">Notificações</h3>
             <div className="flex gap-2">
+              <button
+                onClick={checkForNewNotifications}
+                className="text-xs text-green-600 dark:text-green-400 hover:underline"
+              >
+                Verificar
+              </button>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
