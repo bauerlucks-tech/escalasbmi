@@ -166,15 +166,21 @@ class SystemAuthIntegration {
               console.log('🔄 Autenticação nativa falhou, tentando fallback...');
             }
             
-            // Método 2: Fallback direto (sem RLS)
+            // Método 2: Fallback direto (sem RLS) - usando POST body para segurança
             console.log('🔄 Tentando método fallback direto...');
-            const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
-              method: 'GET',
+            const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&status=eq.ativo', {
+              method: 'POST',
               headers: {
                 'apikey': this.supabaseServiceKey,
                 'Authorization': 'Bearer ' + this.supabaseServiceKey,
-                'Content-Type': 'application/json'
-              }
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+              },
+              body: JSON.stringify({ 
+                password: password,
+                // Adicionar timestamp para evitar cache
+                _timestamp: Date.now()
+              })
             });
             
             const users = await response.json();
