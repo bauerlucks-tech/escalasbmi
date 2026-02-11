@@ -1,12 +1,25 @@
 // INTEGRAÇÃO AUTOMÁTICA DE LOGIN AO SISTEMA
 // Verifica autenticação ao carregar a página
 
+// Importar Supabase
+const { createClient } = window.supabase || {};
+
 class SystemAuthIntegration {
   constructor() {
     this.authManager = null; // Não criar instância aqui
     this.isInitialized = false;
     this.authChecked = false; // Nova flag para controlar piscamento
     this.loginEventDispatched = false; // Prevenir múltiplos eventos
+    
+    // Inicializar Supabase se disponível
+    if (window.supabase) {
+      this.supabase = createClient(
+        'https://lsxmwwwmgfjwnowlsmzf.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MjMzNjQsImV4cCI6MjA4NTQ5OTM2NH0.EarBTpSeSO9JcA_6jH6wmz0l_iVwg8pVO7_ASWXkOK8'
+      );
+    } else {
+      this.supabase = null;
+    }
   }
 
   // Inicializar sistema
@@ -1079,19 +1092,39 @@ class SystemAuthIntegration {
   }
 
   // Login como admin
-  loginAsAdmin() {
+  async loginAsAdmin() {
     const adminUser = {
       name: 'Administrador',
-      role: 'admin',
+      email: 'admin@escalasbmi.com',
+      role: 'super_admin',
       operator: 'ADMIN',
-      permissions: ['read', 'write', 'delete', 'admin'],
-      loginTime: new Date().toISOString()
+      permissions: ['read', 'write', 'delete', 'admin', 'super_admin'],
+      loginTime: new Date().toISOString(),
+      id: 'admin-local-' + Date.now()
     };
     
     // Salvar no localStorage
     localStorage.setItem('auth_user', JSON.stringify(adminUser));
     localStorage.setItem('auth_verified', 'true');
     localStorage.setItem('auth_login_time', new Date().toISOString());
+    
+    // Criar sessão Supabase para admin
+    try {
+      // Tentar login com Supabase usando credenciais de admin
+      const { data, error } = await this.supabase.auth.signInWithPassword({
+        email: 'admin@escalasbmi.com',
+        password: 'bmi@2025!admin'
+      });
+      
+      if (!error && data.user) {
+        console.log('🔐 Sessão Supabase admin criada');
+        localStorage.setItem('supabase_auth_token', data.session.access_token);
+      } else {
+        console.log('⚠️ Login Supabase falhou, usando apenas localStorage');
+      }
+    } catch (error) {
+      console.log('⚠️ Erro ao criar sessão Supabase:', error);
+    }
     
     console.log('🔐 Login admin realizado com sucesso');
     
@@ -1100,7 +1133,7 @@ class SystemAuthIntegration {
     
     // Disparar evento para React
     window.dispatchEvent(new CustomEvent('externalLogin', {
-      detail: { user: adminUser, isAdmin: true }
+      detail: { user: adminUser, isAdmin: true, isSuperAdmin: true }
     }));
   }
 }
