@@ -343,9 +343,6 @@ class SystemAuthIntegration {
       loginScreen.remove();
     }
     
-    // Adicionar header com versão no canto superior esquerdo
-    await this.addVersionHeader();
-    
     // Sincronizar com AuthContext do React
     this.syncWithReactUser(user);
     
