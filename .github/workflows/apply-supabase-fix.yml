@@ -130,7 +130,7 @@ jobs:
 
           # Guard getEventListeners usages (DevTools-only) by wrapping with check
           git ls-files | xargs -I{} bash -c 'if grep -q "getEventListeners" "{}"; then
-            sed -E -i "s/getEventListeners\\s*\\(/(typeof getEventListeners !== \\\"undefined\\\" ? getEventListeners(/g" "{}"
+            sed -E -i "s/getEventListeners\\s*\\(/(typeof getEventListeners !== \\\"undefined\\\" \? getEventListeners(/g" "{}"
           fi' || true
 
           # Neutralize global window.fetch overwrites: comment them out and log a warning
