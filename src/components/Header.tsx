@@ -25,6 +25,8 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const [showHelp, setShowHelp] = React.useState(false);
   const [showTestPanel, setShowTestPanel] = React.useState(false);
   
+  console.log('Header render - activeTab:', activeTab);
+  
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
 
@@ -180,7 +182,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  console.log('Header button clicked:', tab.id);
+                  setActiveTab(tab.id);
+                }}
                 className={`
                   flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium
                   transition-all whitespace-nowrap relative
