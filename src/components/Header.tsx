@@ -11,7 +11,6 @@ import OperatorHelp from '@/components/OperatorHelp';
 import ThemeToggle from '@/components/ThemeToggle';
 import TestPanel from '@/components/TestPanel';
 import NotificationCenter from '@/components/NotificationCenter';
-import DarkModeToggle from '@/components/DarkModeToggle';
 import ReportsDashboard from '@/components/ReportsDashboard';
 
 interface HeaderProps {
@@ -129,7 +128,6 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             {/* User Actions */}
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <DarkModeToggle />
               <NotificationCenter />
               <UserSettings trigger={
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">

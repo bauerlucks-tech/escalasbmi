@@ -68,19 +68,46 @@ const NotificationCenter: React.FC = () => {
       }
     });
 
-    setNotifications(newNotifications);
+    // Restaurar estado de leitura do localStorage
+    const savedReadState = localStorage.getItem(`notifications_read_${currentUser.id}`);
+    const readIds = savedReadState ? JSON.parse(savedReadState) : [];
+    
+    const notificationsWithReadState = newNotifications.map(notification => ({
+      ...notification,
+      read: readIds.includes(notification.id) || notification.read
+    }));
+
+    setNotifications(notificationsWithReadState);
   }, [currentUser, getRequestsForMe, getPendingAdminApproval, getMyNotifications]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+    setNotifications(prev => {
+      const updated = prev.map(n => n.id === id ? { ...n, read: true } : n);
+      
+      // Salvar estado de leitura no localStorage
+      const readIds = updated.filter(n => n.read).map(n => n.id);
+      if (currentUser) {
+        localStorage.setItem(`notifications_read_${currentUser.id}`, JSON.stringify(readIds));
+      }
+      
+      return updated;
+    });
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setNotifications(prev => {
+      const updated = prev.map(n => ({ ...n, read: true }));
+      
+      // Salvar todas como lidas no localStorage
+      if (currentUser) {
+        const readIds = updated.map(n => n.id);
+        localStorage.setItem(`notifications_read_${currentUser.id}`, JSON.stringify(readIds));
+      }
+      
+      return updated;
+    });
   };
 
   const getIcon = (type: string) => {

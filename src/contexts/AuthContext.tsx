@@ -227,6 +227,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (currentUser) {
       // Log de auditoria - Logout
       logLogout(currentUser.id, currentUser.name);
+      
+      // Limpar notificações do localStorage
+      localStorage.removeItem(`notifications_read_${currentUser.id}`);
     }
     setCurrentUser(null);
   };
