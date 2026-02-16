@@ -2,9 +2,11 @@
  * Utilitários para processamento de CSV
  * Exporta parser, validator e exporter
  */
-export * from './parser';
-export * from './validator';
-export * from './exporter';
+
+// Exportar funções individualmente para garantir compatibilidade
+export { parse } from './parser';
+export { validateCSV, validateAndParse, ValidationResult } from './validator';
+export { exportToCSV, generateCSVTemplate, downloadCSVTemplate, downloadScheduleCSV } from './exporter';
 
 // Objeto consolidado para facilitar uso
 import * as parser from './parser';
