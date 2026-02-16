@@ -16,10 +16,13 @@ import {
 type ShiftType = 'meioPeriodo' | 'fechamento';
 
 const SwapRequestView: React.FC = () => {
-  const { currentUser, users } = useAuth();
+  const { currentUser, users, isAdmin } = useAuth();
   const { createSwapRequest, getMyRequests, currentSchedules, switchToSchedule } = useSwap();
   const currentUserId = currentUser?.id ?? '';
   const currentUserName = currentUser?.name ?? '';
+  
+  // Check if current user is admin
+  const isCurrentUserAdmin = currentUser ? isAdmin(currentUser) : false;
   
   // Step 0: Select month for original shift
   const [selectedMonth, setSelectedMonth] = useState<{month: number, year: number} | null>(null);
@@ -89,12 +92,17 @@ const SwapRequestView: React.FC = () => {
   }, [users, currentUserId]);
 
   // Get days where user is scheduled (from today onwards)
+  // For admins, show all available days to allow them to request any shift
   const myScheduledDays = useMemo(() => {
+    if (isCurrentUserAdmin) {
+      // Admins can see all available days to request any shift
+      return targetScheduleData.filter(entry => isDateTodayOrFuture(entry.date));
+    }
     return currentScheduleData.filter(entry => 
       (entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName) &&
       isDateTodayOrFuture(entry.date)
     );
-  }, [currentScheduleData, currentUserName]);
+  }, [currentScheduleData, targetScheduleData, currentUserName, isCurrentUserAdmin]);
 
   // Get all available days (from today onwards) to select target day
   const availableDays = useMemo(() => {
@@ -129,8 +137,17 @@ const SwapRequestView: React.FC = () => {
 
   const getMyShiftsForDay = (entry: ScheduleEntry): ShiftType[] => {
     const shifts: ShiftType[] = [];
-    if (entry.meioPeriodo === currentUserName) shifts.push('meioPeriodo');
-    if (entry.fechamento === currentUserName) shifts.push('fechamento');
+    
+    if (isCurrentUserAdmin) {
+      // Admins can request any available shift
+      if (entry.meioPeriodo) shifts.push('meioPeriodo');
+      if (entry.fechamento) shifts.push('fechamento');
+    } else {
+      // Regular users can only request their own shifts
+      if (entry.meioPeriodo === currentUserName) shifts.push('meioPeriodo');
+      if (entry.fechamento === currentUserName) shifts.push('fechamento');
+    }
+    
     return shifts;
   };
 
@@ -319,15 +336,32 @@ const SwapRequestView: React.FC = () => {
                         <div>
                           <div className="font-medium">{entry.dayOfWeek}</div>
                           <div className="text-xs text-muted-foreground flex items-center gap-2">
-                            {entry.meioPeriodo === currentUser.name && (
-                              <span className="flex items-center gap-1 text-meioPeriodo">
-                                <Sun className="w-3 h-3" /> Meio Período
-                              </span>
-                            )}
-                            {entry.fechamento === currentUser.name && (
-                              <span className="flex items-center gap-1 text-fechamento">
-                                <Sunset className="w-3 h-3" /> Fechamento
-                              </span>
+                            {isCurrentUserAdmin ? (
+                              <>
+                                {entry.meioPeriodo && (
+                                  <span className="flex items-center gap-1 text-meioPeriodo">
+                                    <Sun className="w-3 h-3" /> {entry.meioPeriodo}
+                                  </span>
+                                )}
+                                {entry.fechamento && (
+                                  <span className="flex items-center gap-1 text-fechamento">
+                                    <Sunset className="w-3 h-3" /> {entry.fechamento}
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {entry.meioPeriodo === currentUser.name && (
+                                  <span className="flex items-center gap-1 text-meioPeriodo">
+                                    <Sun className="w-3 h-3" /> Meio Período
+                                  </span>
+                                )}
+                                {entry.fechamento === currentUser.name && (
+                                  <span className="flex items-center gap-1 text-fechamento">
+                                    <Sunset className="w-3 h-3" /> Fechamento
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
