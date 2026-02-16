@@ -22,7 +22,7 @@ export const objectToCamelCase = <T>(obj: any): T => {
   if (typeof obj === 'object') {
     const result: any = {};
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         const camelKey = toCamelCase(key);
         result[camelKey] = objectToCamelCase(obj[key]);
       }
@@ -44,7 +44,7 @@ export const objectToSnakeCase = <T>(obj: any): T => {
   if (typeof obj === 'object') {
     const result: any = {};
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         const snakeKey = toSnakeCase(key);
         result[snakeKey] = objectToSnakeCase(obj[key]);
       }
