@@ -750,10 +750,12 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             <Archive className="w-4 h-4" />
             Meses (Desativado)
           </TabsTrigger>
-          <TabsTrigger value="users" className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Usuários
-          </TabsTrigger>
+          {isSuperAdmin(currentUser) && (
+            <TabsTrigger value="users" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Usuários
+            </TabsTrigger>
+          )}
           {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
             <TabsTrigger value="csv-import" className="flex items-center gap-2">
               <FileSpreadsheet className="w-4 h-4" />
@@ -1618,8 +1620,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </div>
         </TabsContent>
 
-        {/* Users Tab */}
-        <TabsContent value="users" className="space-y-4">
+        {/* Users Tab - Only for Super Admin */}
+        {isSuperAdmin(currentUser) && (
+          <TabsContent value="users" className="space-y-4">
           {/* New User Button */}
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
@@ -1859,6 +1862,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             </div>
           </div>
         </TabsContent>
+        )}
 
         {/* CSV Import Tab */}
         {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
