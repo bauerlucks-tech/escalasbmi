@@ -3,9 +3,14 @@
  * Execute localmente para verificar se tudo está funcionando antes de usar no GitHub Actions
  */
 
-const { createClient } = require('@supabase/supabase-js');
-const fs = require('fs');
-const path = require('path');
+import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Obter __dirname em ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuração - substitua com suas credenciais
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://your-project-ref.supabase.co';
@@ -235,8 +240,8 @@ async function main() {
 }
 
 // Executar se chamado diretamente
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(console.error);
 }
 
-module.exports = { runTests, showConfiguration };
+export { runTests, showConfiguration };
