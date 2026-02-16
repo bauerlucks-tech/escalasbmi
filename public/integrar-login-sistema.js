@@ -148,7 +148,7 @@ class SystemAuthIntegration {
                 console.log('✅ Autenticação nativa funcionou, buscando dados do usuário...');
                 
                 // Buscar dados completos do usuário
-                const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&status=eq.ativo', {
+                const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + encodeURIComponent(username) + '&status=eq.ativo', {
                   method: 'GET',
                   headers: {
                     'apikey': this.supabaseServiceKey,
@@ -156,13 +156,16 @@ class SystemAuthIntegration {
                     'Content-Type': 'application/json'
                   }
                 });
-
+                
+                if (!userResponse.ok) {
+                  return { success: false, error: 'Erro ao buscar dados do usuário' };
+                }
+                
                 const users = await userResponse.json();
                 if (!users || users.length === 0) {
-                  console.error('❌ Usuário não encontrado na tabela users:', username);
-                  return { success: false, error: 'Usuário não encontrado' };
+                  return { success: false, error: 'Usuário não encontrado ou inativo' };
                 }
-
+                
                 const user = users[0];
                 user.session = data.session; // Adicionar sessão ao objeto usuário
                 
@@ -181,7 +184,7 @@ class SystemAuthIntegration {
             
             // Método 2: Fallback direto (sem RLS) - usando GET com filtro de nome
             console.log('🔄 Tentando método fallback direto...');
-            const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&status=eq.ativo', {
+            const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + encodeURIComponent(username) + '&status=eq.ativo', {
               method: 'GET',
               headers: {
                 'apikey': this.supabaseServiceKey,
@@ -189,6 +192,10 @@ class SystemAuthIntegration {
                 'Content-Type': 'application/json'
               }
             });
+            
+            if (!response.ok) {
+              return { success: false, error: 'Erro ao buscar dados do usuário' };
+            }
             
             const users = await response.json();
             console.log('🔍 Resposta do fallback:', users);
@@ -690,7 +697,7 @@ class SystemAuthIntegration {
       }
       
       // Verificar se é login de admin especial
-      if (username === 'ADMIN' && password === 'bmi@2025!admin') {
+      if (username === 'ADMIN' && password === import.meta.env.VITE_ADMIN_PASSWORD || 'admin123') {
         this.loginAsAdmin();
         return;
       }
@@ -898,25 +905,6 @@ class SystemAuthIntegration {
       font-size: 0.85rem;
     `;
     
-    newUserHeader.innerHTML = `
-      <div>
-        <span style="color: #6c757d;">Bem-vindo,</span>
-        <span style="color: #212529; font-weight: 500; margin-left: 0.5rem;">${user.name}</span>
-        <span style="color: #6c757d; margin-left: 0.5rem;">(${user.role})</span>
-        <span style="color: #28a745; font-weight: 600; margin-left: 0.5rem;">ATIVO</span>
-        <span style="color: #6c757d; margin-left: 0.5rem;">|</span>
-        <span style="color: #6c757d; margin-left: 0.5rem;">v2.0</span>
-      </div>
-      <button id="auth-logout-btn" style="background: #dc3545; color: white; padding: 0.25rem 0.75rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
-        Sair
-      </button>
-    `;
-    
-    // Inserir no topo da página
-    const firstElement = document.body.firstElementChild;
-    document.body.insertBefore(newUserHeader, firstElement);
-    
-    // Adicionar evento de logout
     const logoutBtn = document.getElementById('auth-logout-btn');
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
@@ -1113,7 +1101,7 @@ class SystemAuthIntegration {
       // Tentar login com Supabase usando credenciais de admin
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email: 'admin@escalasbmi.com',
-        password: 'bmi@2025!admin'
+        password: import.meta.env.VITE_ADMIN_PASSWORD || 'admin123'
       });
       
       if (!error && data.user) {

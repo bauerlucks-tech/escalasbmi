@@ -81,6 +81,34 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
     refreshVacations();
   }, []);
 
+  // Função para buscar UUIDs de usuários dinamicamente
+  const getUserUUIDs = async (): Promise<{ [key: string]: string }> => {
+    try {
+      // Buscar usuários do Supabase
+      const users = await SupabaseAPI.getUsers();
+      const userUUIDs: { [key: string]: string } = {};
+      
+      users.forEach(user => {
+        if (user.name && user.id) {
+          userUUIDs[user.name.toUpperCase()] = user.id;
+        }
+      });
+      
+      console.log('📋 UUIDs de usuários carregados:', userUUIDs);
+      return userUUIDs;
+    } catch (error) {
+      console.error('❌ Erro ao carregar UUIDs de usuários:', error);
+      // Fallback para UUIDs conhecidos (apenas para desenvolvimento)
+      return {
+        'LUCAS': '3826fb9b-439b-49e2-bfb5-a85e6d3aba23',
+        'CARLOS': 'fd38b592-2986-430e-98be-d9d104d90442',
+        'ROSANA': 'd793d805-3468-4bc4-b7bf-a722b570ec98',
+        'HENRIQUE': '2e7e953f-5b4e-44e9-bc69-d463a92fa99a',
+        'KELLY': '9a91c13a-cf3a-4a08-af02-986163974acc'
+      };
+    }
+  };
+
   // Create vacation request
   const createVacationRequest = async (request: Omit<VacationRequest, 'id' | 'requestedAt'>) => {
     try {
@@ -93,16 +121,10 @@ export const VacationProvider: React.FC<VacationProviderProps> = ({ children }) 
       }
 
       // Convert to Supabase format with validation
-      // Mapear nomes para UUIDs - usando IDs reais do Supabase
-      const userUUIDs: { [key: string]: string } = {
-        'LUCAS': '3826fb9b-439b-49e2-bfb5-a85e6d3aba23',
-        'CARLOS': 'fd38b592-2986-430e-98be-d9d104d90442',
-        'ROSANA': 'd793d805-3468-4bc4-b7bf-a722b570ec98',
-        'HENRIQUE': '2e7e953f-5b4e-44e9-bc69-d463a92fa99a',
-        'KELLY': '9a91c13a-cf3a-4a08-af02-986163974acc'
-      };
+      // Buscar UUIDs dinamicamente
+      const userUUIDs = await getUserUUIDs();
       
-      const operatorUUID = userUUIDs[request.operatorName] || request.operatorId;
+      const operatorUUID = userUUIDs[request.operatorName.toUpperCase()] || request.operatorId;
       
       const supabaseRequest = {
         operator_id: operatorUUID,

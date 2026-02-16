@@ -32,29 +32,56 @@ class SystemAuthIntegration {
       script.src = 'data:text/javascript;base64,' + btoa(`
         class DirectAuthManager {
           constructor() {
-            this.supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-            this.supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+            this.supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            this.supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
             this.currentUser = null;
           }
 
           async login(username, password) {
             try {
-              const response = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + username + '&password=eq.' + password + '&status=eq.ativo', {
+              // Usar Supabase Auth em vez de consulta direta à tabela
+              const response = await fetch(this.supabaseUrl + '/auth/v1/token?grant_type=password', {
+                method: 'POST',
                 headers: {
-                  'apikey': this.supabaseServiceKey,
-                  'Authorization': 'Bearer ' + this.supabaseServiceKey,
+                  'apikey': this.supabaseAnonKey,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  email: username.toLowerCase() + '@bmi.local',
+                  password: password
+                })
+              });
+              
+              if (!response.ok) {
+                return { success: false, error: 'Usuário ou senha inválidos' };
+              }
+              
+              const data = await response.json();
+              
+              // Buscar dados completos do usuário
+              const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?select=*&name=eq.' + encodeURIComponent(username) + '&status=eq.ativo', {
+                headers: {
+                  'apikey': this.supabaseAnonKey,
+                  'Authorization': 'Bearer ' + data.access_token,
                   'Content-Type': 'application/json'
                 }
               });
               
-              const users = await response.json();
+              if (!userResponse.ok) {
+                return { success: false, error: 'Erro ao buscar dados do usuário' };
+              }
+              
+              const users = await userResponse.json();
               if (!users || users.length === 0) {
-                return { success: false, error: 'Usuário ou senha inválidos' };
+                return { success: false, error: 'Usuário não encontrado ou inativo' };
               }
               
               const user = users[0];
               this.currentUser = user;
+              
+              // Armazenar apenas token de acesso, não senha
               localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
+              localStorage.setItem('directAuth_token', data.access_token);
               
               return { success: true, user: user };
             } catch (error) {
@@ -85,6 +112,7 @@ class SystemAuthIntegration {
           async logout() {
             this.currentUser = null;
             localStorage.removeItem('directAuth_currentUser');
+            localStorage.removeItem('directAuth_token');
             return { success: true };
           }
         }
@@ -300,7 +328,7 @@ class SystemAuthIntegration {
     userHeader.innerHTML = `
       <div>
         <span style="color: #6c757d;">Bem-vindo,</span>
-        <span style="color: #212529; font-weight: 500; margin-left: 0.5rem;">${user.name}</span>
+        <span id="user-name-display" style="color: #212529; font-weight: 500; margin-left: 0.5rem;"></span>
         <span style="color: #6c757d; margin-left: 0.5rem;">(${user.role})</span>
       </div>
       <button id="auth-logout-btn" style="background: #dc3545; color: white; padding: 0.25rem 0.75rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
@@ -308,9 +336,15 @@ class SystemAuthIntegration {
       </button>
     `;
     
-    // Inserir no topo da página
+    // Inserir no topo da página PRIMEIRO
     const firstElement = document.body.firstElementChild;
     document.body.insertBefore(userHeader, firstElement);
+    
+    // Set user name safely using textContent (DEPOIS de inserir no DOM)
+    const userNameDisplay = document.getElementById('user-name-display');
+    if (userNameDisplay) {
+      userNameDisplay.textContent = user.name;
+    }
     
     // Adicionar evento de logout
     document.getElementById('auth-logout-btn').addEventListener('click', async () => {
