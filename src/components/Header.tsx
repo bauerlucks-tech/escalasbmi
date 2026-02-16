@@ -145,6 +145,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               </Button>
               
               <Button
+                id="react-logout-btn"
                 variant="ghost"
                 size="icon"
                 onClick={logout}

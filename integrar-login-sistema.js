@@ -360,7 +360,10 @@ class SystemAuthIntegration {
       return;
     }
     
-    // Criar botão flutuante discreto
+    // Tentar encontrar e usar botão do React
+    this.connectReactLogoutButton();
+    
+    // Criar botão flutuante discreto como fallback
     const logoutBtn = document.createElement('button');
     logoutBtn.id = 'auth-logout-float';
     logoutBtn.innerHTML = 'Sair';
@@ -370,12 +373,13 @@ class SystemAuthIntegration {
       right: 20px;
       background: #dc3545;
       color: white;
-      padding: 0.5rem 1rem;
       border: none;
       border-radius: 4px;
+      padding: 0.5rem 1rem;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       z-index: 1000;
+      display: none; // Esconder inicialmente
     `;
     
     document.body.appendChild(logoutBtn);
@@ -385,6 +389,53 @@ class SystemAuthIntegration {
       this.showLoginScreen();
       logoutBtn.remove();
     });
+  }
+
+  // Conectar ao botão de logout do React
+  connectReactLogoutButton() {
+    const maxRetries = 10;
+    let retries = 0;
+    
+    const tryConnect = () => {
+      const reactLogoutBtn = document.getElementById('react-logout-btn');
+      
+      if (reactLogoutBtn) {
+        console.log('✅ Botão React encontrado e conectado!');
+        // Esconder botão flutuante se encontrar o do React
+        const floatBtn = document.getElementById('auth-logout-float');
+        if (floatBtn) {
+          floatBtn.style.display = 'none';
+        }
+        
+        // Adicionar evento ao botão do React
+        reactLogoutBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🔄 Botão React clicado, iniciando logout...');
+          await this.authManager.logout();
+          this.showLoginScreen();
+        });
+        
+        return true;
+      }
+      
+      retries++;
+      if (retries < maxRetries) {
+        console.log(`❌ Botão React não encontrado, tentando novamente... (${retries}/${maxRetries})`);
+        setTimeout(tryConnect, 500);
+      } else {
+        console.log('❌ Botão React não encontrado após várias tentativas, usando botão flutuante');
+        const floatBtn = document.getElementById('auth-logout-float');
+        if (floatBtn) {
+          floatBtn.style.display = 'block';
+        }
+      }
+      
+      return false;
+    };
+    
+    // Começar a tentar conectar
+    setTimeout(tryConnect, 1000); // Esperar 1 segundo para o React renderizar
   }
 }
 

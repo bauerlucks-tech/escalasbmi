@@ -155,6 +155,9 @@ const SwapRequestView: React.FC = () => {
   if (!currentUser) return null;
 
   const handleSubmit = async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/8a5dff31-3ebe-4884-b937-ab042c00d6b1',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SwapRequestView.tsx:handleSubmit:start',message:'handleSubmit called',data:{hasMyDay:!!selectedMyDay,hasMyShift:!!selectedMyShift,hasOperator:!!selectedOperator,hasTargetDay:!!selectedTargetDay,hasTargetShift:!!selectedTargetShift},timestamp:Date.now(),runId:'pre-fix',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     if (!selectedMyDay || !selectedMyShift || !selectedOperator || !selectedTargetDay || !selectedTargetShift) {
       toast.error('Preencha todos os campos para solicitar a troca');
       return;
@@ -167,6 +170,10 @@ const SwapRequestView: React.FC = () => {
       return;
     }
 
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/8a5dff31-3ebe-4884-b937-ab042c00d6b1',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SwapRequestView.tsx:handleSubmit:beforeCreate',message:'Preparing swap request payload',data:{originalDate:!!selectedMyDay,targetDate:!!selectedTargetDay,originalShift:selectedMyShift,targetShift:selectedTargetShift},timestamp:Date.now(),runId:'pre-fix',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+
     await createSwapRequest({
       requesterId: currentUser.id,
       requesterName: currentUser.name,
@@ -178,6 +185,10 @@ const SwapRequestView: React.FC = () => {
       targetShift: selectedTargetShift === 'ambos' ? 'meioPeriodo' : selectedTargetShift,
       status: 'pending',
     });
+
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/8a5dff31-3ebe-4884-b937-ab042c00d6b1',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'SwapRequestView.tsx:handleSubmit:end',message:'Swap request created',data:{},timestamp:Date.now(),runId:'pre-fix',hypothesisId:'H3'})}).catch(()=>{});
+    // #endregion
 
     toast.success('Solicitação de troca enviada!');
     resetForm();
