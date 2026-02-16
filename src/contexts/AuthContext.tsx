@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       console.log('🔍 Verificando usuário externo:', externalUser?.name);
       
-      if (externalUser && !currentUser) {
+      if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
         console.log('🔄 Detectado usuário externo, atualizando AuthContext:', externalUser.name);
         
         // Encontrar usuário correspondente na lista
