@@ -255,7 +255,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       // Update current schedule data if this is the active schedule
       const currentSchedule = currentSchedules.find(s => s.month === month && s.year === year);
-      if (currentSchedule && currentSchedule.is_active !== false) {
+      if (currentSchedule && currentSchedule.isActive !== false) {
         setScheduleData(entries);
       }
       
@@ -267,7 +267,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (success) {
         refreshSchedules();
         const currentSchedule = currentSchedules.find(s => s.month === month && s.year === year);
-        if (currentSchedule && currentSchedule.is_active !== false) {
+        if (currentSchedule && currentSchedule.isActive !== false) {
           setScheduleData(entries);
         }
       }

@@ -12,6 +12,18 @@ export interface ValidationResult {
 }
 
 /**
+ * Valida conteúdo CSV sem parsear
+ */
+export const validateCSV = (
+  content: string,
+  registeredEmployees: string[],
+  targetMonth: number,
+  targetYear: number
+): ValidationResult => {
+  return validateAndParse(content, registeredEmployees, targetMonth, targetYear);
+};
+
+/**
  * Valida e parseia conteúdo CSV
  */
 export const validateAndParse = (

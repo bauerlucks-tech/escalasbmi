@@ -5,7 +5,8 @@
 
 // Exportar funções individualmente para garantir compatibilidade
 export { parse } from './parser';
-export { validateCSV, validateAndParse, validateAndParseCSV, ValidationResult } from './validator';
+export { validateCSV, validateAndParse, validateAndParseCSV } from './validator';
+export type { ValidationResult } from './validator';
 export { exportToCSV, generateCSVTemplate, downloadCSVTemplate, downloadScheduleCSV } from './exporter';
 
 // Objeto consolidado para facilitar uso
