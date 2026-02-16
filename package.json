@@ -9,7 +9,11 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node scripts/test-routine.js",
+    "test:quick": "node scripts/code-validator.js",
+    "validate": "node scripts/code-validator.js",
+    "safe-edit": "node scripts/safe-edit.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
