@@ -71,6 +71,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   // Adicionar abas avançadas para Admins e Super Admins
   if (currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))) {
     tabs.push({ id: 'analytics', label: 'Analytics', icon: BarChart3 });
+  }
+
+  // Adicionar abas especiais apenas para Super Admin
+  if (currentUser && isSuperAdmin(currentUser)) {
     tabs.push({ id: 'widgets', label: 'Widgets', icon: Settings });
     tabs.push({ id: 'performance', label: 'Performance', icon: Activity });
   }

@@ -149,6 +149,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, [currentUser, users]);
 
+  // Escutar evento de logout externo
+  useEffect(() => {
+    const handleExternalLogout = () => {
+      console.log('🔄 AuthContext recebeu evento externalLogout');
+      setCurrentUser(null);
+      authStorage.removeUser();
+    };
+
+    window.addEventListener('externalLogout', handleExternalLogout);
+    
+    return () => {
+      window.removeEventListener('externalLogout', handleExternalLogout);
+    };
+  }, []);
+
   // Computed lists
   const activeUsers = users.filter(u => u.status === 'ativo');
   const operators = users.filter(u => u.role === 'operador' && u.status === 'ativo');
