@@ -94,8 +94,8 @@ const parseEntry = (headers: string[], values: string[]): ScheduleEntry | null =
 const normalizeDate = (dateStr: string): string => {
   // Tenta diferentes formatos
   const patterns = [
-    { regex: /^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/, day: 1, month: 2, year: 3 },
-    { regex: /^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2})$/, day: 1, month: 2, year: 3 },
+    { regex: /^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/, day: 1, month: 2, year: 3 },
+    { regex: /^(\d{1,2})[/-](\d{1,2})[/-](\d{2})$/, day: 1, month: 2, year: 3 },
   ];
 
   for (const pattern of patterns) {
