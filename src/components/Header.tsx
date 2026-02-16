@@ -182,9 +182,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             return (
               <button
                 key={tab.id}
-                onClick={() => {
-                  alert(`Botão clicado: ${tab.label}`);
-                  console.log('Header button clicked:', tab.id);
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Header button clicked:', tab.id, 'Current activeTab:', activeTab);
                   setActiveTab(tab.id);
                 }}
                 className={`
