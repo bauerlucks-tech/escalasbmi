@@ -97,15 +97,17 @@ export const useUpdateSchedule = () => {
   
   return useMutation({
     mutationFn: async ({ 
+      id,
       month, 
       year, 
       entries 
     }: { 
+      id: string;
       month: number; 
       year: number; 
       entries: ScheduleEntry[] 
     }) => {
-      return scheduleApi.update(month, year, entries);
+      return scheduleApi.update(id, { month, year, entries });
     },
     onSuccess: (_, variables) => {
       // Atualiza cache imediatamente

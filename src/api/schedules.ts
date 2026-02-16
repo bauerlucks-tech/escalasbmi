@@ -14,133 +14,139 @@ export interface SchedulePayload {
   is_active?: boolean;
 }
 
-// Exporta como objeto para facilitar importação
+export interface ScheduleResponse {
+  id: string;
+  month: number;
+  year: number;
+  entries: ScheduleEntry[];
+  imported_at?: string;
+  imported_by?: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export const scheduleApi = {
-  /**
-   * Busca todas as escalas
-   */
-  getAll: async () => {
-    const { data, error } = await supabase
-      .from('month_schedules')
-      .select('*')
-      .order('year', { ascending: false })
-      .order('month', { ascending: false });
-    
-    if (error) {
-      console.error('❌ Erro ao carregar escalas:', error);
-      throw new Error(`Falha ao carregar escalas: ${error.message}`);
+  async getByMonth(month: number, year: number): Promise<ScheduleResponse | null> {
+    try {
+      const { data, error } = await supabase
+        .from('schedules')
+        .select('*')
+        .eq('month', month)
+        .eq('year', year)
+        .single();
+
+      if (error) {
+        console.error('Erro ao buscar escala:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erro na API de escalas:', error);
+      return null;
     }
-    
-    return data || [];
   },
 
-  /**
-   * Busca escala por mês e ano
-   */
-  getByMonth: async (month: number, year: number) => {
-    const { data, error } = await supabase
-      .from('month_schedules')
-      .select('*')
-      .eq('month', month)
-      .eq('year', year)
-      .single();
-    
-    if (error && error.code !== 'PGRST116') {
-      console.error('❌ Erro ao buscar escala:', error);
-      throw new Error(`Falha ao buscar escala: ${error.message}`);
+  async create(payload: SchedulePayload): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('schedules')
+        .insert([payload]);
+
+      if (error) {
+        console.error('Erro ao criar escala:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Erro na API de escalas:', error);
+      return false;
     }
-    
-    return data;
   },
 
-  /**
-   * Cria nova escala
-   */
-  create: async (schedule: SchedulePayload) => {
-    const { data, error } = await supabase
-      .from('month_schedules')
-      .insert(schedule)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('❌ Erro ao criar escala:', error);
-      throw new Error(`Falha ao criar escala: ${error.message}`);
+  async update(id: string, payload: Partial<SchedulePayload>): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('schedules')
+        .update(payload)
+        .eq('id', id);
+
+      if (error) {
+        console.error('Erro ao atualizar escala:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Erro na API de escalas:', error);
+      return false;
     }
-    
-    return data;
   },
 
-  /**
-   * Atualiza entradas de uma escala
-   */
-  update: async (
-    month: number, 
-    year: number, 
-    entries: ScheduleEntry[]
-  ) => {
-    const { error } = await supabase
-      .from('month_schedules')
-      .update({ 
-        entries, 
-        updated_at: new Date().toISOString() 
-      })
-      .eq('month', month)
-      .eq('year', year);
-    
-    if (error) {
-      console.error('❌ Erro ao atualizar escala:', error);
-      throw new Error(`Falha ao atualizar escala: ${error.message}`);
+  async deleteSchedule(id: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('schedules')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Erro ao deletar escala:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Erro na API de escalas:', error);
+      return false;
     }
-    
-    return true;
   },
 
-  /**
-   * Alterna status ativo da escala
-   */
-  toggleActive: async (month: number, year: number) => {
-    // Primeiro busca o status atual
-    const { data: current, error: fetchError } = await supabase
-      .from('month_schedules')
-      .select('is_active')
-      .eq('month', month)
-      .eq('year', year)
-      .single();
-    
-    if (fetchError) {
-      throw new Error(`Falha ao buscar escala: ${fetchError.message}`);
+  async getAll(): Promise<ScheduleResponse[]> {
+    try {
+      const { data, error } = await supabase
+        .from('schedules')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Erro ao buscar escalas:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Erro na API de escalas:', error);
+      return [];
     }
-    
-    // Inverte o status
-    const { error } = await supabase
-      .from('month_schedules')
-      .update({ is_active: !current?.is_active })
-      .eq('month', month)
-      .eq('year', year);
-    
-    if (error) {
-      throw new Error(`Falha ao alternar status: ${error.message}`);
-    }
-    
-    return !current?.is_active;
   },
 
-  /**
-   * Subscrição em tempo real para mudanças nas escalas
-   */
-  subscribeToChanges: (
-    callback: (payload: any) => void
-  ) => {
-    const subscription = supabase
-      .channel('schedules_changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'month_schedules' },
-        callback
-      )
-      .subscribe();
-    
-    return subscription;
-  },
+  async toggleActive(month: number, year: number): Promise<boolean> {
+    try {
+      // Primeiro, desativar todas as escalas
+      await supabase
+        .from('schedules')
+        .update({ is_active: false })
+        .neq('is_active', null);
+
+      // Depois, ativar a escala específica
+      const { error } = await supabase
+        .from('schedules')
+        .update({ is_active: true })
+        .eq('month', month)
+        .eq('year', year);
+
+      if (error) {
+        console.error('Erro ao ativar escala:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Erro na API de escalas:', error);
+      return false;
+    }
+  }
 };

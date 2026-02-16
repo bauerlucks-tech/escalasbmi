@@ -1,58 +1,52 @@
-// Utilitários de data - Funções auxiliares para formatação e manipulação de datas
+/**
+ * Utilitários de data
+ * Formatação e manipulação de datas
+ */
+
+import { format, parse, isValid } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 /**
- * Formata número do mês para nome por extenso
+ * Formata o nome do mês
  */
 export const formatMonthName = (month: number): string => {
-  const months = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril',
-    'Maio', 'Junho', 'Julho', 'Agosto',
-    'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
-  return months[month - 1] || '';
+  return format(new Date(2024, month, 1), 'MMMM', { locale: ptBR });
+};
+
+/**
+ * Formata data completa
+ */
+export const formatDate = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? parse(date, 'dd/MM/yyyy', new Date()) : date;
+  return format(dateObj, 'dd/MM/yyyy', { locale: ptBR });
+};
+
+/**
+ * Verifica se uma data é válida
+ */
+export const isValidDate = (date: string): boolean => {
+  const parsed = parse(date, 'dd/MM/yyyy', new Date());
+  return isValid(parsed);
+};
+
+/**
+ * Obtém o primeiro dia do mês
+ */
+export const getFirstDayOfMonth = (year: number, month: number): number => {
+  return new Date(year, month, 1).getDay();
+};
+
+/**
+ * Obtém o número de dias no mês
+ */
+export const getDaysInMonth = (year: number, month: number): number => {
+  return new Date(year, month + 1, 0).getDate();
 };
 
 /**
  * Formata data para exibição
  */
-export const formatDate = (dateStr: string): string => {
-  const [day, month, year] = dateStr.split('/');
-  return `${day}/${month}/${year}`;
-};
-
-/**
- * Converte data DD/MM/YYYY para objeto Date
- */
-export const parseDate = (dateStr: string): Date => {
-  const [day, month, year] = dateStr.split('/').map(Number);
-  return new Date(year, month - 1, day);
-};
-
-/**
- * Formata data para API (ISO string)
- */
-export const toISODate = (dateStr: string): string => {
-  const date = parseDate(dateStr);
-  return date.toISOString().split('T')[0];
-};
-
-/**
- * Verifica se data é fim de semana
- */
-export const isWeekend = (dateStr: string): boolean => {
-  const date = parseDate(dateStr);
-  const day = date.getDay();
-  return day === 0 || day === 6;
-};
-
-/**
- * Obtém dia da semana por extenso
- */
-export const getDayOfWeek = (dateStr: string): string => {
-  const date = parseDate(dateStr);
-  const days = [
-    'Domingo', 'Segunda-feira', 'Terça-feira',
-    'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'
-  ];
-  return days[date.getDay()];
+export const formatDisplayDate = (date: string): string => {
+  const parsed = parse(date, 'dd/MM/yyyy', new Date());
+  return format(parsed, "dd 'MMMM' 'yyyy", { locale: ptBR });
 };
