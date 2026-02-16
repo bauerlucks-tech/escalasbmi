@@ -106,3 +106,15 @@ const getYearFromDate = (dateStr: string): number => {
   const parts = dateStr.split('/');
   return parseInt(parts[2], 10);
 };
+
+/**
+ * Função de compatibilidade para validateAndParseCSV
+ */
+export function validateAndParseCSV(
+  content: string, 
+  registeredEmployees: string[],
+  targetMonth: number,
+  targetYear: number
+) {
+  return validateAndParse(content, registeredEmployees, targetMonth, targetYear);
+}
