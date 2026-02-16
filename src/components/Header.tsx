@@ -37,11 +37,6 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { id: 'vacations', label: 'Férias', icon: Plane },
   ];
 
-  // Remove "Solicitar Troca" e "Solicitações" para o usuário RICARDO
-  if (currentUser?.name === 'RICARDO') {
-    tabs = tabs.filter(tab => tab.id !== 'swap' && tab.id !== 'requests');
-  }
-
   // Adicionar aba de ajuda para operadores (não administradores)
   if (currentUser && !isAdmin(currentUser)) {
     tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });

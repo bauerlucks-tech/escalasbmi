@@ -23,15 +23,6 @@ const Dashboard: React.FC = () => {
   const { currentUser, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  // Redireciona RICARDO se tentar acessar as abas de troca ou solicitações
-  useEffect(() => {
-    console.log('Dashboard useEffect - currentUser:', currentUser?.name, 'activeTab:', activeTab);
-    if (currentUser?.name === 'RICARDO' && (activeTab === 'swap' || activeTab === 'requests')) {
-      console.log('RICARDO tentando acessar aba bloqueada, resetando para schedule');
-      setActiveTab('schedule');
-    }
-  }, [currentUser, activeTab]);
-
   // Redireciona para página de backup se aba backup for selecionada
   useEffect(() => {
     if (activeTab === 'backup') {
