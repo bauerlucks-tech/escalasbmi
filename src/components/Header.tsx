@@ -63,10 +63,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     tabs.push({ id: 'reports', label: 'Relatórios', icon: BarChart3 });
   }
 
-  // Adicionar aba de Calendário para todos os usuários
-  if (currentUser) {
-    tabs.push({ id: 'calendar', label: 'Calendário', icon: Calendar });
-  }
+  // Adicionar aba de Calendário para todos os usuários (DESATIVADO TEMPORARIAMENTE)
+  // if (currentUser) {
+  //   tabs.push({ id: 'calendar', label: 'Calendário', icon: Calendar });
+  // }
 
   // Adicionar abas avançadas para Admins e Super Admins
   if (currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))) {
