@@ -95,7 +95,8 @@ const isValidDate = (dateStr: string): boolean => {
  */
 const getMonthFromDate = (dateStr: string): number => {
   const parts = dateStr.split('/');
-  return parseInt(parts[1], 10);
+  if (parts.length < 3) return 0;
+  return parseInt(parts[1], 10) || 0;
 };
 
 /**

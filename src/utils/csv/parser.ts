@@ -117,7 +117,9 @@ const normalizeDate = (dateStr: string): string => {
 const calculateDayOfWeek = (dateStr: string): string => {
   const [day, month, year] = dateStr.split('/').map(Number);
   const date = new Date(year, month - 1, day);
-
+  
+  if (isNaN(date.getTime())) return '';
+  
   const days = [
     'DOMINGO',
     'SEGUNDA-FEIRA',

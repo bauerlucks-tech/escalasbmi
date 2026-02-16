@@ -49,7 +49,7 @@ export const useScheduleByMonth = (month: number, year: number) => {
     queryKey: QUERY_KEYS.byMonth(month, year),
     queryFn: async () => {
       const response = await scheduleApi.getByMonth(month, year);
-      return dataMapper.toSchedule(response);
+      return response ? dataMapper.toSchedule(response) : null;
     },
     enabled: !!month && !!year,
   });

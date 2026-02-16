@@ -58,6 +58,8 @@ export const objectToSnakeCase = <T>(obj: any): T => {
 
 // Mapeador específico para MonthSchedule
 export const toSchedule = (supabaseData: any): any => {
+  if (!supabaseData) return null;
+  
   return {
     id: supabaseData.id,
     month: supabaseData.month,

@@ -194,7 +194,9 @@ const NotificationCenter: React.FC = () => {
                           {notification.message}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(notification.timestamp).toLocaleString('pt-BR')}
+                          {notification.timestamp 
+                            ? new Date(notification.timestamp).toLocaleString('pt-BR')
+                            : 'Data desconhecida'}
                         </p>
                       </div>
                     </div>
