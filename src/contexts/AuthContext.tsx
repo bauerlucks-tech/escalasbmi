@@ -111,7 +111,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Verificar usuário externo periodicamente
   useEffect(() => {
     const checkExternalUser = () => {
-      const externalUser = authStorage.getUser();
+      // Tentar obter usuário do localStorage (sistema externo)
+      const externalUserStr = localStorage.getItem('directAuth_currentUser');
+      const externalUser = externalUserStr ? JSON.parse(externalUserStr) : null;
+      
+      console.log('🔍 Verificando usuário externo:', externalUser?.name);
+      
       if (externalUser && !currentUser) {
         console.log('🔄 Detectado usuário externo, atualizando AuthContext:', externalUser.name);
         
