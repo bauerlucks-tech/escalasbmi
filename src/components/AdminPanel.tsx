@@ -42,10 +42,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { validateAndParseCSV, downloadCSVTemplate, downloadScheduleCSV, CSVValidationResult } from '@/utils/csvParser';
+import { validateAndParseCSV, downloadCSVTemplate, downloadScheduleCSV } from '@/utils/csv';
 import { downloadCompleteBackup, restoreCompleteBackup } from '@/utils/backupUtils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import CSVImportContent from '@/components/CSVImportContent';
+
+interface CSVValidationResult {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+  data: any[];
+  stats: {
+    totalRows: number;
+    validRows: number;
+    invalidRows: number;
+    unknownEmployees: string[];
+  };
+}
 
 const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActiveTab }) => {
   const { currentUser, users, activeUsers, operators, isAdmin, isSuperAdmin, resetPassword, updateUserRole, createUser, archiveUser } = useAuth();

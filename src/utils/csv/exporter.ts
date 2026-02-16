@@ -12,10 +12,75 @@ export const exportToCSV = (entries: ScheduleEntry[]): string => {
     entry.date,
     entry.dayOfWeek,
     entry.meioPeriodo,
-    entry.fechamento,
+    entry.fechamento
   ]);
 
-  return [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+
+  return csvContent;
+};
+
+/**
+ * Gera template CSV para um mês específico
+ */
+export const generateCSVTemplate = (month: number, year: number): string => {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const headers = ['data', 'dia_semana', 'meio_periodo', 'fechamento'];
+  const rows = [];
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')}/${year}`;
+    const dateObj = new Date(year, month, day);
+    const dayOfWeek = ['DOMINGO', 'SEGUNDA-FEIRA', 'TERÇA-FEIRA', 'QUARTA-FEIRA', 'QUINTA-FEIRA', 'SEXTA-FEIRA', 'SÁBADO'][dateObj.getDay()];
+    
+    rows.push([date, dayOfWeek, '', '']);
+  }
+
+  return [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+};
+
+/**
+ * Baixa template CSV para um mês específico
+ */
+export const downloadCSVTemplate = (month: number, year: number): void => {
+  const content = generateCSVTemplate(month, year);
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.href = url;
+  link.download = `template-escala-${month}-${year}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+/**
+ * Baixa escala em formato CSV
+ */
+export const downloadScheduleCSV = (entries: ScheduleEntry[]): void => {
+  if (entries.length === 0) {
+    return;
+  }
+
+  const content = exportToCSV(entries);
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.href = url;
+  link.download = `escala-${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
 
 /**
