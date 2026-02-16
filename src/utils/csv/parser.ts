@@ -1,7 +1,7 @@
 /**
  * Parser de CSV - Converte conteúdo CSV para objetos
  */
-import { ScheduleEntry } from '@/types/schedule';
+import { ScheduleEntry } from '@/types';
 
 export interface ParseResult {
   data: ScheduleEntry[];

@@ -5,7 +5,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi } from '@/api/schedules';
 import { dataMapper } from '@/utils/mappers/dataMapper';
-import { MonthSchedule, ScheduleEntry } from '@/types/schedule';
+import { MonthSchedule, ScheduleEntry } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
 // Chaves de cache padronizadas

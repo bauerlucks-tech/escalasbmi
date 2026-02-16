@@ -1,7 +1,7 @@
 /**
  * Validator de CSV - Valida dados antes de importar
  */
-import { ScheduleEntry } from '@/types/schedule';
+import { ScheduleEntry } from '@/types';
 import { parse } from './parser';
 
 export interface ValidationResult {

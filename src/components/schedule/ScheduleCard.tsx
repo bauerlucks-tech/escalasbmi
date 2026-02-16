@@ -3,7 +3,7 @@
  * Exibe informações resumidas de uma escala mensal
  */
 import React from 'react';
-import { MonthSchedule } from '@/types/schedule';
+import { MonthSchedule } from '@/types';
 import { useToggleScheduleActive } from '@/hooks/api/useSchedules';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

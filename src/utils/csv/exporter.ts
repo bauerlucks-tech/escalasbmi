@@ -1,7 +1,7 @@
 /**
  * Exporter de CSV - Exporta escalas para formato CSV
  */
-import { ScheduleEntry } from '@/types/schedule';
+import { ScheduleEntry } from '@/types';
 
 /**
  * Converte entradas da escala para CSV

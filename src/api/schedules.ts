@@ -3,7 +3,7 @@
  * Responsável apenas por chamadas à API, sem lógica de negócio
  */
 import { supabase } from './client';
-import { ScheduleEntry } from '@/types/schedule';
+import { ScheduleEntry } from '@/types';
 
 export interface SchedulePayload {
   month: number;
