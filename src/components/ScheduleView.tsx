@@ -484,7 +484,7 @@ const ScheduleView: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Próxima folga</p>
-                  <p className="font-bold text-lg">
+                  <div className="font-bold text-lg">
                     {nextDayOff ? (
                       <>
                         <div>
@@ -502,7 +502,7 @@ const ScheduleView: React.FC = () => {
                     ) : (
                       <span className="text-muted-foreground">-</span>
                     )}
-                  </p>
+                  </div>
                 </div>
               </div>
             </div>

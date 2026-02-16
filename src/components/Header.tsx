@@ -75,13 +75,13 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     tabs.push({ id: 'performance', label: 'Performance', icon: Activity });
   }
 
-  // Adicionar aba de Animações apenas em desenvolvimento
-  if (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development') {
+  // Adicionar aba de Animações apenas para Super Admin em desenvolvimento
+  if (currentUser && isSuperAdmin(currentUser) && (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development')) {
     tabs.push({ id: 'animations', label: 'Animações', icon: Settings });
   }
 
-  // Adicionar aba de Testes apenas no branch de teste
-  if (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development' || window.location.pathname.includes('test')) {
+  // Adicionar aba de Testes apenas para Super Admin em desenvolvimento
+  if (currentUser && isSuperAdmin(currentUser) && (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development' || window.location.pathname.includes('test'))) {
     tabs.push({ id: 'test', label: 'Testes', icon: TestTube });
   }
 
