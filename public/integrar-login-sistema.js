@@ -697,7 +697,7 @@ class SystemAuthIntegration {
       }
       
       // Verificar se é login de admin especial
-      if (username === 'ADMIN' && password === import.meta.env.VITE_ADMIN_PASSWORD || 'admin123') {
+      if (username === 'ADMIN' && password === (window.ENV?.VITE_ADMIN_PASSWORD || 'admin123')) {
         this.loginAsAdmin();
         return;
       }
@@ -1101,7 +1101,7 @@ class SystemAuthIntegration {
       // Tentar login com Supabase usando credenciais de admin
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email: 'admin@escalasbmi.com',
-        password: import.meta.env.VITE_ADMIN_PASSWORD || 'admin123'
+        password: window.ENV?.VITE_ADMIN_PASSWORD || 'admin123'
       });
       
       if (!error && data.user) {
