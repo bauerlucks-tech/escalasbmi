@@ -686,8 +686,8 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </div>
         </div>
 
-        {/* Backup Section - Only for Super Admin */}
-        {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
+        {/* Backup Section */}
+        {isSuperAdmin(currentUser) && (
           <div className="mt-4 p-4 border border-border/50 rounded-xl bg-background/50">
             <h3 className="font-semibold flex items-center gap-2 mb-3">
               <Download className="w-4 h-4 text-primary" />
@@ -732,7 +732,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
       {/* Tabs */}
       <Tabs defaultValue="swaps" className="space-y-4">
-        <TabsList className={`grid ${isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' ? 'grid-cols-6' : 'grid-cols-5'} w-full`}>
+        <TabsList className={`grid ${isSuperAdmin(currentUser) ? 'grid-cols-6' : 'grid-cols-5'} w-full`}>
           <TabsTrigger value="swaps" className="flex items-center gap-2">
             <ArrowLeftRight className="w-4 h-4" />
             Trocas
@@ -756,7 +756,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               Usuários
             </TabsTrigger>
           )}
-          {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
+          {isSuperAdmin(currentUser) && (
             <TabsTrigger value="csv-import" className="flex items-center gap-2">
               <FileSpreadsheet className="w-4 h-4" />
               Importar CSV
@@ -1647,7 +1647,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               size="sm"
               onClick={() => setShowNewUserForm(!showNewUserForm)}
               className="bg-success hover:bg-success/90"
-              disabled={!isSuperAdmin(currentUser) || currentUser.name === 'RICARDO'}
+              disabled={!isSuperAdmin(currentUser)}
             >
               <UserPlus className="w-4 h-4 mr-1" />
               Novo Usuário
@@ -1682,7 +1682,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                   <SelectContent>
                     <SelectItem value="operador">Operador</SelectItem>
                     <SelectItem value="administrador">Administrador</SelectItem>
-                    {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && <SelectItem value="super_admin">Super Admin</SelectItem>}
+                    {isSuperAdmin(currentUser) && <SelectItem value="super_admin">Super Admin</SelectItem>}
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2">
@@ -1768,7 +1768,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                             <SelectContent>
                               <SelectItem value="operador">Operador</SelectItem>
                               <SelectItem value="administrador">Administrador</SelectItem>
-                              {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && <SelectItem value="super_admin">Super Admin</SelectItem>}
+                              {isSuperAdmin(currentUser) && <SelectItem value="super_admin">Super Admin</SelectItem>}
                             </SelectContent>
                           </Select>
                         )}
@@ -1851,7 +1851,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                   {users.filter(u => u.role === 'administrador' && u.status === 'ativo').length}
                 </span>
               </div>
-              {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
+              {isSuperAdmin(currentUser) && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Super Admin:</span>
                   <span className="font-mono font-bold text-destructive">
@@ -1865,7 +1865,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
         )}
 
         {/* CSV Import Tab */}
-        {isSuperAdmin(currentUser) && currentUser.name !== 'RICARDO' && (
+        {isSuperAdmin(currentUser) && (
           <TabsContent value="csv-import" className="space-y-4">
             <CSVImportContent />
           </TabsContent>

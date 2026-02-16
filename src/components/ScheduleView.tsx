@@ -75,7 +75,7 @@ const ScheduleView: React.FC = () => {
   // Parse dates for comparison
   const parseDate = (dateStr: string) => parse(dateStr, 'dd/MM/yyyy', new Date());
 
-  // Calculate yesterday, today, and tomorrow workers for RICARDO view
+  // Calculate yesterday, today, and tomorrow workers
   const yesterday = subDays(today, 1);
   const tomorrow = addDays(today, 1);
 
@@ -249,11 +249,9 @@ const ScheduleView: React.FC = () => {
   // Get first name only for display
   const getFirstName = (name: string) => name.split(' ')[0];
 
-  // Calculate statistics for all operators (for RICARDO view)
-  const isRicardo = currentUser?.name === 'RICARDO';
-
-  const operatorStats = isRicardo ? operators
-    .filter(op => op.name !== 'RICARDO' && !op.hideFromSchedule)
+  // Calculate statistics for all operators
+  const operatorStats = operators
+    .filter(op => !op.hideFromSchedule)
     .map(operator => {
       const operatorSchedule = viewingMonthData.filter(
         entry => entry.meioPeriodo === operator.name || entry.fechamento === operator.name
@@ -265,249 +263,47 @@ const ScheduleView: React.FC = () => {
         daysOff: daysInMonth - operatorSchedule.length,
         meioPeriodo: operatorSchedule.filter(s => s.meioPeriodo === operator.name).length,
         fechamento: operatorSchedule.filter(s => s.fechamento === operator.name).length,
-        weekends: operatorSchedule.filter(s => s.dayOfWeek === 'SABADO' || s.dayOfWeek === 'DOMINGO').length,
       };
     })
-    .sort((a, b) => a.name.localeCompare(b.name)) : [];
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  return (
-    <div className="space-y-6 animate-fade-in">
-
-      {/* Status Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {isRicardo ? (
-          <>
-            {/* Yesterday Workers - RICARDO View */}
-            <div className="glass-card-elevated p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center">
-                  <span>🕐</span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Quem trabalhou ontem</p>
-                  <div className="font-bold text-lg">
-                    {yesterdayWorkers ? (
-                      <div className="text-sm">
-                        <div className="flex items-center gap-1">
-                          <span>☀️</span>
-                          {yesterdayWorkers.meioPeriodo || '-'}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>🌅</span>
-                          {yesterdayWorkers.fechamento || '-'}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">Sem dados</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Today Workers - RICARDO View */}
-            <div className="glass-card-elevated p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <span>📅</span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Quem está hoje</p>
-                  <div className="font-bold text-lg">
-                    {todayWorkers ? (
-                      <div className="text-sm">
-                        <div className="flex items-center gap-1">
-                          <span>☀️</span>
-                          {todayWorkers.meioPeriodo || '-'}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>🌅</span>
-                          {todayWorkers.fechamento || '-'}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">Sem dados</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Tomorrow Workers - RICARDO View */}
-            <div className="glass-card-elevated p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                  <span>📈</span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Quem estará amanhã</p>
-                  <div className="font-bold text-lg">
-                    {tomorrowWorkers ? (
-                      <div className="text-sm">
-                        <div className="flex items-center gap-1">
-                          <span>☀️</span>
-                          {tomorrowWorkers.meioPeriodo || '-'}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>🌅</span>
-                          {tomorrowWorkers.fechamento || '-'}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">Sem dados</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Regular User View */}
-            <div className="glass-card-elevated p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-muted/20 flex items-center justify-center">
-                  <span className="text-2xl">🕐</span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Último dia trabalhado</p>
-                  <div className="font-bold text-lg">
-                    {lastWorkedDay ? (
-                      <>
-                        <div>
-                          {parseDate(lastWorkedDay.date).getDate()}
-                          <span className="text-sm font-normal text-muted-foreground ml-1">
-                            {format(parseDate(lastWorkedDay.date), 'EEEE', { locale: ptBR })}
-                          </span>
-                          {(() => {
-                            const workDate = parseDate(lastWorkedDay.date);
-                            const currentMonth = getMonth(today) + 1;
-                            const workMonth = getMonth(workDate) + 1;
-                            const currentYear = getYear(today);
-                            const workYear = getYear(workDate);
-
-                            return (
-                              <span className="text-xs text-muted-foreground ml-1">
-                                ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
-                              </span>
-                            );
-                          })()}
-                        </div>
-                        <div className="flex items-center gap-1 mt-1">
-                          {lastWorkedDay.meioPeriodo === currentUser.name && (
-                            <div className="flex items-center gap-1 text-xs">
-                              <span>☀️</span>
-                              <span>MP</span>
-                            </div>
-                          )}
-                          {lastWorkedDay.fechamento === currentUser.name && (
-                            <div className="flex items-center gap-1 text-xs">
-                              <span>🌅</span>
-                              <span>FE</span>
-                            </div>
-                          )}
-                          {lastWorkedDay.meioPeriodo === currentUser.name && lastWorkedDay.fechamento === currentUser.name && (
-                            <span className="text-xs text-muted-foreground">(2 turnos)</span>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="glass-card-elevated p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <span className="text-2xl">📈</span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Próximo trabalho</p>
-                  <div className="font-bold text-lg">
-                    {nextWorkDay ? (
-                      <>
-                        <div>
-                          {parseDate(nextWorkDay.date).getDate()}
-                          <span className="text-sm font-normal text-muted-foreground ml-1">
-                            {format(parseDate(nextWorkDay.date), 'EEE MMM', { locale: ptBR })}
-                          </span>
-                          {(() => {
-                            const workDate = parseDate(nextWorkDay.date);
-                            const currentMonth = getMonth(today) + 1;
-                            const workMonth = getMonth(workDate) + 1;
-                            const currentYear = getYear(today);
-                            const workYear = getYear(workDate);
-
-                            if (workMonth !== currentMonth || workYear !== currentYear) {
-                              return (
-                                <span className="text-xs text-muted-foreground ml-1">
-                                  ({format(workDate, 'MMM/yyyy', { locale: ptBR })})
-                                </span>
-                              );
-                            }
-                            return null;
-                          })()}
-                        </div>
-                        <div className="flex items-center gap-1 mt-1">
-                          {nextWorkDay.meioPeriodo === currentUser.name && (
-                            <div className="flex items-center gap-1 text-xs">
-                              <span>☀️</span>
-                              <span>MP</span>
-                            </div>
-                          )}
-                          {nextWorkDay.fechamento === currentUser.name && (
-                            <div className="flex items-center gap-1 text-xs">
-                              <span>🌅</span>
-                              <span>FE</span>
-                            </div>
-                          )}
-                          {nextWorkDay.meioPeriodo === currentUser.name && nextWorkDay.fechamento === currentUser.name && (
-                            <span className="text-xs text-muted-foreground">(2 turnos)</span>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="glass-card-elevated p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                  <span className="text-2xl">🛏️</span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Próxima folga</p>
-                  <div className="font-bold text-lg">
-                    {nextDayOff ? (
-                      <>
-                        <div>
-                          {parseDate(nextDayOff).getDate()}
-                          <span className="text-sm font-normal text-muted-foreground ml-1">
-                            {format(parseDate(nextDayOff), 'EEEE', { locale: ptBR })}
-                          </span>
-                        </div>
-                        {daysOffCount > 1 && (
-                          <div className="text-xs text-success font-medium mt-1">
-                            {daysOffCount} dias seguidos
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
+  {/* Calendar View */}
+  <div className="glass-card-elevated overflow-hidden">
+    <div className="p-4 border-b border-border/50 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handlePreviousMonth}
+          disabled={!hasPrevMonthData}
+          className={!hasPrevMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
+        >
+          <span>◀️</span>
+        </Button>
+        <div className="flex items-center gap-2">
+          <span>📅</span>
+          {availableMonths.length > 1 ? (
+            <Select
+              value={`${getMonth(viewingMonth) + 1}/${getYear(viewingMonth)}`}
+              onValueChange={handleMonthChange}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableMonths.map(month => (
+                  <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <h2 className="text-lg font-semibold">
+              {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
+            </h2>
+          )}
+        </div>
       </div>
 
       {/* Calendar View */}
@@ -644,60 +440,13 @@ const ScheduleView: React.FC = () => {
                       </div>
                     </div>
                   )}
-                </div>
-              );
-            })}
-          </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
-
-      {/* Stats */}
-      {isRicardo ? (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <span>📈</span>
-            Estatísticas dos Operadores - {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {operatorStats.map(stat => (
-              <div key={stat.name} className="glass-card-elevated p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-lg">{stat.name}</h4>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{stat.totalDays}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Dias de Trabalho</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-muted-foreground">{stat.daysOff}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-meioPeriodo">{stat.meioPeriodo}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Meio Período</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-fechamento">{stat.fechamento}</div>
-                    <div className="text-xs text-muted-foreground mt-1">Fechamento</div>
-                  </div>
-                </div>
-                <div className="mt-3 pt-3 border-t border-border/50 text-center">
-                  <div className="text-xl font-bold text-helipad-orange">{stat.weekends}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Fins de Semana</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-          <div className="glass-card p-4 text-center">
-            <div className="text-3xl font-bold text-primary">{mySchedule.length}</div>
-            <div className="text-xs text-muted-foreground mt-1">Dias de Trabalho</div>
-          </div>
-        <div className="glass-card p-4 text-center">
-          <div className="text-3xl font-bold text-muted-foreground">
             {daysInMonth - mySchedule.length}
           </div>
           <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
