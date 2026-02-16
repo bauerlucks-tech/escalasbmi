@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
 
-  let tabs = [
+  const tabs = [
     { id: 'schedule', label: 'Escala SBMIBZ', icon: Calendar },
     { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight },
     { id: 'requests', label: 'Solicitações', icon: Bell, badge: pendingCount },

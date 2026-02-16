@@ -102,12 +102,12 @@ const SwapRequestView: React.FC = () => {
       (entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName) &&
       isDateTodayOrFuture(entry.date)
     );
-  }, [currentScheduleData, targetScheduleData, currentUserName, isCurrentUserAdmin]);
+  }, [currentScheduleData, targetScheduleData, currentUserName, isCurrentUserAdmin, isDateTodayOrFuture]);
 
   // Get all available days (from today onwards) to select target day
   const availableDays = useMemo(() => {
     return targetScheduleData.filter(entry => isDateTodayOrFuture(entry.date));
-  }, [targetScheduleData]);
+  }, [targetScheduleData, isDateTodayOrFuture]);
 
   // Get operators available on the selected target day
   const operatorsOnTargetDay = useMemo(() => {
@@ -115,11 +115,15 @@ const SwapRequestView: React.FC = () => {
     const targetEntry = targetScheduleData.find(e => e.date === selectedTargetDay);
     if (!targetEntry) return [];
     
-    return availableOperators.filter(op => 
-      op.name === targetEntry.meioPeriodo || 
-      op.name === targetEntry.fechamento
+    const shifts: ShiftType[] = getOperatorShiftsForDay(targetEntry, selectedOperator);
+    return users.filter(u => 
+      u.id !== currentUserId && 
+      u.status === 'ativo' && 
+      u.role === 'operador' &&
+      !u.hideFromSchedule &&
+      (shifts as unknown[]).includes(getOperatorShiftsForDay(targetEntry, u.name))
     );
-  }, [selectedTargetDay, availableOperators, targetScheduleData]);
+  }, [users, currentUserId, selectedTargetDay, selectedOperator, targetScheduleData]);
 
   // Get days where selected operator is scheduled (from today onwards)
   const operatorScheduledDays = useMemo(() => {
