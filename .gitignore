@@ -29,3 +29,6 @@ dist-ssr
 public/env.js
 *.secret
 *.key
+
+# TypeScript build artifacts
+*.tsbuildinfo
