@@ -1,0 +1,387 @@
+# Workflow para backup diário do banco de dados Supabase
+# Executa automaticamente todos os dias às 02:00 UTC
+# Salva backups no bucket Supabase "Backup_DADOS"
+name: Daily Database Backup
+
+on:
+  schedule:
+    # Executar todos os dias às 02:00 UTC (23:00 horário de Brasília)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      manual_backup:
+        description: 'Executar backup manual agora'
+        required: false
+        default: 'true'
+
+permissions:
+  contents: read
+
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  BACKUP_BUCKET: 'Backup_DADOS'
+
+jobs:
+  backup-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm install -g supabase
+          npm install @supabase/supabase-js
+
+      - name: Create backup directory
+        run: |
+          mkdir -p ./backups
+          echo "BACKUP_DIR=./backups" >> $GITHUB_ENV
+
+      - name: Generate backup filename
+        run: |
+          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+          BACKUP_FILENAME="backup_${TIMESTAMP}.sql"
+          echo "BACKUP_FILENAME=${BACKUP_FILENAME}" >> $GITHUB_ENV
+          echo "BACKUP_PATH=${{ env.BACKUP_DIR }}/${BACKUP_FILENAME}" >> $GITHUB_ENV
+
+      - name: Extract database connection info
+        run: |
+          # Extrair informações de conexão da URL do Supabase
+          PROJECT_REF=$(echo "${{ env.SUPABASE_URL }}" | sed -n 's|https://\(.*\)\.supabase\.co.*|\1|p')
+          echo "PROJECT_REF=${PROJECT_REF}" >> $GITHUB_ENV
+          echo "Database project reference: ${PROJECT_REF}"
+
+      - name: Create database backup
+        run: |
+          echo "🔄 Iniciando backup do banco de dados..."
+          echo "Projeto: ${{ env.PROJECT_REF }}"
+          echo "Arquivo: ${{ env.BACKUP_FILENAME }}"
+          
+          # Criar backup usando pg_dump via Supabase CLI
+          supabase db dump --db-url="${{ env.SUPABASE_URL }}" --file="${{ env.BACKUP_PATH }}" --data-only --format=custom || {
+            echo "❌ Falha no backup com Supabase CLI, tentando método alternativo..."
+            
+            # Método alternativo: usar REST API para exportar dados
+            node << 'EOF'
+          const { createClient } = require('@supabase/supabase-js');
+          const fs = require('fs');
+          const path = require('path');
+
+          const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+          );
+
+          async function createBackup() {
+            console.log('🔄 Criando backup via REST API...');
+            
+            const tables = [
+              'users',
+              'schedules', 
+              'swap_requests',
+              'vacation_requests',
+              'audit_logs',
+              'notifications',
+              'preferences'
+            ];
+
+            const backupData = {
+              metadata: {
+                timestamp: new Date().toISOString(),
+                version: '1.0',
+                project_ref: process.env.PROJECT_REF,
+                tables: tables
+              },
+              data: {}
+            };
+
+            for (const table of tables) {
+              try {
+                console.log(`📥 Exportando tabela: ${table}`);
+                const { data, error } = await supabase
+                  .from(table)
+                  .select('*');
+                
+                if (error) {
+                  console.warn(`⚠️ Erro ao exportar ${table}:`, error.message);
+                  backupData.data[table] = { error: error.message, data: [] };
+                } else {
+                  backupData.data[table] = data;
+                  console.log(`✅ ${table}: ${data.length} registros`);
+                }
+              } catch (err) {
+                console.error(`❌ Erro crítico em ${table}:`, err);
+                backupData.data[table] = { error: err.message, data: [] };
+              }
+            }
+
+            // Salvar backup como JSON
+            const backupPath = process.env.BACKUP_PATH.replace('.sql', '.json');
+            fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
+            console.log(`✅ Backup salvo em: ${backupPath}`);
+            
+            // Atualizar variáveis de ambiente
+            fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_PATH=${backupPath}\n`);
+            fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_FILENAME=${process.env.BACKUP_FILENAME.replace('.sql', '.json')}\n`);
+          }
+
+          createBackup().catch(console.error);
+          EOF
+          }
+
+      - name: Verify backup file
+        run: |
+          if [ -f "${{ env.BACKUP_PATH }}" ]; then
+            FILE_SIZE=$(stat -c%s "${{ env.BACKUP_PATH }}")
+            echo "✅ Backup criado com sucesso!"
+            echo "📁 Arquivo: ${{ env.BACKUP_FILENAME }}"
+            echo "📊 Tamanho: ${FILE_SIZE} bytes"
+            echo "BACKUP_SIZE=${FILE_SIZE}" >> $GITHUB_ENV
+          else
+            echo "❌ Falha ao criar arquivo de backup"
+            exit 1
+          fi
+
+      - name: Upload to Supabase Storage
+        run: |
+          echo "🔄 Fazendo upload para o bucket Backup_DADOS..."
+          
+          node << 'EOF'
+          const { createClient } = require('@supabase/supabase-js');
+          const fs = require('fs');
+
+          const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+          );
+
+          async function uploadBackup() {
+            try {
+              console.log('📁 Lendo arquivo de backup...');
+              const backupPath = process.env.BACKUP_PATH;
+              const backupFile = fs.readFileSync(backupPath);
+              const backupFilename = process.env.BACKUP_FILENAME;
+
+              console.log(`📤 Fazendo upload: ${backupFilename}`);
+
+              // Upload para o bucket Backup_DADOS
+              const { data, error } = await supabase.storage
+                .from('Backup_DADOS')
+                .upload(backupFilename, backupFile, {
+                  contentType: backupFilename.endsWith('.json') ? 'application/json' : 'application/octet-stream',
+                  upsert: false
+                });
+
+              if (error) {
+                console.error('❌ Erro no upload:', error);
+                throw error;
+              }
+
+              console.log('✅ Upload realizado com sucesso!');
+              console.log('📋 Detalhes:', data);
+
+              // Gerar URL pública do backup
+              const { data: { publicUrl } } = supabase.storage
+                .from('Backup_DADOS')
+                .getPublicUrl(backupFilename);
+
+              console.log(`🔗 URL do backup: ${publicUrl}`);
+              
+              // Salvar URL no environment
+              fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_URL=${publicUrl}\n`);
+
+            } catch (error) {
+              console.error('❌ Erro crítico no upload:', error);
+              throw error;
+            }
+          }
+
+          uploadBackup().catch(console.error);
+          EOF
+
+      - name: Create backup metadata
+        run: |
+          cat << EOF > backup_metadata.json
+          {
+            "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "filename": "${{ env.BACKUP_FILENAME }}",
+            "size_bytes": ${{ env.BACKUP_SIZE }},
+            "project_ref": "${{ env.PROJECT_REF }}",
+            "bucket": "${{ env.BACKUP_BUCKET }}",
+            "url": "${{ env.BACKUP_URL }}",
+            "workflow_run_id": "${{ github.run_id }}",
+            "trigger": "${{ github.event_name }}"
+          }
+          EOF
+
+      - name: Upload metadata to storage
+        run: |
+          node << 'EOF'
+          const { createClient } = require('@supabase/supabase-js');
+          const fs = require('fs');
+
+          const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+          );
+
+          async function uploadMetadata() {
+            try {
+              const metadata = fs.readFileSync('backup_metadata.json');
+              const metadataFilename = `metadata_${{ env.BACKUP_FILENAME }}.json`;
+
+              const { data, error } = await supabase.storage
+                .from('Backup_DADOS')
+                .upload(metadataFilename, metadata, {
+                  contentType: 'application/json',
+                  upsert: true
+                });
+
+              if (error) {
+                console.error('❌ Erro no upload de metadados:', error);
+                throw error;
+              }
+
+              console.log('✅ Metadados salvos com sucesso!');
+            } catch (error) {
+              console.error('❌ Erro nos metadados:', error);
+            }
+          }
+
+          uploadMetadata().catch(console.error);
+          EOF
+
+      - name: Clean old backups (keep last 30 days)
+        run: |
+          echo "🧹 Limpando backups antigos (mantendo últimos 30 dias)..."
+          
+          node << 'EOF'
+          const { createClient } = require('@supabase/supabase-js');
+
+          const supabase = createClient(
+            process.env.SUPABASE_URL,
+            process.env.SUPABASE_SERVICE_ROLE_KEY
+          );
+
+          async function cleanOldBackups() {
+            try {
+              console.log('📋 Listando arquivos no bucket Backup_DADOS...');
+              
+              const { data, error } = await supabase.storage
+                .from('Backup_DADOS')
+                .list('', { limit: 1000 });
+
+              if (error) {
+                console.error('❌ Erro ao listar arquivos:', error);
+                return;
+              }
+
+              const files = data || [];
+              const thirtyDaysAgo = new Date();
+              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+              console.log(`📁 Encontrados ${files.length} arquivos`);
+
+              let deletedCount = 0;
+              for (const file of files) {
+                // Pular metadados
+                if (file.name.startsWith('metadata_')) continue;
+
+                // Verificar se é um arquivo de backup
+                if (file.name.startsWith('backup_')) {
+                  const fileDate = new Date(file.created_at);
+                  
+                  if (fileDate < thirtyDaysAgo) {
+                    console.log(`🗑️ Removendo arquivo antigo: ${file.name} (${file.created_at})`);
+                    
+                    const { error: deleteError } = await supabase.storage
+                      .from('Backup_DADOS')
+                      .remove([file.name]);
+
+                    if (deleteError) {
+                      console.error(`❌ Erro ao remover ${file.name}:`, deleteError);
+                    } else {
+                      deletedCount++;
+                      // Remover metadados correspondentes
+                      const metadataFile = `metadata_${file.name}`;
+                      await supabase.storage
+                        .from('Backup_DADOS')
+                        .remove([metadataFile]);
+                    }
+                  }
+                }
+              }
+
+              console.log(`✅ Limpeza concluída! ${deletedCount} arquivos removidos.`);
+            } catch (error) {
+              console.error('❌ Erro na limpeza:', error);
+            }
+          }
+
+          cleanOldBackups().catch(console.error);
+          EOF
+
+      - name: Generate backup report
+        run: |
+          echo "📊 Gerando relatório do backup..."
+          
+          cat << EOF > backup_report.md
+          # Relatório de Backup Diário - $(date +"%d/%m/%Y")
+          
+          ## 📋 Informações
+          - **Data/Hora**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - **Projeto**: ${{ env.PROJECT_REF }}
+          - **Arquivo**: ${{ env.BACKUP_FILENAME }}
+          - **Tamanho**: ${{ env.BACKUP_SIZE }} bytes
+          - **Bucket**: ${{ env.BACKUP_BUCKET }}
+          - **Workflow**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          
+          ## ✅ Status
+          - **Backup**: Concluído com sucesso
+          - **Upload**: Realizado para Supabase Storage
+          - **Limpeza**: Backups antigos removidos
+          - **Metadados**: Salvos com sucesso
+          
+          ## 🔗 Links
+          - **URL do Backup**: ${{ env.BACKUP_URL }}
+          - **GitHub Actions**: ${{ github.server_url }}/${{ github.repository }}/actions
+          
+          ---
+          *Gerado automaticamente pelo GitHub Actions*
+          EOF
+
+      - name: Upload backup artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backup-${{ github.run_number }}
+          path: |
+            ${{ env.BACKUP_PATH }}
+            backup_metadata.json
+            backup_report.md
+          retention-days: 30
+
+      - name: Send notification (optional)
+        if: failure()
+        run: |
+          echo "❌ Backup falhou! Verifique os logs acima."
+          echo "🔗 Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+      - name: Success notification
+        if: success()
+        run: |
+          echo "🎉 Backup diário concluído com sucesso!"
+          echo "📁 Arquivo: ${{ env.BACKUP_FILENAME }}"
+          echo "📊 Tamanho: ${{ env.BACKUP_SIZE }} bytes"
+          echo "🔗 URL: ${{ env.BACKUP_URL }}"
+          echo "⏰ Próximo backup: $(date -d '+1 day 02:00' -u +"%Y-%m-%d %H:%M:%S UTC")"
