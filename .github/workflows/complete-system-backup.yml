@@ -68,17 +68,22 @@ jobs:
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+        BACKUP_DIR: ${{ env.BACKUP_DIR }}
       run: |
         echo "🗄️ Backup do banco de dados..."
         
         # Backup usando script Node.js
-        node scripts/backup-database.cjs "${{ env.BACKUP_DIR }}/database-${{ env.BACKUP_TIMESTAMP }}.json"
+        node scripts/backup-database-simple.cjs "${{ env.BACKUP_DIR }}/database-${{ env.BACKUP_TIMESTAMP }}.json"
         
         DB_SIZE=$(du -h "${{ env.BACKUP_DIR }}/database-${{ env.BACKUP_TIMESTAMP }}.json" | cut -f1)
         echo "DB_SIZE=$DB_SIZE" >> $GITHUB_ENV
         echo "✅ Database backup: $DB_SIZE"
 
     - name: Backup Configurations
+      env:
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+        BACKUP_DIR: ${{ env.BACKUP_DIR }}
       run: |
         echo "⚙️ Backup das configurações..."
         
@@ -104,12 +109,24 @@ jobs:
         fi
 
     - name: Generate Backup Report
+      env:
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+        BACKUP_DIR: ${{ env.BACKUP_DIR }}
+        SOURCE_SIZE: ${{ env.SOURCE_SIZE }}
+        DB_SIZE: ${{ env.DB_SIZE }}
+        CONFIG_SIZE: ${{ env.CONFIG_SIZE }}
+        COMMIT_HASH: ${{ env.COMMIT_HASH }}
+        COMMIT_MESSAGE: ${{ env.COMMIT_MESSAGE }}
+        TOTAL_SIZE: ${{ env.TOTAL_SIZE }}
       run: |
         echo "📋 Gerando relatório..."
         
-        # Calcular tamanho total
-        TOTAL_SIZE_KB=$(du -sk ${{ env.BACKUP_DIR }} | cut -f1)
-        TOTAL_SIZE=$(numfmt --to=iec-i --suffix=B $((TOTAL_SIZE_KB * 1024)))
+        # Calcular tamanho total se ainda não foi calculado
+        if [ -z "${{ env.TOTAL_SIZE }}" ]; then
+          TOTAL_SIZE_KB=$(du -sk ${{ env.BACKUP_DIR }} | cut -f1)
+          TOTAL_SIZE=$(numfmt --to=iec-i --suffix=B $((TOTAL_SIZE_KB * 1024)))
+          echo "TOTAL_SIZE=$TOTAL_SIZE" >> $GITHUB_ENV
+        fi
         
         # Gerar relatório JSON
         cat > "${{ env.BACKUP_DIR }}/backup-report-${{ env.BACKUP_TIMESTAMP }}.json" << EOF
@@ -131,7 +148,7 @@ jobs:
               "path": "config-${{ env.BACKUP_TIMESTAMP }}.tar.gz"
             }
           },
-          "total_size": "$TOTAL_SIZE",
+          "total_size": "${{ env.TOTAL_SIZE }}",
           "git_info": {
             "commit": "${{ env.COMMIT_HASH }}",
             "message": "${{ env.COMMIT_MESSAGE }}",
@@ -146,9 +163,19 @@ jobs:
         EOF
         
         echo "✅ Relatório gerado"
-        echo "📊 Tamanho total: $TOTAL_SIZE"
+        echo "📊 Tamanho total: ${{ env.TOTAL_SIZE }}"
 
     - name: Upload to GitHub Releases
+      env:
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+        BACKUP_DIR: ${{ env.BACKUP_DIR }}
+        SOURCE_SIZE: ${{ env.SOURCE_SIZE }}
+        DB_SIZE: ${{ env.DB_SIZE }}
+        CONFIG_SIZE: ${{ env.CONFIG_SIZE }}
+        TOTAL_SIZE: ${{ env.TOTAL_SIZE }}
+        COMMIT_HASH: ${{ env.COMMIT_HASH }}
+        COMMIT_MESSAGE: ${{ env.COMMIT_MESSAGE }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       uses: softprops/action-gh-release@v2
       with:
         name: "System Backup - ${{ env.BACKUP_TIMESTAMP }}"
@@ -183,8 +210,6 @@ jobs:
           *Gerado automaticamente por GitHub Actions*
         draft: false
         prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Cleanup old backups (keep last 5)
       run: |
@@ -201,6 +226,9 @@ jobs:
           done || true
 
     - name: Notify backup completion
+      env:
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+        TOTAL_SIZE: ${{ env.TOTAL_SIZE }}
       run: |
         echo "🎉 BACKUP COMPLETO REALIZADO COM SUCESSO!"
         echo "📅 Data: ${{ env.BACKUP_TIMESTAMP }}"

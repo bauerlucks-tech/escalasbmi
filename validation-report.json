@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-17T05:48:30.637Z",
+  "timestamp": "2026-02-17T10:12:37.878Z",
   "phases": {
     "syntax": {
       "status": "passed",
@@ -50,8 +50,8 @@
         {
           "file": "src/contexts/SupabaseContext.tsx",
           "type": "improvement",
-          "line": 573,
-          "message": "Função muito longa (510 linhas) - considerar refatoração"
+          "line": 574,
+          "message": "Função muito longa (511 linhas) - considerar refatoração"
         },
         {
           "file": "src/contexts/SwapContext.tsx",
