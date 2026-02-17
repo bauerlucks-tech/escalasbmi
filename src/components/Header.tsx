@@ -19,7 +19,7 @@ interface HeaderProps {
 }
 ///
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
-  const { currentUser, logout, isAdmin, isSuperAdmin } = useAuth();
+  const { currentUser, logout, isAdmin, isSuperAdmin, switchToSuperAdmin, switchBackToUser, isHiddenSuperAdmin } = useAuth();
   const { getPendingCount, getPendingAdminApproval } = useSwap();
   const [showHelp, setShowHelp] = React.useState(false);
   const [showTestPanel, setShowTestPanel] = React.useState(false);
@@ -130,6 +130,23 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                 </Button>
               } />
               
+              {/* Botão secreto para Lucas acessar Super Admin */}
+              {currentUser && currentUser.name === 'LUCAS' && !isHiddenSuperAdmin && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (window.confirm('Deseja fazer logout como Lucas e acessar como Super Admin?')) {
+                      switchToSuperAdmin();
+                    }
+                  }}
+                  className="text-muted-foreground hover:text-primary opacity-50"
+                  title="Acesso Super Admin"
+                >
+                  <Shield className="w-4 h-4" />
+                </Button>
+              )}
+              
               <Button
                 variant="ghost"
                 size="icon"
@@ -143,7 +160,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                 id="react-logout-btn"
                 variant="ghost"
                 size="icon"
-                onClick={logout}
+                onClick={isHiddenSuperAdmin ? switchBackToUser : logout}
                 className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               >
                 <LogOut className="w-5 h-5" />

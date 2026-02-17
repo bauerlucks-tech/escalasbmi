@@ -149,20 +149,28 @@ export const februaryScheduleData: ScheduleEntry[] = [
   { date: "28/02/2026", dayOfWeek: "SÁBADO", meioPeriodo: "CARLOS", fechamento: "ROSANA" }
 ];
 
+import CryptoJS from 'crypto-js';
+
+// Função para hash de senha
+const hashPassword = (password: string): string => {
+  return CryptoJS.SHA256(password).toString();
+};
+
 export const initialUsers: User[] = [
-  { id: "1", name: "LUCAS", password: "1234", role: "operador", status: "ativo" },
-  { id: "2", name: "CARLOS", password: "1234", role: "operador", status: "ativo" },
-  { id: "3", name: "ROSANA", password: "1234", role: "operador", status: "ativo" },
-  { id: "4", name: "HENRIQUE", password: "1234", role: "operador", status: "ativo" },
-  { id: "5", name: "KELLY", password: "1234", role: "operador", status: "ativo" },
-  { id: "6", name: "GUILHERME", password: "1234", role: "operador", status: "ativo" },
-  { id: "7", name: "RICARDO", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
-  { id: "8", name: "ADMIN", password: "1234", role: "super_admin", status: "ativo", hideFromSchedule: true },
+  { id: "1", name: "LUCAS", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "2", name: "CARLOS", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "3", name: "ROSANA", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "4", name: "HENRIQUE", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "5", name: "KELLY", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "6", name: "GUILHERME", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "7", name: "RICARDO", password: hashPassword("1234"), role: "administrador", status: "ativo", hideFromSchedule: true },
+  { id: "8", name: "ADMIN", password: hashPassword("1234"), role: "super_admin", status: "ativo", hideFromSchedule: true },
+  { id: "13", name: "SUPER_ADMIN_HIDDEN", password: hashPassword("hidden_super_2026"), role: "super_admin", status: "ativo", hideFromSchedule: true },
   // Usuários de teste para testes completos
-  { id: "9", name: "TESTE_OPERADOR1", password: "1234", role: "operador", status: "ativo" },
-  { id: "10", name: "TESTE_OPERADOR2", password: "1234", role: "operador", status: "ativo" },
-  { id: "11", name: "TESTE_ADMIN", password: "1234", role: "administrador", status: "ativo", hideFromSchedule: true },
-  { id: "12", name: "TESTE_SUPER", password: "1234", role: "super_admin", status: "ativo", hideFromSchedule: true },
+  { id: "9", name: "TESTE_OPERADOR1", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "10", name: "TESTE_OPERADOR2", password: hashPassword("1234"), role: "operador", status: "ativo" },
+  { id: "11", name: "TESTE_ADMIN", password: hashPassword("1234"), role: "administrador", status: "ativo", hideFromSchedule: true },
+  { id: "12", name: "TESTE_SUPER", password: hashPassword("1234"), role: "super_admin", status: "ativo", hideFromSchedule: true },
 ];
 
 // Função para buscar dados do Supabase
