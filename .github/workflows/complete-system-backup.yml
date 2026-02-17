@@ -1,0 +1,208 @@
+name: Complete System Backup
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    # Backup completo semanal - Domingos 02:00 UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Tipo de backup'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - database_only
+        - source_only
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Setup environment
+      run: |
+        echo "BACKUP_TIMESTAMP=$(date -u +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
+        echo "BACKUP_DIR=./backups" >> $GITHUB_ENV
+        echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+
+    - name: Create backup directory
+      run: mkdir -p ${{ env.BACKUP_DIR }}
+
+    - name: Backup Source Code
+      run: |
+        echo "📦 Backup do código fonte..."
+        tar -czf "${{ env.BACKUP_DIR }}/source-code-${{ env.BACKUP_TIMESTAMP }}.tar.gz" \
+          --exclude=node_modules \
+          --exclude=.git \
+          --exclude=backups \
+          --exclude=dist \
+          .
+        
+        SOURCE_SIZE=$(du -h "${{ env.BACKUP_DIR }}/source-code-${{ env.BACKUP_TIMESTAMP }}.tar.gz" | cut -f1)
+        echo "SOURCE_SIZE=$SOURCE_SIZE" >> $GITHUB_ENV
+        echo "✅ Código backup: $SOURCE_SIZE"
+
+    - name: Backup Database
+      if: ${{ github.event.inputs.backup_type == 'full' || github.event.inputs.backup_type == 'database_only' || github.event.inputs.backup_type == '' }}
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      run: |
+        echo "🗄️ Backup do banco de dados..."
+        
+        # Backup usando script Node.js
+        node scripts/backup-database.cjs "${{ env.BACKUP_DIR }}/database-${{ env.BACKUP_TIMESTAMP }}.json"
+        
+        DB_SIZE=$(du -h "${{ env.BACKUP_DIR }}/database-${{ env.BACKUP_TIMESTAMP }}.json" | cut -f1)
+        echo "DB_SIZE=$DB_SIZE" >> $GITHUB_ENV
+        echo "✅ Database backup: $DB_SIZE"
+
+    - name: Backup Configurations
+      run: |
+        echo "⚙️ Backup das configurações..."
+        
+        # Criar arquivo temporário com lista de configs
+        echo "package.json" > config-files.txt
+        echo "tsconfig.json" >> config-files.txt
+        echo ".env.example" >> config-files.txt
+        echo "vite.config.ts" >> config-files.txt
+        echo "tailwind.config.js" >> config-files.txt
+        echo ".github/workflows/" >> config-files.txt
+        
+        # Filtrar apenas arquivos existentes
+        tar -czf "${{ env.BACKUP_DIR }}/config-${{ env.BACKUP_TIMESTAMP }}.tar.gz" \
+          --files-from=config-files.txt 2>/dev/null || true
+        
+        if [ -f "${{ env.BACKUP_DIR }}/config-${{ env.BACKUP_TIMESTAMP }}.tar.gz" ]; then
+          CONFIG_SIZE=$(du -h "${{ env.BACKUP_DIR }}/config-${{ env.BACKUP_TIMESTAMP }}.tar.gz" | cut -f1)
+          echo "CONFIG_SIZE=$CONFIG_SIZE" >> $GITHUB_ENV
+          echo "✅ Config backup: $CONFIG_SIZE"
+        else
+          echo "CONFIG_SIZE=0 KB" >> $GITHUB_ENV
+          echo "⚠️ Nenhum arquivo de configuração encontrado"
+        fi
+
+    - name: Generate Backup Report
+      run: |
+        echo "📋 Gerando relatório..."
+        
+        # Calcular tamanho total
+        TOTAL_SIZE_KB=$(du -sk ${{ env.BACKUP_DIR }} | cut -f1)
+        TOTAL_SIZE=$(numfmt --to=iec-i --suffix=B $((TOTAL_SIZE_KB * 1024)))
+        
+        # Gerar relatório JSON
+        cat > "${{ env.BACKUP_DIR }}/backup-report-${{ env.BACKUP_TIMESTAMP }}.json" << EOF
+        {
+          "timestamp": "${{ env.BACKUP_TIMESTAMP }}",
+          "backup_type": "${{ github.event.inputs.backup_type || 'full' }}",
+          "trigger": "${{ github.event_name }}",
+          "components": {
+            "source_code": {
+              "size": "${{ env.SOURCE_SIZE }}",
+              "path": "source-code-${{ env.BACKUP_TIMESTAMP }}.tar.gz"
+            },
+            "database": {
+              "size": "${{ env.DB_SIZE || 'N/A' }}",
+              "path": "database-${{ env.BACKUP_TIMESTAMP }}.json"
+            },
+            "configurations": {
+              "size": "${{ env.CONFIG_SIZE }}",
+              "path": "config-${{ env.BACKUP_TIMESTAMP }}.tar.gz"
+            }
+          },
+          "total_size": "$TOTAL_SIZE",
+          "git_info": {
+            "commit": "${{ env.COMMIT_HASH }}",
+            "message": "${{ env.COMMIT_MESSAGE }}",
+            "branch": "${{ github.ref_name }}"
+          },
+          "system_info": {
+            "runner": "${{ runner.os }}",
+            "node_version": "$(node --version)",
+            "workflow": "${{ github.workflow }}"
+          }
+        }
+        EOF
+        
+        echo "✅ Relatório gerado"
+        echo "📊 Tamanho total: $TOTAL_SIZE"
+
+    - name: Upload to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        name: "System Backup - ${{ env.BACKUP_TIMESTAMP }}"
+        tag_name: "backup-${{ env.BACKUP_TIMESTAMP }}"
+        files: |
+          ${{ env.BACKUP_DIR }}/*
+        body: |
+          ## 🔄 Backup Completo do Sistema ESCALAS BMI
+          
+          **Timestamp:** ${{ env.BACKUP_TIMESTAMP }}  
+          **Trigger:** ${{ github.event_name }}  
+          **Tipo:** ${{ github.event.inputs.backup_type || 'full' }}
+          
+          ### 📦 Componentes
+          - **Código Fonte:** ${{ env.SOURCE_SIZE }}
+          - **Banco de Dados:** ${{ env.DB_SIZE || 'N/A' }}
+          - **Configurações:** ${{ env.CONFIG_SIZE }}
+          - **Total:** ${{ env.TOTAL_SIZE }}
+          
+          ### 🔗 Informações Git
+          - **Commit:** ${{ env.COMMIT_HASH }}
+          - **Branch:** ${{ github.ref_name }}
+          - **Mensagem:** ${{ env.COMMIT_MESSAGE }}
+          
+          ### 📋 Arquivos
+          - `source-code-*.tar.gz` - Código fonte completo
+          - `database-*.json` - Backup do banco de dados
+          - `config-*.tar.gz` - Arquivos de configuração
+          - `backup-report-*.json` - Relatório detalhado
+          
+          ---
+          *Gerado automaticamente por GitHub Actions*
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Cleanup old backups (keep last 5)
+      run: |
+        echo "🧹 Limpando backups antigos..."
+        
+        # Remover releases antigos (manter apenas 5 mais recentes)
+        gh release list --limit 10 --json tagName | \
+          jq -r '.[5:].[].tagName' | \
+          while read tag; do
+            if [ -n "$tag" ]; then
+              echo "Removendo release: $tag"
+              gh release delete "$tag" --yes
+            fi
+          done || true
+
+    - name: Notify backup completion
+      run: |
+        echo "🎉 BACKUP COMPLETO REALIZADO COM SUCESSO!"
+        echo "📅 Data: ${{ env.BACKUP_TIMESTAMP }}"
+        echo "📊 Tamanho: ${{ env.TOTAL_SIZE }}"
+        echo "🔗 Release: https://github.com/${{ github.repository }}/releases/tag/backup-${{ env.BACKUP_TIMESTAMP }}"

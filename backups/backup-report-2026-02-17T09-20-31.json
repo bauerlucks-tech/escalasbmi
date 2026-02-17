@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-02-17T09-20-31",
+  "backup_type": "full_system",
+  "components": {
+    "source_code": {
+      "path": "backups\\source-code-2026-02-17T09-20-31.tar.gz",
+      "size": 339971,
+      "files": "194"
+    },
+    "database": {
+      "path": "backups\\database-2026-02-17T09-20-31.json",
+      "size": 4974,
+      "tables": [
+        "users",
+        "month_schedules",
+        "swap_requests",
+        "vacation_requests",
+        "audit_logs"
+      ],
+      "records": 27
+    },
+    "configurations": {
+      "path": "backups\\config-2026-02-17T09-20-31.json",
+      "size": 5535,
+      "files": [
+        "package.json",
+        "tsconfig.json",
+        "vite.config.ts"
+      ]
+    }
+  },
+  "total_size": 350480,
+  "status": "completed",
+  "system_info": {
+    "node_version": "v24.13.0",
+    "platform": "win32",
+    "git_commit": "5d3e5597f95fbb8b853dc89a55272ff156fdab72",
+    "git_branch": "main"
+  }
+}
