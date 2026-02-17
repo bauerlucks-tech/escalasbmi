@@ -95,14 +95,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Verificar se há usuário do login externo PRIMEIRO
     const externalUser = authStorage.getUser();
     if (externalUser) {
-      console.log('🔄 Carregando usuário externo no AuthContext:', externalUser.name);
+      // 🔄 Carregando usuário externo no AuthContext
       return externalUser;
     }
     
     // Verificar usuário salvo normalmente
     const saved = authStorage.getUser();
     if (saved) {
-      console.log('🔄 Carregando usuário salvo no AuthContext:', saved.name);
+      // 🔄 Carregando usuário salvo no AuthContext
       return saved;
     }
     
@@ -120,10 +120,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const externalUserStr = localStorage.getItem('directAuth_currentUser');
       const externalUser = externalUserStr ? JSON.parse(externalUserStr) : null;
       
-      console.log('🔍 Verificando usuário externo:', externalUser?.name);
+      // 🔍 Verificando usuário externo
       
       if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
-        console.log('🔄 Detectado usuário externo, atualizando AuthContext:', externalUser.name);
+        // 🔄 Detectado usuário externo, atualizando AuthContext
         
         // Encontrar usuário correspondente na lista
         const matchedUser = users.find(u => u.name === externalUser.name);
@@ -136,7 +136,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           
           setCurrentUser(userWithExternalData);
           authStorage.setUser(userWithExternalData);
-          console.log('✅ Usuário externo sincronizado com AuthContext:', userWithExternalData.name);
+          // ✅ Usuário externo sincronizado com AuthContext
         }
       }
     };
@@ -157,7 +157,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Escutar evento de logout externo
   useEffect(() => {
     const handleExternalLogout = () => {
-      console.log('🔄 AuthContext recebeu evento externalLogout');
+      // 🔄 AuthContext recebeu evento externalLogout
       setCurrentUser(null);
       authStorage.removeUser();
     };
@@ -362,7 +362,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Log de auditoria - login do Super Admin
         logAdminLogin(hiddenSuperAdmin.id, hiddenSuperAdmin.name);
       } else {
-        console.warn('Hidden super admin user not found');
+        // Hidden super admin user not found
       }
     }
   };

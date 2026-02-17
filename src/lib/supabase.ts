@@ -173,7 +173,7 @@ export class SupabaseAPI {
       throw error;
     }
     
-    console.log('📅 Month schedules carregados do Supabase:', data);
+    // 📅 Month schedules carregados do Supabase
     return data || [];
   }
 
@@ -248,7 +248,7 @@ export class SupabaseAPI {
       throw error;
     }
     
-    console.log('📊 Dados brutos do Supabase:', data);
+    // 📊 Dados brutos do Supabase
     
     // Processar dados sem JOIN complexo
     const processedData = (data || []).map(item => ({
@@ -257,13 +257,13 @@ export class SupabaseAPI {
       target_name: item.target_name || ''
     }));
     
-    console.log('✅ Dados processados:', processedData);
+    // ✅ Dados processados
     return processedData;
   }
 
   static async createSwapRequest(request: Omit<SwapRequestSupabase, 'id' | 'created_at'>): Promise<SwapRequestSupabase> {
     try {
-      console.log('📝 Creating swap request with data:', request);
+      // 📝 Creating swap request with data
       
       const { data, error } = await supabase
         .from('swap_requests')
@@ -281,7 +281,7 @@ export class SupabaseAPI {
         throw new Error('Nenhum dado retornado ao criar solicitação de troca');
       }
       
-      console.log('✅ Swap request created successfully:', data);
+      // ✅ Swap request created successfully
       return data;
     } catch (error) {
       console.error('❌ Error in createSwapRequest:', error);
@@ -356,7 +356,7 @@ export class SupabaseAPI {
       throw error;
     }
     
-    console.log('✅ Month schedule atualizado:', { month, year, entries: entries.length });
+    // ✅ Month schedule atualizado
     return true;
   }
 
@@ -373,7 +373,7 @@ export class SupabaseAPI {
 
   static async createVacationRequest(request: Omit<VacationRequest, 'id' | 'requested_at'>): Promise<VacationRequest> {
     try {
-      console.log('📝 Creating vacation request with data:', request);
+      // 📝 Creating vacation request with data
       
       const { data, error } = await supabase
         .from('vacation_requests')
@@ -391,7 +391,7 @@ export class SupabaseAPI {
         throw new Error('Nenhum dado retornado ao criar solicitação');
       }
       
-      console.log('✅ Vacation request created successfully:', data);
+      // ✅ Vacation request created successfully
       return data;
     } catch (error) {
       console.error('❌ Error in createVacationRequest:', error);

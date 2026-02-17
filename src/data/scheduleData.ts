@@ -189,7 +189,7 @@ const fetchFromSupabase = async () => {
     
     if (response.ok) {
       const schedules = await response.json();
-      console.log(`✅ ${schedules.length} escalas buscadas do Supabase`);
+      // ✅ ${schedules.length} escalas buscadas do Supabase
       
       // Salvar no localStorage
       localStorage.setItem('escala_scheduleStorage', JSON.stringify(schedules));
@@ -202,7 +202,7 @@ const fetchFromSupabase = async () => {
       
       return schedules;
     } else {
-      console.log('❌ Erro ao buscar do Supabase:', response.status);
+      // ❌ Erro ao buscar do Supabase
       return null;
     }
   } catch (error) {
@@ -227,7 +227,7 @@ export const createScheduleStorage = (): ScheduleStorage => {
   }
   
   // Se não tiver no localStorage, buscar do Supabase
-  console.log('🔄 Buscando dados do Supabase...');
+  // 🔄 Buscando dados do Supabase...
   fetchFromSupabase();
   
   // Initialize with January and February 2026 as current schedules (fallback)
@@ -286,8 +286,8 @@ export const addNewMonthSchedule = (
   replace: boolean = false
 ): { success: boolean; message: string; archived?: ArchivedSchedule[] } => {
   // BLOQUEAR MODIFICAÇÃO - DADOS VÊM DO SUPABASE
-  console.log('🚫 Bloqueando modificação local - dados devem vir do Supabase');
-  console.log(`📋 Tentativa de modificar ${month}/${year} bloqueada`);
+  // 🚫 Bloqueando modificação local - dados devem vir do Supabase
+  // 📋 Tentativa de modificar ${month}/${year} bloqueada
   
   // Verificar se já existe no Supabase
   const supabaseData = localStorage.getItem('escala_scheduleStorage');
@@ -304,7 +304,7 @@ export const addNewMonthSchedule = (
       }
       
       if (existingSchedule) {
-        console.log('⚠️ Escala já existe no Supabase, modificação bloqueada');
+        // ⚠️ Escala já existe no Supabase, modificação bloqueada
         return { 
           success: false, 
           message: `Escala de ${getMonthName(month)}/${year} já existe no Supabase - modificação bloqueada` 
@@ -387,8 +387,8 @@ export const addNewMonthSchedule = (
 
 export const updateMonthSchedule = (month: number, year: number, entries: ScheduleEntry[]): boolean => {
   // BLOQUEAR MODIFICAÇÃO - DADOS VÊM DO SUPABASE
-  console.log('🚫 Bloqueando modificação de escala - dados devem vir do Supabase');
-  console.log(`📋 Tentativa de modificar ${month}/${year} bloqueada`);
+  // 🚫 Bloqueando modificação de escala - dados devem vir do Supabase
+  // 📋 Tentativa de modificar ${month}/${year} bloqueada
   
   // Verificar se existe no Supabase
   const supabaseData = localStorage.getItem('escala_scheduleStorage');

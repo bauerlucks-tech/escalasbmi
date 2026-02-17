@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-16T23:37:33.895Z",
+  "timestamp": "2026-02-17T05:31:34.384Z",
   "phases": {
     "syntax": {
       "status": "passed",
@@ -34,13 +34,13 @@
         {
           "file": "src/contexts/AuthContext.tsx",
           "type": "warning",
-          "message": "Encontrados 5 console.log - remover antes de produção"
+          "message": "Encontrados 7 console.log - remover antes de produção"
         },
         {
           "file": "src/contexts/AuthContext.tsx",
           "type": "improvement",
-          "line": 350,
-          "message": "Função muito longa (304 linhas) - considerar refatoração"
+          "line": 413,
+          "message": "Função muito longa (364 linhas) - considerar refatoração"
         },
         {
           "file": "src/contexts/SupabaseContext.tsx",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,20 +19,12 @@ const AuditLogsView: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<string>('all');
   const [showDetails, setShowDetails] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadLogs();
-  }, []);
-
-  useEffect(() => {
-    filterLogs();
-  }, [logs, searchTerm, selectedAction, selectedUser, dateFilter]);
-
   const loadLogs = () => {
     const allLogs = getAuditLogs();
     setLogs(allLogs);
   };
 
-  const filterLogs = () => {
+  const filterLogs = useCallback(() => {
     let filtered = [...logs];
 
     // Filtro por termo de busca
@@ -56,30 +48,40 @@ const AuditLogsView: React.FC = () => {
 
     // Filtro por data
     if (dateFilter !== 'all') {
-      const now = new Date();
-      let startDate: Date;
-
-      switch (dateFilter) {
-        case 'today':
-          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-          break;
-        case 'week':
-          startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          break;
-        case 'month':
-          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-          break;
-        default:
-          startDate = new Date(0);
-      }
-
-      filtered = filtered.filter(log => 
-        new Date(log.timestamp) >= startDate
-      );
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      filtered = filtered.filter(log => {
+        const logDate = new Date(log.timestamp);
+        logDate.setHours(0, 0, 0, 0);
+        
+        switch (dateFilter) {
+          case 'today':
+            return logDate.getTime() === today.getTime();
+          case 'week': {
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            return logDate >= weekAgo;
+          }
+          case 'month':
+            return logDate.getMonth() === today.getMonth() && 
+                   logDate.getFullYear() === today.getFullYear();
+          default:
+            return true;
+        }
+      });
     }
 
     setFilteredLogs(filtered);
-  };
+  }, [logs, searchTerm, selectedAction, selectedUser, dateFilter]);
+
+  useEffect(() => {
+    loadLogs();
+  }, []);
+
+  useEffect(() => {
+    filterLogs();
+  }, [logs, searchTerm, selectedAction, selectedUser, dateFilter, filterLogs]);
 
   const getActionBadgeVariant = (action: AuditLog['action']) => {
     switch (action) {

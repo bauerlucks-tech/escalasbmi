@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSwap } from '@/contexts/SwapContext';
 import { ScheduleEntry, getCurrentSchedules, getMonthName } from '@/data/scheduleData';
@@ -50,12 +50,12 @@ const SwapRequestView: React.FC = () => {
   };
 
   // Helper function to check if date is today or in the future
-  const isDateTodayOrFuture = (dateStr: string): boolean => {
+  const isDateTodayOrFuture = useCallback((dateStr: string): boolean => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const dateTime = convertDateToTime(dateStr);
     return dateTime >= today.getTime();
-  };
+  }, []);
 
   // Get available months for selection
   const availableMonths = useMemo(() => {
@@ -132,7 +132,7 @@ const SwapRequestView: React.FC = () => {
       (entry.meioPeriodo === selectedOperator || entry.fechamento === selectedOperator) &&
       isDateTodayOrFuture(entry.date)
     );
-  }, [targetScheduleData, selectedOperator]);
+  }, [targetScheduleData, selectedOperator, isDateTodayOrFuture]);
 
   const getScheduleByDate = (dateStr: string, useTargetSchedule: boolean = false): ScheduleEntry | undefined => {
     const scheduleData = useTargetSchedule ? targetScheduleData : currentScheduleData;

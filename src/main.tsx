@@ -9,7 +9,7 @@ const checkAuthAndRender = () => {
   const currentUser = localStorage.getItem('directAuth_currentUser');
   
   if (currentUser) {
-    console.log('✅ Usuário logado, renderizando React');
+  // ✅ Usuário logado, renderizando React
     const root = document.getElementById("root");
     if (root && !appRoot) {
       appRoot = createRoot(root);
@@ -18,7 +18,7 @@ const checkAuthAndRender = () => {
       appRoot.render(<App />);
     }
   } else {
-    console.log('❌ Usuário não logado, aguardando login...');
+  // ❌ Usuário não logado, aguardando login...
     // Não renderizar React até que usuário faça login
   }
 };
@@ -28,13 +28,13 @@ checkAuthAndRender();
 
 // Ouvir evento de login do sistema externo
 window.addEventListener('externalLogin', () => {
-  console.log('🔄 Evento externalLogin recebido, renderizando React');
+  // 🔄 Evento externalLogin recebido, renderizando React
   checkAuthAndRender();
 });
 
 // Ouvir evento de logout do sistema externo
 window.addEventListener('externalLogout', () => {
-  console.log('🔄 Evento externalLogout recebido, limpando React');
+  // 🔄 Evento externalLogout recebido, limpando React
   if (appRoot) {
     appRoot.unmount();
     appRoot = null;
