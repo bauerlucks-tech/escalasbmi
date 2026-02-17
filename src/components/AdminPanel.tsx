@@ -52,7 +52,10 @@ interface CSVValidationResult {
   errors: string[];
   warnings: string[];
   data: any[];
-  stats: {
+  stats?: {
+    totalEntries: number;
+    validEntries: number;
+    invalidEntries: number;
     totalRows: number;
     validRows: number;
     invalidRows: number;
@@ -126,7 +129,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     downloadCompleteBackup();
   };
 
-  const handleBackupRestore = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBackupRestore = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     
@@ -135,7 +138,11 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
       return;
     }
     
-    restoreCompleteBackup(file)
+    // Read and parse the file as CompleteBackup
+    const content = await file.text();
+    const backupData = JSON.parse(content);
+    
+    restoreCompleteBackup(backupData)
       .then(() => {
         // Refresh the page after successful restore
         setTimeout(() => {
