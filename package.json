@@ -13,7 +13,11 @@
     "test": "node scripts/test-routine.js",
     "test:quick": "node scripts/code-validator.js",
     "validate": "node scripts/code-validator.js",
-    "safe-edit": "node scripts/safe-edit.js"
+    "safe-edit": "node scripts/safe-edit.js",
+    "validate:full": "node scripts/full-system-validation.cjs",
+    "validate:components": "node scripts/component-integration-test.cjs",
+    "validate:all": "npm run validate:full && npm run validate:components && npm run lint && npm run build",
+    "fix:issues": "node scripts/auto-fix-issues.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

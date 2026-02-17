@@ -267,45 +267,8 @@ const ScheduleView: React.FC = () => {
     })
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  {/* Calendar View */}
-  <div className="glass-card-elevated overflow-hidden">
-    <div className="p-4 border-b border-border/50 flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handlePreviousMonth}
-          disabled={!hasPrevMonthData}
-          className={!hasPrevMonthData ? "opacity-50 cursor-not-allowed" : "hover:bg-muted"}
-        >
-          <span>◀️</span>
-        </Button>
-        <div className="flex items-center gap-2">
-          <span>📅</span>
-          {availableMonths.length > 1 ? (
-            <Select
-              value={`${getMonth(viewingMonth) + 1}/${getYear(viewingMonth)}`}
-              onValueChange={handleMonthChange}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {availableMonths.map(month => (
-                  <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
-                    {month.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <h2 className="text-lg font-semibold">
-              {format(viewingMonth, "MMMM yyyy", { locale: ptBR })}
-            </h2>
-          )}
-        </div>
-      </div>
-
+  return (
+    <div className="space-y-6">
       {/* Calendar View */}
       <div className="glass-card-elevated overflow-hidden">
         <div className="p-4 border-b border-border/50 flex items-center justify-between">
@@ -440,17 +403,22 @@ const ScheduleView: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-            {daysInMonth - mySchedule.length}
+
+      {/* Statistics Summary */}
+      {currentUser && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="glass-card p-4 text-center">
+            <div className="text-3xl font-bold text-primary">
+              {daysInMonth - mySchedule.length}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Dias de Folga</div>
-        </div>
           <div className="glass-card p-4 text-center">
             <div className="text-3xl font-bold text-meioPeriodo">
               {mySchedule.filter(s => s.meioPeriodo === currentUser.name).length}

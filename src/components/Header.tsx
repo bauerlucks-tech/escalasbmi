@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });
   }
 
-  if (currentUser && isAdmin(currentUser)) {
+  if (currentUser && isSuperAdmin(currentUser)) {
     tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
   }
 
