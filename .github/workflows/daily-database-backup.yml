@@ -53,6 +53,7 @@ jobs:
           BACKUP_FILENAME="backup_${TIMESTAMP}.sql"
           echo "BACKUP_FILENAME=${BACKUP_FILENAME}" >> $GITHUB_ENV
           echo "BACKUP_PATH=${{ env.BACKUP_DIR }}/${BACKUP_FILENAME}" >> $GITHUB_ENV
+          echo "Generated filename: ${BACKUP_FILENAME}"
 
       - name: Extract database connection info
         run: |

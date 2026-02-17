@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-17T05:31:34.384Z",
+  "timestamp": "2026-02-17T05:48:30.637Z",
   "phases": {
     "syntax": {
       "status": "passed",
@@ -30,11 +30,6 @@
           "type": "improvement",
           "line": 798,
           "message": "Função muito longa (781 linhas) - considerar refatoração"
-        },
-        {
-          "file": "src/contexts/AuthContext.tsx",
-          "type": "warning",
-          "message": "Encontrados 7 console.log - remover antes de produção"
         },
         {
           "file": "src/contexts/AuthContext.tsx",
@@ -72,17 +67,12 @@
         {
           "file": "src/lib/supabase.ts",
           "type": "warning",
-          "message": "Encontrados 18 console.log - remover antes de produção"
+          "message": "Encontrados 10 console.log - remover antes de produção"
         },
         {
           "file": "src/api/schedules.ts",
           "type": "warning",
           "message": "Encontrados 12 console.log - remover antes de produção"
-        },
-        {
-          "file": "src/main.tsx",
-          "type": "warning",
-          "message": "Encontrados 4 console.log - remover antes de produção"
         }
       ]
     },
@@ -124,7 +114,7 @@
   "summary": {
     "totalFiles": 10,
     "errors": 0,
-    "warnings": 12,
+    "warnings": 10,
     "passed": 7
   }
 }

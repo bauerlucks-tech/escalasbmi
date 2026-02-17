@@ -1,7 +1,7 @@
 // CONTEXT SUPABASE - SUBSTITUIR O SwapContext
 // Gerenciar estado do sistema com Supabase
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { SupabaseAPI, User, MonthSchedule, SwapRequestSupabase as SwapRequest, VacationRequest, AuditLog } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 
@@ -71,7 +71,103 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Inicialização
+  // Funções de Dados - movidas para antes do useEffect para corrigir escopo
+  const getUsers = async () => {
+    try {
+      const data = await SupabaseAPI.getUsers();
+      setUsers(data);
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      throw error;
+    }
+  };
+
+  const getSchedules = async () => {
+    try {
+      const data = await SupabaseAPI.getMonthSchedules();
+      setSchedules(data);
+    } catch (error) {
+      console.error('Erro ao buscar escalas:', error);
+      throw error;
+    }
+  };
+
+  const getSwapRequests = async () => {
+    try {
+      const data = await SupabaseAPI.getSwapRequests();
+      setSwapRequests(data);
+    } catch (error) {
+      console.error('Erro ao buscar trocas:', error);
+      throw error;
+    }
+  };
+
+  const getVacationRequests = async () => {
+    try {
+      const data = await SupabaseAPI.getVacationRequests();
+      setVacationRequests(data);
+    } catch (error) {
+      console.error('Erro ao buscar férias:', error);
+      throw error;
+    }
+  };
+
+  const getAuditLogs = async () => {
+    try {
+      const data = await SupabaseAPI.getAuditLogs(100);
+      setAuditLogs(data);
+    } catch (error) {
+      console.error('Erro ao buscar logs:', error);
+      throw error;
+    }
+  };
+
+  const createAuditLog = async (log: any) => {
+    try {
+      const newLog = await SupabaseAPI.createAuditLog(log);
+      setAuditLogs(prev => [newLog, ...prev]);
+    } catch (error) {
+      console.error('Erro ao criar log:', error);
+    }
+  };
+
+  const checkCurrentUser = async () => {
+    try {
+      const user = await SupabaseAPI.getCurrentUser();
+      if (user) {
+        // Buscar dados completos do usuário
+        const userData = await SupabaseAPI.getUserById(user.id);
+        setCurrentUser(userData || null);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar usuário atual:', error);
+    }
+  };
+
+  // Função initializeData sem dependências circulares
+  const initializeData = useCallback(async () => {
+    setLoading(true);
+    try {
+      await Promise.all([
+        SupabaseAPI.getUsers().then(data => setUsers(data)),
+        SupabaseAPI.getMonthSchedules().then(data => setSchedules(data)),
+        SupabaseAPI.getSwapRequests().then(data => setSwapRequests(data)),
+        SupabaseAPI.getVacationRequests().then(data => setVacationRequests(data)),
+        SupabaseAPI.getAuditLogs(100).then(data => setAuditLogs(data))
+      ]);
+    } catch (error) {
+      console.error('Erro ao inicializar dados:', error);
+      toast({
+        title: "Erro",
+        description: "Falha ao carregar dados iniciais",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  // Inicialização - agora com dependências corretas
   useEffect(() => {
     initializeData();
     
@@ -99,42 +195,7 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
       swapsSub.unsubscribe();
       vacationsSub.unsubscribe();
     };
-  }, []);
-
-  const initializeData = async () => {
-    setLoading(true);
-    try {
-      await Promise.all([
-        getUsers(),
-        getSchedules(),
-        getSwapRequests(),
-        getVacationRequests(),
-        getAuditLogs()
-      ]);
-    } catch (error) {
-      console.error('Erro ao inicializar dados:', error);
-      toast({
-        title: "Erro",
-        description: "Falha ao carregar dados iniciais",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkCurrentUser = async () => {
-    try {
-      const user = await SupabaseAPI.getCurrentUser();
-      if (user) {
-        // Buscar dados completos do usuário
-        const userData = await SupabaseAPI.getUserById(user.id);
-        setCurrentUser(userData || null);
-      }
-    } catch (error) {
-      console.error('Erro ao verificar usuário atual:', error);
-    }
-  };
+  }, [initializeData]);
 
   // Funções de Autenticação
   const signIn = async (email: string, password: string) => {
@@ -191,16 +252,6 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
   };
 
   // Funções de Usuários
-  const getUsers = async () => {
-    try {
-      const data = await SupabaseAPI.getUsers();
-      setUsers(data);
-    } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
-      throw error;
-    }
-  };
-
   const createUser = async (user: any) => {
     try {
       const newUser = await SupabaseAPI.createUser(user);
@@ -254,16 +305,6 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
   };
 
   // Funções de Escalas
-  const getSchedules = async () => {
-    try {
-      const data = await SupabaseAPI.getMonthSchedules();
-      setSchedules(data);
-    } catch (error) {
-      console.error('Erro ao buscar escalas:', error);
-      throw error;
-    }
-  };
-
   const getScheduleByMonth = async (month: number, year: number): Promise<MonthSchedule | null> => {
     try {
       return await SupabaseAPI.getScheduleByMonth(month, year);
@@ -361,16 +402,6 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
   };
 
   // Funções de Trocas
-  const getSwapRequests = async () => {
-    try {
-      const data = await SupabaseAPI.getSwapRequests();
-      setSwapRequests(data);
-    } catch (error) {
-      console.error('Erro ao buscar trocas:', error);
-      throw error;
-    }
-  };
-
   const createSwapRequest = async (request: any) => {
     try {
       const newRequest = await SupabaseAPI.createSwapRequest(request);
@@ -449,16 +480,6 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
   };
 
   // Funções de Férias
-  const getVacationRequests = async () => {
-    try {
-      const data = await SupabaseAPI.getVacationRequests();
-      setVacationRequests(data);
-    } catch (error) {
-      console.error('Erro ao buscar férias:', error);
-      throw error;
-    }
-  };
-
   const createVacationRequest = async (request: any) => {
     try {
       const newRequest = await SupabaseAPI.createVacationRequest(request);
@@ -507,26 +528,6 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
         description: "Falha ao atualizar solicitação",
         variant: "destructive"
       });
-      throw error;
-    }
-  };
-
-  // Funções de Auditoria
-  const createAuditLog = async (log: any) => {
-    try {
-      const newLog = await SupabaseAPI.createAuditLog(log);
-      setAuditLogs(prev => [newLog, ...prev]);
-    } catch (error) {
-      console.error('Erro ao criar log:', error);
-    }
-  };
-
-  const getAuditLogs = async () => {
-    try {
-      const data = await SupabaseAPI.getAuditLogs(100);
-      setAuditLogs(data);
-    } catch (error) {
-      console.error('Erro ao buscar logs:', error);
       throw error;
     }
   };
