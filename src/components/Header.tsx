@@ -130,13 +130,13 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                 </Button>
               } />
               
-              {/* Botão secreto para Lucas acessar Super Admin */}
-              {currentUser && currentUser.name === 'LUCAS' && !isHiddenSuperAdmin && (
+              {/* Botão secreto para usuários autorizados acessar Super Admin */}
+              {currentUser && (import.meta.env.VITE_SUPER_ADMIN_ALLOWED_USERS || 'LUCAS').split(',').map(s => s.trim().toUpperCase()).includes(currentUser.name.toUpperCase()) && !isHiddenSuperAdmin && (
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => {
-                    if (window.confirm('Deseja fazer logout como Lucas e acessar como Super Admin?')) {
+                    if (window.confirm('Deseja fazer logout como ' + currentUser.name + ' e acessar como Super Admin?')) {
                       switchToSuperAdmin();
                     }
                   }}

@@ -336,24 +336,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Funções para acesso secreto ao Super Admin
   const switchToSuperAdmin = () => {
-    if (currentUser && currentUser.name === 'LUCAS') {
-      // Fazer logout do usuário Lucas primeiro
-      logLogout(currentUser.id, currentUser.name);
-      
-      // Limpar notificações do Lucas
-      localStorage.removeItem(`notifications_read_${currentUser.id}`);
-      
+    // Consider using a more secure mechanism (e.g., role-based check, 
+    // environment variable, or database flag) rather than hardcoded username
+    const ALLOWED_USERS = (import.meta.env.VITE_SUPER_ADMIN_ALLOWED_USERS || 'LUCAS').split(',').map(s => s.trim().toUpperCase());
+    
+    if (currentUser && ALLOWED_USERS.includes(currentUser.name.toUpperCase())) {
       // Encontrar o usuário Super Admin escondido
       const hiddenSuperAdmin = users.find(u => u.name === 'SUPER_ADMIN_HIDDEN');
       if (hiddenSuperAdmin) {
+        // Fazer logout do usuário original primeiro
+        logLogout(currentUser.id, currentUser.name);
+        
+        // Limpar notificações do usuário original
+        localStorage.removeItem(`notifications_read_${currentUser.id}`);
+        
         // Salvar usuário original para poder voltar depois
         setOriginalUser(currentUser);
         // Trocar para Super Admin
         setCurrentUser(hiddenSuperAdmin);
         setIsHiddenSuperAdmin(true);
         
+        // Log de auditoria with escalation context
+        logUserManagement(currentUser.id, currentUser.name, 'USER_UPDATE', 
+          `User ${currentUser.name} switched to hidden super admin mode`);
         // Log de auditoria - login do Super Admin
         logAdminLogin(hiddenSuperAdmin.id, hiddenSuperAdmin.name);
+      } else {
+        console.warn('Hidden super admin user not found');
       }
     }
   };
@@ -367,6 +376,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       // Voltar para usuário original
       setCurrentUser(originalUser);
+      
+      // Log de auditoria - login do usuário restaurado
+      logLogin(originalUser.id, originalUser.name, true, 'Restored from hidden admin session');
+      
       setOriginalUser(null);
       setIsHiddenSuperAdmin(false);
     }
