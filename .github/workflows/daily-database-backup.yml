@@ -17,15 +17,15 @@ on:
 permissions:
   contents: read
 
-env:
-  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-  BACKUP_BUCKET: 'Backup_DADOS'
-
 jobs:
   backup-database:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      BACKUP_BUCKET: 'Backup_DADOS'
     
     steps:
       - name: Checkout repository
@@ -58,11 +58,9 @@ jobs:
           echo "Generated filename: ${BACKUP_FILENAME}"
 
       - name: Extract database connection info
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         run: |
           # Extrair informações de conexão da URL do Supabase
-          PROJECT_REF=$(echo "${{ env.SUPABASE_URL }}" | sed -n 's|https://\(.*\)\.supabase\.co.*|\1|p')
+          PROJECT_REF=$(echo "${{ secrets.SUPABASE_URL }}" | sed -n 's|https://\(.*\)\.supabase\.co.*|\1|p')
           echo "PROJECT_REF=${PROJECT_REF}" >> $GITHUB_ENV
           echo "Database project reference: ${PROJECT_REF}"
 
@@ -71,16 +69,25 @@ jobs:
           PROJECT_REF: ${{ env.PROJECT_REF }}
           BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
           BACKUP_PATH: ${{ env.BACKUP_PATH }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           echo "🔄 Iniciando backup do banco de dados..."
           echo "Projeto: ${{ env.PROJECT_REF }}"
           echo "Arquivo: ${{ env.BACKUP_FILENAME }}"
           
-          # Criar backup usando pg_dump via Supabase CLI
-          supabase db dump --db-url="${{ env.SUPABASE_URL }}" --file="${{ env.BACKUP_PATH }}" --data-only --format=custom || {
-            echo "❌ Falha no backup com Supabase CLI, tentando método alternativo..."
+          # Criar backup usando pg_dump com a URL do Supabase
+          PGPASSWORD="${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" pg_dump \
+            --host="${{ secrets.SUPABASE_URL }}" \
+            --port=5432 \
+            --username=postgres \
+            --dbname=postgres \
+            --verbose \
+            --clean \
+            --if-exists \
+            --no-owner \
+            --no-privileges \
+            --format=custom \
+            --file="${{ env.BACKUP_PATH }}" || {
+            echo "❌ Falha no backup com pg_dump, tentando método alternativo..."
             
             # Método alternativo: usar REST API para exportar dados
             node << 'EOF'
@@ -89,8 +96,8 @@ jobs:
           const path = require('path');
 
           const supabase = createClient(
-            process.env.SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
+            '${{ secrets.SUPABASE_URL }}',
+            '${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}'
           );
 
           async function createBackup() {
@@ -170,8 +177,6 @@ jobs:
         env:
           BACKUP_PATH: ${{ env.BACKUP_PATH }}
           BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           echo "🔄 Fazendo upload para o bucket Backup_DADOS..."
           
@@ -180,8 +185,8 @@ jobs:
           const fs = require('fs');
 
           const supabase = createClient(
-            process.env.SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
+            '${{ secrets.SUPABASE_URL }}',
+            '${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}'
           );
 
           async function uploadBackup() {
@@ -252,16 +257,14 @@ jobs:
       - name: Upload metadata to storage
         env:
           BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           node << 'EOF'
           const { createClient } = require('@supabase/supabase-js');
           const fs = require('fs');
 
           const supabase = createClient(
-            process.env.SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
+            '${{ secrets.SUPABASE_URL }}',
+            '${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}'
           );
 
           async function uploadMetadata() {
@@ -291,9 +294,6 @@ jobs:
           EOF
 
       - name: Clean old backups (keep last 30 days)
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           echo "🧹 Limpando backups antigos (mantendo últimos 30 dias)..."
           
@@ -301,8 +301,8 @@ jobs:
           const { createClient } = require('@supabase/supabase-js');
 
           const supabase = createClient(
-            process.env.SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
+            '${{ secrets.SUPABASE_URL }}',
+            '${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}'
           );
 
           async function cleanOldBackups() {

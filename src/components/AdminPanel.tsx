@@ -738,17 +738,24 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="swaps" className="space-y-4">
-        <TabsList className={`grid ${isSuperAdmin(currentUser) ? 'grid-cols-6' : 'grid-cols-5'} w-full`}>
-          <TabsTrigger value="swaps" className="flex items-center gap-2">
-            <ArrowLeftRight className="w-4 h-4" />
-            Trocas
-            {pendingApproval.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-warning text-warning-foreground">
-                {pendingApproval.length}
-              </span>
-            )}
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className={`grid ${isSuperAdmin(currentUser) ? 'grid-cols-6' : 'grid-cols-4'} w-full`}>
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            Visão Geral
           </TabsTrigger>
+          
+          {isSuperAdmin(currentUser) && (
+            <TabsTrigger value="swaps" className="flex items-center gap-2">
+              <ArrowLeftRight className="w-4 h-4" />
+              Trocas
+              {pendingApproval.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold bg-warning text-primary flex items-center justify-center">
+                  {pendingApproval.length}
+                </span>
+              )}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="schedule" className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             Escala
@@ -770,6 +777,85 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             </TabsTrigger>
           )}
         </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-4">
+          <div className="glass-card overflow-hidden">
+            <div className="p-4 border-b border-border/50">
+              <h3 className="font-semibold flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-primary" />
+                Visão Geral do Sistema
+              </h3>
+            </div>
+            
+            <div className="p-4 space-y-4">
+              {/* Status Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="glass-card p-4 text-center">
+                  <div className="text-2xl font-bold text-primary">{activeUsers.length}</div>
+                  <div className="text-sm text-muted-foreground">Usuários Ativos</div>
+                </div>
+                <div className="glass-card p-4 text-center">
+                  <div className="text-2xl font-bold text-success">{approvedSwaps.length}</div>
+                  <div className="text-sm text-muted-foreground">Trocas Aprovadas</div>
+                </div>
+                <div className="glass-card p-4 text-center">
+                  <div className="text-2xl font-bold text-warning">{currentSchedules.length}</div>
+                  <div className="text-sm text-muted-foreground">Meses de Escala</div>
+                </div>
+              </div>
+              
+              {/* Recent Activity */}
+              <div className="mt-6">
+                <h4 className="font-medium mb-3">Atividade Recente</h4>
+                <div className="space-y-2">
+                  {approvedSwaps.slice(0, 3).map(swap => (
+                    <div key={swap.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="w-4 h-4 text-success" />
+                        <div>
+                          <div className="text-sm font-medium">{swap.requesterName} ⇄ {swap.targetName}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(swap.adminApprovedAt || swap.createdAt).toLocaleDateString('pt-BR')}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-xs text-success">Aprovada</span>
+                    </div>
+                  ))}
+                  {approvedSwaps.length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      Nenhuma atividade recente
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* System Info */}
+              <div className="mt-6 p-4 bg-muted/30 rounded">
+                <h4 className="font-medium mb-2">Informações do Sistema</h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Versão:</span>
+                    <span className="ml-2 font-mono">2.0</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Ambiente:</span>
+                    <span className="ml-2">Desenvolvimento</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Backup:</span>
+                    <span className="ml-2 text-success">Automático</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Status:</span>
+                    <span className="ml-2 text-success">Operacional</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
 
         {/* Swaps Tab */}
         <TabsContent value="swaps" className="space-y-4">
