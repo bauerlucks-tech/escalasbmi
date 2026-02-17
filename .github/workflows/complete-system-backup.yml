@@ -1,4 +1,5 @@
 name: Complete System Backup
+
 on:
   push:
     branches: [ main ]
@@ -47,9 +48,14 @@ jobs:
         echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
 
     - name: Create backup directory
+      env:
+        BACKUP_DIR: ./backups
       run: mkdir -p ${{ env.BACKUP_DIR }}
 
     - name: Backup Source Code
+      env:
+        BACKUP_DIR: ./backups
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
       run: |
         echo "📦 Backup do código fonte..."
         tar -czf "${{ env.BACKUP_DIR }}/source-code-${{ env.BACKUP_TIMESTAMP }}.tar.gz" \

@@ -51,6 +51,8 @@ jobs:
           echo "Generated filename: ${BACKUP_FILENAME}"
 
       - name: Extract database connection info
+        env:
+          PROJECT_REF: ${{ env.PROJECT_REF }}
         run: |
           # Extrair informações de conexão da URL do Supabase
           PROJECT_REF=$(echo "${{ secrets.SUPABASE_URL }}" | sed -n 's|https://\(.*\)\.supabase\.co.*|\1|p')
