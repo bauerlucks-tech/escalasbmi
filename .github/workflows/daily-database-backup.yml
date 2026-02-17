@@ -22,11 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      BACKUP_BUCKET: 'Backup_DADOS'
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -48,13 +43,11 @@ jobs:
           echo "BACKUP_DIR=./backups" >> $GITHUB_ENV
 
       - name: Generate backup filename
-        env:
-          BACKUP_DIR: ${{ env.BACKUP_DIR }}
         run: |
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           BACKUP_FILENAME="backup_${TIMESTAMP}.sql"
           echo "BACKUP_FILENAME=${BACKUP_FILENAME}" >> $GITHUB_ENV
-          echo "BACKUP_PATH=${{ env.BACKUP_DIR }}/${BACKUP_FILENAME}" >> $GITHUB_ENV
+          echo "BACKUP_PATH=./backups/${BACKUP_FILENAME}" >> $GITHUB_ENV
           echo "Generated filename: ${BACKUP_FILENAME}"
 
       - name: Extract database connection info
@@ -66,12 +59,10 @@ jobs:
 
       - name: Create database backup
         env:
-          PROJECT_REF: ${{ env.PROJECT_REF }}
           BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
           BACKUP_PATH: ${{ env.BACKUP_PATH }}
         run: |
           echo "🔄 Iniciando backup do banco de dados..."
-          echo "Projeto: ${{ env.PROJECT_REF }}"
           echo "Arquivo: ${{ env.BACKUP_FILENAME }}"
           
           # Criar backup usando pg_dump com a URL do Supabase
@@ -198,12 +189,11 @@ jobs:
 
               console.log(`📤 Fazendo upload: ${backupFilename}`);
 
-              // Upload para o bucket Backup_DADOS
               const { data, error } = await supabase.storage
                 .from('Backup_DADOS')
                 .upload(backupFilename, backupFile, {
-                  contentType: backupFilename.endsWith('.json') ? 'application/json' : 'application/octet-stream',
-                  upsert: false
+                  contentType: 'application/octet-stream',
+                  upsert: true
                 });
 
               if (error) {
@@ -212,20 +202,21 @@ jobs:
               }
 
               console.log('✅ Upload realizado com sucesso!');
-              console.log('📋 Detalhes:', data);
-
-              // Gerar URL pública do backup
+              
+              // Gerar URL pública
               const { data: { publicUrl } } = supabase.storage
                 .from('Backup_DADOS')
                 .getPublicUrl(backupFilename);
-
-              console.log(`🔗 URL do backup: ${publicUrl}`);
               
-              // Salvar URL no environment
+              console.log(`🔗 URL do backup: ${publicUrl}`);
+              console.log(`BACKUP_URL=${publicUrl}`);
+              
+              // Adicionar ao GITHUB_ENV
               fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_URL=${publicUrl}\n`);
-
+              
+              return publicUrl;
             } catch (error) {
-              console.error('❌ Erro crítico no upload:', error);
+              console.error('❌ Erro no upload:', error);
               throw error;
             }
           }
@@ -238,7 +229,7 @@ jobs:
           BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
           BACKUP_SIZE: ${{ env.BACKUP_SIZE }}
           PROJECT_REF: ${{ env.PROJECT_REF }}
-          BACKUP_BUCKET: ${{ env.BACKUP_BUCKET }}
+          BACKUP_BUCKET: 'Backup_DADOS'
           BACKUP_URL: ${{ env.BACKUP_URL }}
         run: |
           cat << 'EOF' > backup_metadata.json
@@ -280,13 +271,14 @@ jobs:
                 });
 
               if (error) {
-                console.error('❌ Erro no upload de metadados:', error);
+                console.error('❌ Erro no upload dos metadados:', error);
                 throw error;
               }
 
               console.log('✅ Metadados salvos com sucesso!');
             } catch (error) {
-              console.error('❌ Erro nos metadados:', error);
+              console.error('❌ Erro no upload dos metadados:', error);
+              throw error;
             }
           }
 
@@ -368,13 +360,13 @@ jobs:
           PROJECT_REF: ${{ env.PROJECT_REF }}
           BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
           BACKUP_SIZE: ${{ env.BACKUP_SIZE }}
-          BACKUP_BUCKET: ${{ env.BACKUP_BUCKET }}
+          BACKUP_BUCKET: 'Backup_DADOS'
           BACKUP_URL: ${{ env.BACKUP_URL }}
         run: |
           echo "📊 Gerando relatório do backup..."
           
           cat << 'EOF' > backup_report.md
-          # Relatório de Backup Diário - $(date +"%d/%m/%Y")
+          # 🗄️ Relatório de Backup Diário
           
           ## 📋 Informações
           - **Data/Hora**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
@@ -385,9 +377,8 @@ jobs:
           - **Workflow**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           
           ## ✅ Status
-          - **Backup**: Concluído com sucesso
-          - **Upload**: Realizado para Supabase Storage
-          - **Limpeza**: Backups antigos removidos
+          - **Backup**: Criado com sucesso
+          - **Upload**: Realizado com sucesso
           - **Metadados**: Salvos com sucesso
           
           ## 🔗 Links
@@ -395,7 +386,7 @@ jobs:
           - **GitHub Actions**: ${{ github.server_url }}/${{ github.repository }}/actions
           
           ---
-          *Gerado automaticamente pelo GitHub Actions*
+          *Relatório gerado automaticamente pelo GitHub Actions*
           EOF
 
       - name: Upload backup artifacts
