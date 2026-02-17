@@ -47,7 +47,7 @@ class SystemAuthIntegration {
                   'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                  email: username.toLowerCase() + '@bmi.local',
+                  email: username,
                   password: password
                 })
               });
