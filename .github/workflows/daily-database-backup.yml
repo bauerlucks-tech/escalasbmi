@@ -48,6 +48,8 @@ jobs:
           echo "BACKUP_DIR=./backups" >> $GITHUB_ENV
 
       - name: Generate backup filename
+        env:
+          BACKUP_DIR: ${{ env.BACKUP_DIR }}
         run: |
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           BACKUP_FILENAME="backup_${TIMESTAMP}.sql"
@@ -56,6 +58,8 @@ jobs:
           echo "Generated filename: ${BACKUP_FILENAME}"
 
       - name: Extract database connection info
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         run: |
           # Extrair informações de conexão da URL do Supabase
           PROJECT_REF=$(echo "${{ env.SUPABASE_URL }}" | sed -n 's|https://\(.*\)\.supabase\.co.*|\1|p')
@@ -63,6 +67,12 @@ jobs:
           echo "Database project reference: ${PROJECT_REF}"
 
       - name: Create database backup
+        env:
+          PROJECT_REF: ${{ env.PROJECT_REF }}
+          BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
+          BACKUP_PATH: ${{ env.BACKUP_PATH }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           echo "🔄 Iniciando backup do banco de dados..."
           echo "Projeto: ${{ env.PROJECT_REF }}"
@@ -141,6 +151,9 @@ jobs:
           }
 
       - name: Verify backup file
+        env:
+          BACKUP_PATH: ${{ env.BACKUP_PATH }}
+          BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
         run: |
           if [ -f "${{ env.BACKUP_PATH }}" ]; then
             FILE_SIZE=$(stat -c%s "${{ env.BACKUP_PATH }}")
@@ -154,6 +167,11 @@ jobs:
           fi
 
       - name: Upload to Supabase Storage
+        env:
+          BACKUP_PATH: ${{ env.BACKUP_PATH }}
+          BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           echo "🔄 Fazendo upload para o bucket Backup_DADOS..."
           
@@ -211,8 +229,14 @@ jobs:
           EOF
 
       - name: Create backup metadata
+        env:
+          BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
+          BACKUP_SIZE: ${{ env.BACKUP_SIZE }}
+          PROJECT_REF: ${{ env.PROJECT_REF }}
+          BACKUP_BUCKET: ${{ env.BACKUP_BUCKET }}
+          BACKUP_URL: ${{ env.BACKUP_URL }}
         run: |
-          cat << EOF > backup_metadata.json
+          cat << 'EOF' > backup_metadata.json
           {
             "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
             "filename": "${{ env.BACKUP_FILENAME }}",
@@ -226,6 +250,10 @@ jobs:
           EOF
 
       - name: Upload metadata to storage
+        env:
+          BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           node << 'EOF'
           const { createClient } = require('@supabase/supabase-js');
@@ -263,6 +291,9 @@ jobs:
           EOF
 
       - name: Clean old backups (keep last 30 days)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           echo "🧹 Limpando backups antigos (mantendo últimos 30 dias)..."
           
@@ -333,10 +364,16 @@ jobs:
           EOF
 
       - name: Generate backup report
+        env:
+          PROJECT_REF: ${{ env.PROJECT_REF }}
+          BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
+          BACKUP_SIZE: ${{ env.BACKUP_SIZE }}
+          BACKUP_BUCKET: ${{ env.BACKUP_BUCKET }}
+          BACKUP_URL: ${{ env.BACKUP_URL }}
         run: |
           echo "📊 Gerando relatório do backup..."
           
-          cat << EOF > backup_report.md
+          cat << 'EOF' > backup_report.md
           # Relatório de Backup Diário - $(date +"%d/%m/%Y")
           
           ## 📋 Informações
@@ -364,6 +401,8 @@ jobs:
       - name: Upload backup artifacts
         uses: actions/upload-artifact@v4
         if: always()
+        env:
+          BACKUP_PATH: ${{ env.BACKUP_PATH }}
         with:
           name: backup-${{ github.run_number }}
           path: |
@@ -380,6 +419,10 @@ jobs:
           
       - name: Success notification
         if: success()
+        env:
+          BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
+          BACKUP_SIZE: ${{ env.BACKUP_SIZE }}
+          BACKUP_URL: ${{ env.BACKUP_URL }}
         run: |
           echo "🎉 Backup diário concluído com sucesso!"
           echo "📁 Arquivo: ${{ env.BACKUP_FILENAME }}"
