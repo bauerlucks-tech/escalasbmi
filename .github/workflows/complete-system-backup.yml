@@ -104,6 +104,9 @@ jobs:
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
+      env:
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+        BACKUP_DIR: ${{ env.BACKUP_DIR }}
       with:
         name: complete-backup-${{ env.BACKUP_TIMESTAMP }}
         path: |
@@ -112,6 +115,10 @@ jobs:
         retention-days: 30
 
     - name: Success notification
+      env:
+        SOURCE_SIZE: ${{ env.SOURCE_SIZE }}
+        BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
+        COMMIT_HASH: ${{ env.COMMIT_HASH }}
       run: |
         echo "🎉 Backup completo realizado com sucesso!"
         echo "📦 Código fonte: ${{ env.SOURCE_SIZE }}"
