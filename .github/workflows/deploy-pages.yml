@@ -35,7 +35,10 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: './dist'
+        path: |
+          ./dist
+          ./404.html
+          ./redirect.html
 
   deploy:
     environment:
