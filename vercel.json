@@ -52,6 +52,22 @@
       "dest": "/$1"
     },
     {
+      "src": "/(.*\\.svg)",
+      "headers": {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.png)",
+      "headers": {
+        "Content-Type": "image/png",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/$1"
+    },
+    {
       "src": "/env.js",
       "headers": {
         "Content-Type": "application/javascript",
@@ -66,6 +82,62 @@
         "Cache-Control": "no-cache"
       },
       "dest": "/integrar-login-sistema.js"
+    },
+    {
+      "src": "/corrigir-logout-integrar.js",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Cache-Control": "no-cache"
+      },
+      "dest": "/corrigir-logout-integrar.js"
+    },
+    {
+      "src": "/login-direto.js",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Cache-Control": "no-cache"
+      },
+      "dest": "/login-direto.js"
+    },
+    {
+      "src": "/robots.txt",
+      "headers": {
+        "Content-Type": "text/plain",
+        "Cache-Control": "public, max-age=86400"
+      },
+      "dest": "/robots.txt"
+    },
+    {
+      "src": "/placeholder.svg",
+      "headers": {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/placeholder.svg"
+    },
+    {
+      "src": "/helicopter-icon.ico",
+      "headers": {
+        "Content-Type": "image/x-icon",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/helicopter-icon.ico"
+    },
+    {
+      "src": "/helicopter-icon.svg",
+      "headers": {
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/helicopter-icon.svg"
+    },
+    {
+      "src": "/helicopter-icon.png",
+      "headers": {
+        "Content-Type": "image/png",
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/helicopter-icon.png"
     },
     {
       "src": "/(.*)",
