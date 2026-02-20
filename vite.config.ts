@@ -14,7 +14,9 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  base: mode === 'production' ? './' : '/',
   build: {
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -22,7 +24,10 @@ export default defineConfig(({ mode }) => ({
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs'],
           charts: ['recharts'],
           utils: ['date-fns', 'lucide-react']
-        }
+        },
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js'
       }
     }
   }
