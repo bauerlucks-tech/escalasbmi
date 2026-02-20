@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-17T10:12:37.878Z",
+  "timestamp": "2026-02-20T09:00:35.745Z",
   "phases": {
     "syntax": {
       "status": "passed",
@@ -7,12 +7,12 @@
         {
           "file": "src/components/AdminPanel.tsx",
           "type": "warning",
-          "message": "Arquivo muito grande (83KB). Considere dividir em componentes menores."
+          "message": "Arquivo muito grande (87KB). Considere dividir em componentes menores."
         },
         {
           "file": "src/components/AdminPanel.tsx",
           "type": "warning",
-          "message": "Arquivo muito extenso (1879 linhas). Considere refatorar."
+          "message": "Arquivo muito extenso (1972 linhas). Considere refatorar."
         },
         {
           "file": "src/components/AdminPanel.tsx",
@@ -33,9 +33,14 @@
         },
         {
           "file": "src/contexts/AuthContext.tsx",
+          "type": "warning",
+          "message": "Encontrados 2 console.log - remover antes de produção"
+        },
+        {
+          "file": "src/contexts/AuthContext.tsx",
           "type": "improvement",
-          "line": 413,
-          "message": "Função muito longa (364 linhas) - considerar refatoração"
+          "line": 426,
+          "message": "Função muito longa (377 linhas) - considerar refatoração"
         },
         {
           "file": "src/contexts/SupabaseContext.tsx",
@@ -114,7 +119,7 @@
   "summary": {
     "totalFiles": 10,
     "errors": 0,
-    "warnings": 10,
+    "warnings": 11,
     "passed": 7
   }
 }
