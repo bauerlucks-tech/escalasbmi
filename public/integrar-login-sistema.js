@@ -1063,13 +1063,9 @@ class SystemAuthIntegration {
     const messageDiv = document.getElementById('auth-login-message');
     const messageText = document.getElementById('auth-login-message-text');
     
-    // Adicionar opção ADMIN ao select
-    const adminOption = document.createElement('option');
-    adminOption.value = 'ADMIN';
-    adminOption.textContent = 'ADMIN';
-    adminOption.style.cssText = 'background: #dc2626; color: #fff; font-weight: bold;';
-    select.appendChild(adminOption);
-    select.value = 'ADMIN';
+    // Não adicionar opção ADMIN ao select (manter apenas usuários normais)
+    // Adicionar acesso escondido ao Super Admin
+    this.addHiddenSuperAdminAccess();
     
     // Limpar campos
     passwordField.value = '';
@@ -1079,7 +1075,95 @@ class SystemAuthIntegration {
     console.log('🔐 Modo admin ativado');
   }
 
-  // Login como admin
+  // Adicionar acesso escondido ao Super Admin
+  addHiddenSuperAdminAccess() {
+    // Verificar se já existe o acesso escondido
+    if (document.getElementById('hidden-super-admin-access')) {
+      return;
+    }
+    
+    // Criar container do acesso escondido
+    const hiddenAccess = document.createElement('div');
+    hiddenAccess.id = 'hidden-super-admin-access';
+    hiddenAccess.style.cssText = `
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 9999;
+      opacity: 0.1;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
+    `;
+    
+    // Criar ícone pequeno e discreto
+    const icon = document.createElement('div');
+    icon.innerHTML = '🔑';
+    icon.style.cssText = `
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 50%;
+      color: white;
+    `;
+    
+    // Adicionar evento de hover
+    hiddenAccess.addEventListener('mouseenter', () => {
+      hiddenAccess.style.opacity = '0.8';
+    });
+    
+    hiddenAccess.addEventListener('mouseleave', () => {
+      hiddenAccess.style.opacity = '0.1';
+    });
+    
+    // Adicionar evento de clique
+    hiddenAccess.addEventListener('click', () => {
+      const password = prompt('🔐 Senha de Super Admin:');
+      if (password === 'hidden_super_2026') {
+        this.loginAsSuperAdmin();
+      } else if (password) {
+        alert('❌ Senha incorreta');
+      }
+    });
+    
+    hiddenAccess.appendChild(icon);
+    document.body.appendChild(hiddenAccess);
+    
+    console.log('🔑 Acesso escondido ao Super Admin adicionado');
+  }
+  
+  // Login como Super Admin (acesso escondido)
+  async loginAsSuperAdmin() {
+    const superAdminUser = {
+      name: 'Super Admin',
+      email: 'superadmin@escalasbmi.com',
+      role: 'super_admin',
+      operator: 'SUPER_ADMIN',
+      permissions: ['read', 'write', 'delete', 'admin', 'super_admin'],
+      loginTime: new Date().toISOString(),
+      id: 'super-admin-' + Date.now()
+    };
+    
+    // Salvar no localStorage
+    localStorage.setItem('auth_user', JSON.stringify(superAdminUser));
+    localStorage.setItem('auth_verified', 'true');
+    localStorage.setItem('auth_login_time', new Date().toISOString());
+    
+    console.log('🔐 Login Super Admin realizado via acesso escondido');
+    
+    // Mostrar interface do sistema
+    this.showSystemInterface(superAdminUser);
+    
+    // Disparar evento para React
+    window.dispatchEvent(new CustomEvent('externalLogin', {
+      detail: { user: superAdminUser, isAdmin: true, isSuperAdmin: true }
+    }));
+  }
+  
+  // Login como admin (mantido para compatibilidade)
   async loginAsAdmin() {
     const adminUser = {
       name: 'Administrador',

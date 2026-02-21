@@ -119,8 +119,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             <div className="hidden lg:block mr-2">
               <PartnerLogos compact />
             </div>
-            
-            {/* User Actions */}
+                        {/* User Actions */}
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <NotificationCenter />
@@ -129,23 +128,6 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                   <Settings className="w-5 h-5" />
                 </Button>
               } />
-              
-              {/* Botão secreto para usuários autorizados acessar Super Admin */}
-              {currentUser && (import.meta.env.VITE_SUPER_ADMIN_ALLOWED_USERS || 'LUCAS').split(',').map(s => s.trim().toUpperCase()).includes(currentUser.name.toUpperCase()) && !isHiddenSuperAdmin && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    if (window.confirm('Deseja fazer logout como ' + currentUser.name + ' e acessar como Super Admin?')) {
-                      switchToSuperAdmin();
-                    }
-                  }}
-                  className="text-muted-foreground hover:text-primary opacity-50"
-                  title="Acesso Super Admin"
-                >
-                  <Shield className="w-4 h-4" />
-                </Button>
-              )}
               
               <Button
                 variant="ghost"
