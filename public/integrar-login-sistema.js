@@ -1082,10 +1082,59 @@ class SystemAuthIntegration {
       return;
     }
     
-    // Procurar pelo elemento de versão (texto "2.0")
-    const versionElement = Array.from(document.querySelectorAll('*')).find(el => 
-      el.textContent && el.textContent.includes('2.0')
-    );
+    // Múltiplas tentativas de encontrar o elemento de versão
+    const versionSelectors = [
+      '2.0',
+      'v2.0',
+      'versão 2.0',
+      'version',
+      'Versão',
+      'ESCALAS BMI',
+      'sistema',
+      'Sistema'
+    ];
+    
+    let versionElement = null;
+    
+    // Tentar encontrar por texto exato
+    for (const selector of versionSelectors) {
+      versionElement = Array.from(document.querySelectorAll('*')).find(el => 
+        el.textContent && el.textContent.includes(selector)
+      );
+      if (versionElement) {
+        console.log(`🔑 Elemento encontrado com seletor: ${selector}`);
+        break;
+      }
+    }
+    
+    // Se não encontrar, tentar por atributos específicos
+    if (!versionElement) {
+      // Procurar por elementos que possam ser o rodapé/cabeçalho
+      const possibleElements = [
+        'footer',
+        'header', 
+        '.version',
+        '.footer',
+        '[class*="version"]',
+        '[class*="footer"]',
+        '[id*="version"]'
+      ];
+      
+      for (const selector of possibleElements) {
+        const element = document.querySelector(selector);
+        if (element) {
+          versionElement = element;
+          console.log(`🔑 Elemento encontrado por fallback: ${selector}`);
+          break;
+        }
+      }
+    }
+    
+    // Último recurso: usar body como fallback
+    if (!versionElement) {
+      console.log('🔑 Usando body como fallback para posicionamento');
+      versionElement = document.body;
+    }
     
     if (!versionElement) {
       console.log('🔑 Elemento de versão não encontrado, tentando novamente em 2s...');
@@ -1104,6 +1153,7 @@ class SystemAuthIntegration {
       height: 20px;
       cursor: pointer;
       z-index: 9999;
+      background: rgba(255, 0, 0, 0.01); // Debug: quase invisível
     `;
     
     // Adicionar evento de clique
@@ -1118,9 +1168,19 @@ class SystemAuthIntegration {
       }
     });
     
+    // Adicionar evento de hover para debug
+    hiddenAccess.addEventListener('mouseenter', () => {
+      hiddenAccess.style.background = 'rgba(255, 0, 0, 0.1)'; // Visível para debug
+    });
+    
+    hiddenAccess.addEventListener('mouseleave', () => {
+      hiddenAccess.style.background = 'rgba(255, 0, 0, 0.01)'; // Invisível normal
+    });
+    
     document.body.appendChild(hiddenAccess);
     
-    console.log('🔑 Acesso Super Admin invisível adicionado (clique no texto "2.0")');
+    console.log('🔑 Acesso Super Admin invisível adicionado');
+    console.log('🔑 Elemento usado para posicionamento:', versionElement.tagName, versionElement.textContent?.substring(0, 50));
   }
   
   // Login como Super Admin (acesso escondido)
