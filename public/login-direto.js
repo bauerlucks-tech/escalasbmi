@@ -11,15 +11,6 @@ class DirectAuthManager {
       console.warn('⚠️ SUPABASE_SERVICE_KEY not configured. Authentication will fail.');
     }
     this.currentUser = null;
-    
-    // Estado para Easter Egg
-    this.logoClickCount = 0;
-    this.lastLogoClick = 0;
-    this.easterEggActivated = false;
-    this.superAdminAttempts = 0;
-    this.CLICK_TIMEOUT = 3000; // 3 segundos
-    this.REQUIRED_CLICKS = 1; // Mudado para 1 clique
-    this.MAX_SUPER_ADMIN_ATTEMPTS = 3;
   }
 
   // Login direto com Service Key (contorna RLS)
@@ -96,7 +87,6 @@ class DirectAuthManager {
     
     try {
       const userName = this.currentUser?.name;
-      const isSuperAdmin = this.isSuperAdminMode();
       
       // Criar log de logout
       if (userName) {
@@ -109,7 +99,7 @@ class DirectAuthManager {
           },
           body: JSON.stringify({
             user_name: userName,
-            action: isSuperAdmin ? 'SUPER_ADMIN_LOGOUT' : 'LOGOUT',
+            action: 'LOGOUT',
             details: 'Logout realizado - ' + new Date().toISOString(),
             created_at: new Date().toISOString()
           })
@@ -119,19 +109,11 @@ class DirectAuthManager {
       // Limpar dados de autenticação
       this.currentUser = null;
       localStorage.removeItem('directAuth_currentUser');
-      localStorage.removeItem('directAuth_superAdminMode');
       localStorage.removeItem('reactCurrentUser');
       localStorage.removeItem('escala_currentUser');
       localStorage.removeItem('currentUser');
-      
-      // Limpar cache de escalas para forçar recarregamento
-      localStorage.removeItem('escala_scheduleStorage');
-      localStorage.removeItem('escala_scheduleData');
       localStorage.removeItem('escala_currentSchedules');
       localStorage.removeItem('escala_archivedSchedules');
-      
-      // Limpar tentativas de Super Admin
-      this.clearSuperAdminAttempts();
       
       console.log('🧹 Cache de escalas limpo');
       
@@ -195,7 +177,7 @@ class DirectAuthManager {
   }
 
   // Verificar permissão
-  hasRole(requiredRole) {
+  hasPermission(requiredRole) {
     const user = this.getCurrentUser();
     if (!user) return false;
     
@@ -209,262 +191,6 @@ class DirectAuthManager {
     const requiredLevel = roleHierarchy[requiredRole] || 0;
     
     return userLevel >= requiredLevel;
-  }
-
-  // =========== SUPER ADMIN DISCRETO ===========
-  
-  // Detectar cliques no logo (Easter Egg)
-  handleLogoClick(event) {
-    const now = Date.now();
-    
-    // Reset se passou muito tempo
-    if (now - this.lastLogoClick > this.CLICK_TIMEOUT) {
-      this.logoClickCount = 0;
-    }
-    
-    this.logoClickCount++;
-    this.lastLogoClick = now;
-    
-    // Debug apenas em desenvolvimento
-    if (window.location.hostname === 'localhost') {
-      console.log(`🔍 Cliques: ${this.logoClickCount}/${this.REQUIRED_CLICKS}`);
-    }
-    
-    // Ativar Easter Egg com 1 clique
-    if (this.logoClickCount >= this.REQUIRED_CLICKS && !this.easterEggActivated) {
-      this.activateEasterEgg();
-    }
-  }
-  
-  // Ativar modo Super Admin
-  activateEasterEgg() {
-    this.easterEggActivated = true;
-    console.log('🔓 Easter Egg ativado - Modo Super Admin');
-    
-    // Feedback visual sutil (brilho suave no logo)
-    const logo = document.querySelector('#login-logo');
-    if (logo) {
-      logo.style.animation = 'subtle-glow 0.5s ease-in-out';
-      setTimeout(() => {
-        logo.style.animation = '';
-      }, 500);
-    }
-    
-    // Vibração se disponível
-    if (navigator.vibrate) {
-      navigator.vibrate([50, 100, 50]);
-    }
-    
-    // Auto-preencher campo de usuário
-    const usernameField = document.getElementById('login-username');
-    if (usernameField) {
-      usernameField.value = 'SUPERADMIN';
-      usernameField.readOnly = true;
-      usernameField.style.background = '#f0f0f0';
-      usernameField.style.color = '#6b7280';
-    }
-    
-    // Focar no campo de senha
-    const passwordField = document.getElementById('login-password');
-    if (passwordField) {
-      passwordField.placeholder = 'Digite a senha de Super Admin';
-      passwordField.focus();
-    }
-    
-    // Reset após 2 minutos
-    setTimeout(() => {
-      this.resetEasterEgg();
-    }, 120000);
-  }
-  
-  // Reset do Easter Egg
-  resetEasterEgg() {
-    this.logoClickCount = 0;
-    this.easterEggActivated = false;
-    
-    const usernameField = document.getElementById('login-username');
-    if (usernameField && usernameField.value === 'SUPERADMIN') {
-      usernameField.value = '';
-      usernameField.readOnly = false;
-      usernameField.style.background = '';
-      usernameField.style.color = '';
-    }
-    
-    const passwordField = document.getElementById('login-password');
-    if (passwordField) {
-      passwordField.placeholder = 'Senha';
-    }
-  }
-  
-  // Login Super Admin
-  async loginSuperAdmin(password) {
-    console.log('🔐 Tentativa de login Super Admin');
-    
-    // Rate limiting
-    const attempts = this.getSuperAdminAttempts();
-    if (attempts >= this.MAX_SUPER_ADMIN_ATTEMPTS) {
-      await this.logAuditEvent('SUPER_ADMIN_LOGIN_BLOCKED',
-        'Tentativas excedidas');
-      return {
-        success: false,
-        error: 'Acesso temporariamente bloqueado'
-      };
-    }
-    
-    try {
-      // Validar senha forte
-      if (!this.validateStrongPassword(password)) {
-        this.incrementSuperAdminAttempts();
-        await this.logAuditEvent('SUPER_ADMIN_LOGIN_FAILED',
-          'Senha fraca ou inválida');
-        return {
-          success: false,
-          error: 'Acesso negado'
-        };
-      }
-      
-      // Buscar Super Admin no banco
-      const response = await fetch(
-        `${this.supabaseUrl}/rest/v1/users?name=eq.SUPERADMIN&role=eq.super_admin`,
-        {
-          headers: {
-            'apikey': this.supabaseServiceKey,
-            'Authorization': `Bearer ${this.supabaseServiceKey}`
-          }
-        }
-      );
-      
-      if (!response.ok) {
-        this.incrementSuperAdminAttempts();
-        await this.logAuditEvent('SUPER_ADMIN_LOGIN_ERROR',
-          `HTTP ${response.status}`);
-        return {
-          success: false,
-          error: 'Erro no sistema'
-        };
-      }
-      
-      const users = await response.json();
-      
-      if (!users || users.length === 0) {
-        this.incrementSuperAdminAttempts();
-        await this.logAuditEvent('SUPER_ADMIN_LOGIN_FAILED',
-          'Usuário não encontrado');
-        return {
-          success: false,
-          error: 'Acesso negado'
-        };
-      }
-      
-      const user = users[0];
-      
-      // Verificar senha (comparação direta - em produção usar hash)
-      if (password !== user.password) {
-        this.incrementSuperAdminAttempts();
-        await this.logAuditEvent('SUPER_ADMIN_LOGIN_FAILED',
-          'Senha incorreta');
-        return {
-          success: false,
-          error: 'Acesso negado'
-        };
-      }
-      
-      // Login bem-sucedido
-      this.clearSuperAdminAttempts();
-      await this.logAuditEvent('SUPER_ADMIN_LOGIN_SUCCESS',
-        `Acesso Super Admin realizado`);
-      
-      this.currentUser = user;
-      localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
-      localStorage.setItem('directAuth_superAdminMode', 'true');
-      
-      // Configurar timeout de sessão (30 minutos)
-      this.setSuperAdminTimeout();
-      
-      console.log('✅ Login Super Admin bem-sucedido');
-      
-      return {
-        success: true,
-        user: user
-      };
-      
-    } catch (error) {
-      console.error('❌ Erro no login Super Admin:', error);
-      await this.logAuditEvent('SUPER_ADMIN_LOGIN_ERROR',
-        error.message);
-      return {
-        success: false,
-        error: 'Erro no sistema'
-      };
-    }
-  }
-  
-  // Validar senha forte
-  validateStrongPassword(password) {
-    // Mínimo 12 caracteres
-    if (password.length < 12) return false;
-    
-    // Deve conter:
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /[0-9]/.test(password);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-    
-    return hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar;
-  }
-  
-  // Gerenciar tentativas de Super Admin
-  getSuperAdminAttempts() {
-    const attempts = sessionStorage.getItem('superAdminAttempts');
-    return attempts ? parseInt(attempts, 10) : 0;
-  }
-  
-  incrementSuperAdminAttempts() {
-    const current = this.getSuperAdminAttempts();
-    sessionStorage.setItem('superAdminAttempts', (current + 1).toString());
-  }
-  
-  clearSuperAdminAttempts() {
-    sessionStorage.removeItem('superAdminAttempts');
-  }
-  
-  // Timeout de sessão Super Admin
-  setSuperAdminTimeout() {
-    // 30 minutos = 1800000 ms
-    setTimeout(() => {
-      if (this.isSuperAdminMode()) {
-        console.log('⏰ Timeout de sessão Super Admin - Fazendo logout');
-        this.logAuditEvent('SUPER_ADMIN_TIMEOUT', 'Sessão expirada');
-        this.logout();
-      }
-    }, 1800000);
-  }
-  
-  // Verificar se está em modo Super Admin
-  isSuperAdminMode() {
-    return localStorage.getItem('directAuth_superAdminMode') === 'true';
-  }
-  
-  // Log de auditoria com mais detalhes
-  async logAuditEvent(action, details) {
-    try {
-      await fetch(this.supabaseUrl + '/rest/v1/audit_logs', {
-        method: 'POST',
-        headers: {
-          'apikey': this.supabaseServiceKey,
-          'Authorization': 'Bearer ' + this.supabaseServiceKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_name: this.currentUser?.name || 'SYSTEM',
-          action: action,
-          details: details + ' - ' + new Date().toISOString(),
-          created_at: new Date().toISOString()
-        })
-      });
-    } catch (error) {
-      console.error('❌ Erro ao registrar log:', error);
-    }
   }
 }
 
@@ -646,10 +372,7 @@ function criarInterfaceLoginDireto() {
   
   loginModal.innerHTML = `
     <div style="background: white; padding: 2rem; border-radius: 8px; min-width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-      <div style="text-align: center; margin-bottom: 1rem;">
-        <div id="login-logo" style="font-size: 3rem; cursor: pointer; user-select: none; transition: transform 0.2s;">🚁</div>
-        <h2 style="margin: 0.5rem 0 0 0; color: #333; text-align: center;">Login Sistema de Escalas</h2>
-      </div>
+      <h2 style="margin: 0 0 1rem 0; color: #333; text-align: center;">🔐 Login Sistema de Escalas</h2>
       <p style="margin: 0 0 1rem 0; color: #666; text-align: center; font-size: 0.9rem;">Acesso direto ao sistema</p>
       
       <form id="direct-login-form">
@@ -680,21 +403,6 @@ function criarInterfaceLoginDireto() {
   
   document.body.appendChild(loginModal);
   
-  // Adicionar listener para Easter Egg no logo
-  const logo = document.getElementById('login-logo');
-  if (logo) {
-    logo.addEventListener('click', (e) => {
-      // Feedback visual no clique
-      logo.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        logo.style.transform = 'scale(1)';
-      }, 100);
-      
-      // Detectar sequência de cliques
-      auth.handleLogoClick(e);
-    });
-  }
-  
   // Adicionar event listeners para o formulário
   document.getElementById('direct-login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -710,14 +418,7 @@ function criarInterfaceLoginDireto() {
       return;
     }
     
-    let result;
-    
-    // Verificar se é login de Super Admin
-    if (username === 'SUPERADMIN' && auth.easterEggActivated) {
-      result = await auth.loginSuperAdmin(password);
-    } else {
-      result = await auth.login(username, password);
-    }
+    const result = await auth.login(username, password);
     
     if (result.success) {
       messageDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 0.5rem; border-radius: 4px;';
@@ -726,13 +427,6 @@ function criarInterfaceLoginDireto() {
       
       setTimeout(() => {
         loginModal.style.display = 'none';
-        
-        // Disparar evento personalizado para React
-        const loginEvent = new CustomEvent('externalLogin', {
-          detail: { user: result.user }
-        });
-        window.dispatchEvent(loginEvent);
-        
         window.location.reload();
       }, 1500);
     } else {
