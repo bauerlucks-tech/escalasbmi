@@ -149,23 +149,33 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               </Button>
             </div>
             
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50">
-              {currentUser && isSuperAdmin(currentUser) && (
-                <Shield className="w-4 h-4 text-destructive" />
+            <div className="hidden sm:flex items-center gap-2">
+              {/* Indicador discreto de Super Admin */}
+              {isHiddenSuperAdmin && (
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                  <Shield className="w-4 h-4 text-purple-500" />
+                  <span className="text-xs font-medium text-purple-500">SA</span>
+                </div>
               )}
-              {currentUser && isAdmin(currentUser) && !isSuperAdmin(currentUser) && (
-                <Shield className="w-4 h-4 text-primary" />
-              )}
-              {currentUser?.profileImage ? (
-                <Avatar className="w-6 h-6">
-                  <AvatarImage src={currentUser.profileImage} alt={currentUser.name || ''} />
-                  <AvatarFallback className="text-[10px] bg-primary/20 text-primary">
-                    {getInitials(currentUser.name || '')}
-                  </AvatarFallback>
-                </Avatar>
-              ) : currentUser ? (
-                <span className="text-sm font-medium">{getInitials(currentUser.name || '')}</span>
-              ) : null}
+              
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50">
+                {currentUser && isSuperAdmin(currentUser) && !isHiddenSuperAdmin && (
+                  <Shield className="w-4 h-4 text-destructive" />
+                )}
+                {currentUser && isAdmin(currentUser) && !isSuperAdmin(currentUser) && (
+                  <Shield className="w-4 h-4 text-primary" />
+                )}
+                {currentUser?.profileImage ? (
+                  <Avatar className="w-6 h-6">
+                    <AvatarImage src={currentUser.profileImage} alt={currentUser.name || ''} />
+                    <AvatarFallback className="text-[10px] bg-primary/20 text-primary">
+                      {getInitials(currentUser.name || '')}
+                    </AvatarFallback>
+                  </Avatar>
+                ) : currentUser ? (
+                  <span className="text-sm font-medium">{getInitials(currentUser.name || '')}</span>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
