@@ -1064,8 +1064,7 @@ class SystemAuthIntegration {
     const messageText = document.getElementById('auth-login-message-text');
     
     // Não adicionar opção ADMIN ao select (manter apenas usuários normais)
-    // Adicionar acesso escondido ao Super Admin
-    this.addHiddenSuperAdminAccess();
+    // Removido acesso escondido ao Super Admin
     
     // Limpar campos
     passwordField.value = '';
@@ -1183,33 +1182,33 @@ class SystemAuthIntegration {
     console.log('🔑 Elemento usado para posicionamento:', versionElement.tagName, versionElement.textContent?.substring(0, 50));
   }
   
-  // Login como Super Admin (acesso escondido)
-  async loginAsSuperAdmin() {
-    const superAdminUser = {
-      name: 'Super Admin',
-      email: 'superadmin@escalasbmi.com',
-      role: 'super_admin',
-      operator: 'SUPER_ADMIN',
-      permissions: ['read', 'write', 'delete', 'admin', 'super_admin'],
-      loginTime: new Date().toISOString(),
-      id: 'super-admin-' + Date.now()
-    };
-    
-    // Salvar no localStorage
-    localStorage.setItem('auth_user', JSON.stringify(superAdminUser));
-    localStorage.setItem('auth_verified', 'true');
-    localStorage.setItem('auth_login_time', new Date().toISOString());
-    
-    console.log('🔐 Login Super Admin realizado via acesso escondido');
-    
-    // Mostrar interface do sistema
-    this.showSystemInterface(superAdminUser);
-    
-    // Disparar evento para React
-    window.dispatchEvent(new CustomEvent('externalLogin', {
-      detail: { user: superAdminUser, isAdmin: true, isSuperAdmin: true }
-    }));
-  }
+  // Login como Super Admin (acesso escondido) - REMOVIDO
+  // async loginAsSuperAdmin() {
+  //   const superAdminUser = {
+  //     name: 'Super Admin',
+  //     email: 'superadmin@escalasbmi.com',
+  //     role: 'super_admin',
+  //     operator: 'SUPER_ADMIN',
+  //     permissions: ['read', 'write', 'delete', 'admin', 'super_admin'],
+  //     loginTime: new Date().toISOString(),
+  //     id: 'super-admin-' + Date.now()
+  //   };
+  //   
+  //   // Salvar no localStorage
+  //   localStorage.setItem('auth_user', JSON.stringify(superAdminUser));
+  //   localStorage.setItem('auth_verified', 'true');
+  //   localStorage.setItem('auth_login_time', new Date().toISOString());
+  //   
+  //   console.log('🔐 Login Super Admin realizado via acesso escondido');
+  //   
+  //   // Mostrar interface do sistema
+  //   this.showSystemInterface(superAdminUser);
+  //   
+  //   // Disparar evento para React
+  //   window.dispatchEvent(new CustomEvent('externalLogin', {
+  //     detail: { user: superAdminUser, isAdmin: true, isSuperAdmin: true }
+  //   }));
+  // }
   
   // Login como admin (mantido para compatibilidade)
   async loginAsAdmin() {
