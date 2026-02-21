@@ -12,13 +12,13 @@ class DirectAuthManager {
     }
     this.currentUser = null;
     
-    // Estado para Easter Egg e Super Admin
+    // Estado para Easter Egg
     this.logoClickCount = 0;
     this.lastLogoClick = 0;
     this.easterEggActivated = false;
     this.superAdminAttempts = 0;
     this.CLICK_TIMEOUT = 3000; // 3 segundos
-    this.REQUIRED_CLICKS = 7;
+    this.REQUIRED_CLICKS = 1; // Mudado para 1 clique
     this.MAX_SUPER_ADMIN_ATTEMPTS = 3;
   }
 
@@ -230,7 +230,7 @@ class DirectAuthManager {
       console.log(`🔍 Cliques: ${this.logoClickCount}/${this.REQUIRED_CLICKS}`);
     }
     
-    // Ativar Easter Egg
+    // Ativar Easter Egg com 1 clique
     if (this.logoClickCount >= this.REQUIRED_CLICKS && !this.easterEggActivated) {
       this.activateEasterEgg();
     }
