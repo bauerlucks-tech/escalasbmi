@@ -8,11 +8,14 @@
     
     // Função para adicionar chave de acesso
     const addSuperAdminKey = () => {
+        console.log('🔍 Procurando elemento "Lucas Pott"...');
+        
         // Procurar pelo elemento "Lucas Pott" em qualquer lugar da página
         const selectors = [
             'span[data-component-name*="Lucas"]',
-            'span:contains("Lucas Pott")',
-            '*:contains("Lucas Pott")'
+            'span[data-component-name*="Pott"]',
+            '[data-component-name*="Lucas"]',
+            '[data-component-name*="Pott"]'
         ];
         
         let lucasElement = null;
@@ -21,18 +24,32 @@
         for (const selector of selectors) {
             try {
                 lucasElement = document.querySelector(selector);
-                if (lucasElement) break;
+                if (lucasElement) {
+                    console.log(`✅ Elemento encontrado com seletor: ${selector}`);
+                    break;
+                }
             } catch (e) {
-                // Ignorar erros de seletores inválidos
+                console.log(`❌ Erro no seletor ${selector}:`, e.message);
             }
         }
         
         // Se não encontrar com querySelector, tentar por texto
         if (!lucasElement) {
+            console.log('🔍 Tentando busca por texto...');
             const allSpans = document.querySelectorAll('span');
-            for (const span of allSpans) {
-                if (span.textContent && span.textContent.includes('Lucas Pott')) {
+            console.log(`📊 Encontrados ${allSpans.length} spans`);
+            
+            for (let i = 0; i < allSpans.length; i++) {
+                const span = allSpans[i];
+                console.log(`🔍 Verificando span ${i}: "${span.textContent}"`);
+                
+                if (span.textContent && (
+                    span.textContent.includes('Lucas Pott') || 
+                    span.textContent.includes('Lucas') ||
+                    span.textContent.includes('Pott')
+                )) {
                     lucasElement = span;
+                    console.log(`✅ Elemento encontrado por texto: "${span.textContent}"`);
                     break;
                 }
             }
@@ -53,6 +70,8 @@
                 opacity: 0.7;
                 transition: opacity 0.3s ease;
                 vertical-align: middle;
+                position: relative;
+                z-index: 1000;
             `;
             keyElement.title = 'Clique para acesso Super Admin';
             
@@ -61,9 +80,13 @@
                 e.stopPropagation();
                 e.preventDefault();
                 
+                console.log('🔑 Chave de Super Admin clicada!');
+                
                 // Mostrar prompt para senha do Super Admin
                 const password = prompt('🔐 Acesso Super Admin - Digite a senha:');
                 if (password === 'hidden_super_2026') {
+                    console.log('✅ Senha correta, fazendo login como Super Admin...');
+                    
                     // Login como Super Admin
                     localStorage.setItem('directAuth_superAdminMode', 'true');
                     localStorage.setItem('currentUser', JSON.stringify({
@@ -88,7 +111,10 @@
                     alert('✅ Acesso Super Admin concedido!');
                     window.location.reload();
                 } else if (password !== null) {
+                    console.log('❌ Senha incorreta');
                     alert('❌ Senha incorreta!');
+                } else {
+                    console.log('🚫 Prompt cancelado');
                 }
             });
             
@@ -102,33 +128,67 @@
             });
             
             // Inserir a chave após o elemento "Lucas Pott"
-            if (lucasElement.nextSibling) {
-                lucasElement.parentNode.insertBefore(keyElement, lucasElement.nextSibling);
-            } else {
-                lucasElement.parentNode.appendChild(keyElement);
+            try {
+                if (lucasElement.nextSibling) {
+                    lucasElement.parentNode.insertBefore(keyElement, lucasElement.nextSibling);
+                } else {
+                    lucasElement.parentNode.appendChild(keyElement);
+                }
+                console.log('✅ Chave de Super Admin adicionada com sucesso!');
+                return true;
+            } catch (e) {
+                console.error('❌ Erro ao adicionar chave:', e);
+                return false;
             }
-            
-            console.log('✅ Chave de Super Admin adicionada com sucesso!');
-            return true;
+        } else {
+            if (!lucasElement) {
+                console.log('❌ Elemento "Lucas Pott" não encontrado');
+            } else {
+                console.log('ℹ️ Chave já existe');
+            }
         }
         
         return false;
     };
     
     // Tentar adicionar imediatamente
+    console.log('🚀 Tentando adicionar chave imediatamente...');
     if (!addSuperAdminKey()) {
         // Se não encontrar, tentar novamente após carregamento completo
         setTimeout(() => {
+            console.log('🔄 Tentando novamente após 100ms...');
             if (!addSuperAdminKey()) {
                 // Tentar novamente com mais delay
-                setTimeout(addSuperAdminKey, 500);
+                setTimeout(() => {
+                    console.log('🔄 Tentando novamente após 500ms...');
+                    addSuperAdminKey();
+                }, 500);
             }
         }, 100);
     }
     
     // Também tentar quando o DOM estiver completamente carregado
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', addSuperAdminKey);
+        console.log('📄 DOM ainda carregando, aguardando DOMContentLoaded...');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOMContentLoaded disparado, tentando adicionar chave...');
+            addSuperAdminKey();
+        });
+    } else {
+        console.log('📄 DOM já carregado');
     }
+    
+    // Adicionar listener para mudanças no DOM (caso o elemento apareça depois)
+    const observer = new MutationObserver(() => {
+        console.log('🔄 DOM modificado, verificando novamente...');
+        setTimeout(addSuperAdminKey, 100);
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    
+    console.log('✅ Módulo de acesso Super Admin carregado!');
     
 })();
