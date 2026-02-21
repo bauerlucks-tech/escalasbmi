@@ -1082,47 +1082,35 @@ class SystemAuthIntegration {
       return;
     }
     
-    // Criar container do acesso escondido
+    // Procurar pelo elemento de versão (texto "2.0")
+    const versionElement = Array.from(document.querySelectorAll('*')).find(el => 
+      el.textContent && el.textContent.includes('2.0')
+    );
+    
+    if (!versionElement) {
+      console.log('🔑 Elemento de versão não encontrado, tentando novamente em 2s...');
+      setTimeout(() => this.addHiddenSuperAdminAccess(), 2000);
+      return;
+    }
+    
+    // Criar acesso invisível (sem ícone)
     const hiddenAccess = document.createElement('div');
     hiddenAccess.id = 'hidden-super-admin-access';
     hiddenAccess.style.cssText = `
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 9999;
-      opacity: 0.05;
-      transition: opacity 0.3s ease;
+      position: absolute;
+      top: ${versionElement.getBoundingClientRect().top}px;
+      left: ${versionElement.getBoundingClientRect().left + 20}px;
+      width: 30px;
+      height: 20px;
       cursor: pointer;
+      z-index: 9999;
     `;
-    
-    // Criar ícone pequeno e discreto (chave)
-    const icon = document.createElement('div');
-    icon.innerHTML = '🔑';
-    icon.style.cssText = `
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 50%;
-      color: white;
-      margin-bottom: 2px;
-    `;
-    
-    // Adicionar evento de hover
-    hiddenAccess.addEventListener('mouseenter', () => {
-      hiddenAccess.style.opacity = '0.3';
-    });
-    
-    hiddenAccess.addEventListener('mouseleave', () => {
-      hiddenAccess.style.opacity = '0.05';
-    });
     
     // Adicionar evento de clique
-    hiddenAccess.addEventListener('click', () => {
-      const password = prompt('� Senha de Super Admin:');
+    hiddenAccess.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const password = prompt('🔑 Senha de Super Admin:');
       if (password === 'hidden_super_2026') {
         this.loginAsSuperAdmin();
       } else if (password) {
@@ -1130,23 +1118,9 @@ class SystemAuthIntegration {
       }
     });
     
-    hiddenAccess.appendChild(icon);
     document.body.appendChild(hiddenAccess);
     
-    // Posicionar depois do texto "Criado por" (se existir)
-    setTimeout(() => {
-      const createdByElement = Array.from(document.querySelectorAll('*')).find(el => 
-        el.textContent && el.textContent.includes('Criado por')
-      );
-      
-      if (createdByElement) {
-        const rect = createdByElement.getBoundingClientRect();
-        hiddenAccess.style.top = (rect.bottom + 10) + 'px';
-        console.log('🔑 Ícone posicionado depois do texto "Criado por"');
-      }
-    }, 100);
-    
-    console.log('🔑 Acesso escondido ao Super Admin adicionado (opacity: 0.05)');
+    console.log('🔑 Acesso Super Admin invisível adicionado (clique no texto "2.0")');
   }
   
   // Login como Super Admin (acesso escondido)
