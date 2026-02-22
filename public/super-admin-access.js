@@ -27,12 +27,17 @@
         
         console.log('🔍 Procurando elemento "Lucas Pott"...');
         
-        // Múltiplos seletores para encontrar o elemento
+        // Múltiplos seletores para encontrar o elemento "Lucas Pott"
         const selectors = [
-            'p:contains("Lucas Pott")',
-            'div:contains("Lucas Pott")',
-            'span:contains("Lucas Pott")',
-            '*:contains("Lucas Pott")'
+            'p',
+            'span',
+            'div',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6'
         ];
         
         let targetElement = null;
