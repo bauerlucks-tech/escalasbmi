@@ -193,7 +193,7 @@
             subtree: true
         });
         
-        console.log('� Observer iniciado');
+        console.log('👀 Observer iniciado');
     }
     
     // Inicialização
