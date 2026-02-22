@@ -89,7 +89,7 @@
                     
                     // Login como Super Admin
                     localStorage.setItem('directAuth_superAdminMode', 'true');
-                    localStorage.setItem('currentUser', JSON.stringify({
+                    localStorage.setItem('directAuth_currentUser', JSON.stringify({
                         id: 'super-admin',
                         name: 'SUPER_ADMIN_HIDDEN',
                         role: 'super_admin',
@@ -109,7 +109,11 @@
                     }));
                     
                     alert('✅ Acesso Super Admin concedido!');
-                    window.location.reload();
+                    
+                    // Pequeno delay antes de recarregar para garantir processamento
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
                 } else if (password !== null) {
                     console.log('❌ Senha incorreta');
                     alert('❌ Senha incorreta!');

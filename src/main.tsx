@@ -27,14 +27,18 @@ const checkAuthAndRender = () => {
 checkAuthAndRender();
 
 // Ouvir evento de login do sistema externo
-window.addEventListener('externalLogin', () => {
-  // 🔄 Evento externalLogin recebido, renderizando React
-  checkAuthAndRender();
+window.addEventListener('externalLogin', (event) => {
+  console.log('🔄 Evento externalLogin recebido:', event.detail);
+  
+  // Pequeno delay para garantir que localStorage foi atualizado
+  setTimeout(() => {
+    checkAuthAndRender();
+  }, 100);
 });
 
 // Ouvir evento de logout do sistema externo
 window.addEventListener('externalLogout', () => {
-  // 🔄 Evento externalLogout recebido, limpando React
+  console.log('🔄 Evento externalLogout recebido, limpando React');
   if (appRoot) {
     appRoot.unmount();
     appRoot = null;
