@@ -27,7 +27,7 @@ const checkAuthAndRender = () => {
 checkAuthAndRender();
 
 // Ouvir evento de login do sistema externo
-window.addEventListener('externalLogin', (event) => {
+window.addEventListener('externalLogin', (event: CustomEvent) => {
   console.log('🔄 Evento externalLogin recebido:', event.detail);
   
   // Pequeno delay para garantir que localStorage foi atualizado
