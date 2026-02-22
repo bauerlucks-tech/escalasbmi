@@ -6,79 +6,90 @@
     
     console.log('🔑 Carregando módulo de acesso Super Admin...');
     
-    // Função para adicionar chave de acesso
-    const addSuperAdminKey = () => {
+    // Variável global para controle
+    let keyAdded = false;
+    let observer = null;
+    let retryCount = 0;
+    const MAX_RETRIES = 5;
+    
+    // Função principal para adicionar a chave
+    function addSuperAdminKey() {
+        if (keyAdded) {
+            console.log('🔑 Chave do Super Admin já adicionada');
+            return;
+        }
+        
+        // Parar observer se existir
+        if (observer) {
+            observer.disconnect();
+            observer = null;
+        }
+        
         console.log('🔍 Procurando elemento "Lucas Pott"...');
         
-        // Procurar pelo elemento "Lucas Pott" em qualquer lugar da página
+        // Múltiplos seletores para encontrar o elemento
         const selectors = [
-            'span[data-component-name*="Lucas"]',
-            'span[data-component-name*="Pott"]',
-            '[data-component-name*="Lucas"]',
-            '[data-component-name*="Pott"]'
+            'p:contains("Lucas Pott")',
+            'div:contains("Lucas Pott")',
+            'span:contains("Lucas Pott")',
+            '*:contains("Lucas Pott")'
         ];
         
-        let lucasElement = null;
+        let targetElement = null;
         
-        // Tentar encontrar o elemento
+        // Tentar encontrar por seletores
         for (const selector of selectors) {
-            try {
-                lucasElement = document.querySelector(selector);
-                if (lucasElement) {
-                    console.log(`✅ Elemento encontrado com seletor: ${selector}`);
+            const elements = document.querySelectorAll(selector);
+            for (const element of elements) {
+                if (element.textContent && element.textContent.includes('Lucas Pott')) {
+                    targetElement = element;
+                    console.log('✅ Elemento encontrado via seletor:', selector);
                     break;
                 }
-            } catch (e) {
-                console.log(`❌ Erro no seletor ${selector}:`, e.message);
             }
+            if (targetElement) break;
         }
         
-        // Se não encontrar com querySelector, tentar por texto
-        if (!lucasElement) {
+        // Se não encontrou, tentar busca por texto
+        if (!targetElement) {
             console.log('🔍 Tentando busca por texto...');
-            const allSpans = document.querySelectorAll('span');
-            console.log(`📊 Encontrados ${allSpans.length} spans`);
-            
-            for (let i = 0; i < allSpans.length; i++) {
-                const span = allSpans[i];
-                console.log(`🔍 Verificando span ${i}: "${span.textContent}"`);
-                
-                if (span.textContent && (
-                    span.textContent.includes('Lucas Pott') || 
-                    span.textContent.includes('Lucas') ||
-                    span.textContent.includes('Pott')
-                )) {
-                    lucasElement = span;
-                    console.log(`✅ Elemento encontrado por texto: "${span.textContent}"`);
+            const allElements = document.querySelectorAll('*');
+            for (const element of allElements) {
+                if (element.children.length === 0 && element.textContent && element.textContent.includes('Lucas Pott')) {
+                    targetElement = element;
+                    console.log('✅ Elemento encontrado via texto');
                     break;
                 }
             }
         }
         
-        // Se encontrou o elemento e ainda não tem a chave
-        if (lucasElement && !document.getElementById('super-admin-key-global')) {
-            console.log('🔑 Elemento "Lucas Pott" encontrado, adicionando chave...');
+        if (targetElement) {
+            console.log('✅ Elemento "Lucas Pott" encontrado:', targetElement);
+            
+            // Verificar se já tem chave
+            if (targetElement.querySelector('.super-admin-key')) {
+                console.log('🔑 Chave já existe no elemento');
+                keyAdded = true;
+                return;
+            }
             
             // Criar elemento da chave
             const keyElement = document.createElement('span');
-            keyElement.id = 'super-admin-key-global';
+            keyElement.className = 'super-admin-key';
             keyElement.innerHTML = '🔑';
             keyElement.style.cssText = `
-                margin-left: 8px;
                 cursor: pointer;
+                margin-left: 8px;
                 font-size: 14px;
                 opacity: 0.7;
                 transition: opacity 0.3s ease;
                 vertical-align: middle;
-                position: relative;
-                z-index: 1000;
             `;
-            keyElement.title = 'Clique para acesso Super Admin';
             
             // Adicionar evento de clique
-            keyElement.addEventListener('click', (e) => {
-                e.stopPropagation();
+            keyElement.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 
                 console.log('🔑 Chave de Super Admin clicada!');
                 
@@ -131,64 +142,85 @@
                 keyElement.style.opacity = '0.7';
             });
             
-            // Inserir a chave após o elemento "Lucas Pott"
-            try {
-                if (lucasElement.nextSibling) {
-                    lucasElement.parentNode.insertBefore(keyElement, lucasElement.nextSibling);
-                } else {
-                    lucasElement.parentNode.appendChild(keyElement);
-                }
-                console.log('✅ Chave de Super Admin adicionada com sucesso!');
-                return true;
-            } catch (e) {
-                console.error('❌ Erro ao adicionar chave:', e);
-                return false;
-            }
+            // Adicionar a chave ao lado do texto
+            targetElement.appendChild(keyElement);
+            
+            keyAdded = true;
+            console.log('✅ Chave do Super Admin adicionada com sucesso!');
+            
         } else {
-            if (!lucasElement) {
-                console.log('❌ Elemento "Lucas Pott" não encontrado');
+            console.log('❌ Elemento "Lucas Pott" não encontrado');
+            
+            // Tentar novamente se ainda não excedeu o limite
+            retryCount++;
+            if (retryCount < MAX_RETRIES) {
+                console.log(`🔄 Tentativa ${retryCount}/${MAX_RETRIES} em 2 segundos...`);
+                setTimeout(addSuperAdminKey, 2000);
             } else {
-                console.log('ℹ️ Chave já existe');
+                console.log('❌ Máximo de tentativas atingido');
             }
         }
-        
-        return false;
-    };
-    
-    // Tentar adicionar imediatamente
-    console.log('🚀 Tentando adicionar chave imediatamente...');
-    if (!addSuperAdminKey()) {
-        // Se não encontrar, tentar novamente após carregamento completo
-        setTimeout(() => {
-            console.log('🔄 Tentando novamente após 100ms...');
-            if (!addSuperAdminKey()) {
-                // Tentar novamente com mais delay
-                setTimeout(() => {
-                    console.log('🔄 Tentando novamente após 500ms...');
-                    addSuperAdminKey();
-                }, 500);
-            }
-        }, 100);
     }
     
-    // Também tentar quando o DOM estiver completamente carregado
-    if (document.readyState === 'loading') {
-        console.log('📄 DOM ainda carregando, aguardando DOMContentLoaded...');
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('📄 DOMContentLoaded disparado, tentando adicionar chave...');
-            addSuperAdminKey();
+    // Função para iniciar o observer
+    function startObserver() {
+        if (observer) return;
+        
+        observer = new MutationObserver((mutations) => {
+            let shouldRetry = false;
+            
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    // Verificar se algum nó adicionado contém "Lucas Pott"
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.ELEMENT_NODE) {
+                            if (node.textContent && node.textContent.includes('Lucas Pott')) {
+                                shouldRetry = true;
+                            }
+                        }
+                    });
+                }
+            });
+            
+            if (shouldRetry && !keyAdded) {
+                console.log('🔄 DOM modificado, verificando novamente...');
+                setTimeout(addSuperAdminKey, 500);
+            }
         });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        console.log('� Observer iniciado');
+    }
+    
+    // Inicialização
+    function init() {
+        // Tentar imediatamente
+        addSuperAdminKey();
+        
+        // Se não encontrou, iniciar observer
+        if (!keyAdded) {
+            startObserver();
+        }
+    }
+    
+    // Iniciar quando o DOM estiver pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
     } else {
-        console.log('📄 DOM já carregado');
+        init();
     }
     
     // Adicionar listener para mudanças no DOM (caso o elemento apareça depois)
-    const observer = new MutationObserver(() => {
+    const domObserver = new MutationObserver(() => {
         console.log('🔄 DOM modificado, verificando novamente...');
         setTimeout(addSuperAdminKey, 100);
     });
     
-    observer.observe(document.body, {
+    domObserver.observe(document.body, {
         childList: true,
         subtree: true
     });
