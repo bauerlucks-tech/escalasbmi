@@ -122,7 +122,7 @@ async function testUserMapping() {
     console.log('\n  ✅ Mapeamento funcionando corretamente');
   }
   
-  return issues.length === 0;
+  return { success: issues.length === 0, issues, totalTests: testCases.length };
 }
 
 // ============================================

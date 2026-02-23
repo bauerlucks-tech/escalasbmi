@@ -1,0 +1,316 @@
+{
+  "timestamp": "2026-02-23T19:48:57.437Z",
+  "summary": {
+    "totalTests": 11,
+    "passedTests": 10,
+    "failedTests": 1,
+    "successRate": 90.9
+  },
+  "details": {
+    "userMapping": true,
+    "connection": {
+      "success": true
+    },
+    "tableStructure": {
+      "success": true,
+      "columns": [
+        "id",
+        "requester_id",
+        "target_id",
+        "original_date",
+        "original_shift",
+        "target_date",
+        "target_shift",
+        "status",
+        "responded_at",
+        "responded_by",
+        "admin_approved",
+        "admin_approved_at",
+        "admin_approved_by",
+        "created_at",
+        "requester_name",
+        "target_name"
+      ]
+    },
+    "existingSwaps": {
+      "success": true,
+      "count": 16,
+      "data": [
+        {
+          "id": "17aef119-b203-462c-bbaf-2ff1e5ec8f62",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "08/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "31/12/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-06T00:30:49.711+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-06T00:32:06.134+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-06T00:30:36.37432+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "3cb688d4-ad38-4582-8a49-6104d6c21ccc",
+          "requester_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "target_id": "b5a1b456-e837-4f47-ab41-4734a00a0355",
+          "original_date": "10/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "07/12/2026",
+          "target_shift": "meioPeriodo",
+          "status": "accepted",
+          "responded_at": "2026-02-06T00:27:34.85514+00:00",
+          "responded_by": "GUILHERME",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-06T00:27:38.850231+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-06T00:27:26.848025+00:00",
+          "requester_name": "CARLOS",
+          "target_name": "GUILHERME"
+        },
+        {
+          "id": "267c95b0-8e3c-4ffc-9bda-7b345cc80861",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "06/12/2026",
+          "original_shift": "fechamento",
+          "target_date": "09/12/2026",
+          "target_shift": "meioPeriodo",
+          "status": "accepted",
+          "responded_at": "2026-02-06T00:22:16.687475+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-06T00:22:21.090739+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-06T00:22:08.103105+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        }
+      ]
+    },
+    "insertionTest": {
+      "success": true,
+      "testSwap": {
+        "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+        "requester_name": "LUCAS",
+        "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+        "target_name": "CARLOS",
+        "original_date": "25/02/2026",
+        "original_shift": "meioPeriodo",
+        "target_date": "26/02/2026",
+        "target_shift": "meioPeriodo",
+        "status": "pending"
+      },
+      "insertedId": "a7102a36-9b6d-4260-a853-eee5578dad06",
+      "countBefore": 16,
+      "countAfter": 17,
+      "countFinal": 16,
+      "rollbackSuccessful": true
+    },
+    "performance": {
+      "success": true,
+      "performance": {
+        "countTime": 0,
+        "limitTime": 1,
+        "totalRecords": 16
+      }
+    },
+    "schemaValidation": {
+      "success": true,
+      "schema": {
+        "fields": [
+          "id",
+          "requester_id",
+          "target_id",
+          "original_date",
+          "original_shift",
+          "target_date",
+          "target_shift",
+          "status",
+          "responded_at",
+          "responded_by",
+          "admin_approved",
+          "admin_approved_at",
+          "admin_approved_by",
+          "created_at",
+          "requester_name",
+          "target_name"
+        ],
+        "missingFields": [],
+        "extraFields": [],
+        "isValid": true
+      }
+    },
+    "usersInDb": {
+      "success": true,
+      "users": [
+        {
+          "id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "name": "LUCAS",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "name": "CARLOS",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "name": "ROSANA",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "name": "HENRIQUE",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "name": "KELLY",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "b5a1b456-e837-4f47-ab41-4734a00a0355",
+          "name": "GUILHERME",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "bbad7a98-2412-43e6-8dd6-cf52fae171be",
+          "name": "RICARDO",
+          "role": "administrador",
+          "status": "ativo"
+        },
+        {
+          "id": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "name": "ADMIN",
+          "role": "super_admin",
+          "status": "ativo"
+        }
+      ]
+    },
+    "edgeCases": {
+      "success": true,
+      "results": {
+        "invalidFilter": {
+          "success": true,
+          "error": "column swap_requests.invalid_field does not exist"
+        },
+        "largeLimit": {
+          "success": true,
+          "records": 16
+        },
+        "invalidOrder": {
+          "success": true,
+          "error": "column swap_requests.invalid_field does not exist"
+        },
+        "invalidFields": {
+          "success": true,
+          "error": "column swap_requests.invalid_field1 does not exist"
+        },
+        "concurrent": {
+          "success": true,
+          "timeMs": 469
+        }
+      },
+      "passedTests": 5,
+      "totalTests": 5
+    },
+    "concurrency": {
+      "success": true,
+      "operationCount": 10,
+      "successfulOps": 10,
+      "failedOps": 0,
+      "totalTime": 538,
+      "avgTime": 53.8,
+      "consistent": true
+    },
+    "dataIntegrity": {
+      "success": true,
+      "totalRecords": 16,
+      "validRecords": 16,
+      "invalidRecords": 0,
+      "integrityScore": 100,
+      "isHealthy": true,
+      "issues": []
+    }
+  },
+  "performance": {
+    "countTime": 0,
+    "limitTime": 1,
+    "totalRecords": 16
+  },
+  "schema": {
+    "fields": [
+      "id",
+      "requester_id",
+      "target_id",
+      "original_date",
+      "original_shift",
+      "target_date",
+      "target_shift",
+      "status",
+      "responded_at",
+      "responded_by",
+      "admin_approved",
+      "admin_approved_at",
+      "admin_approved_by",
+      "created_at",
+      "requester_name",
+      "target_name"
+    ],
+    "missingFields": [],
+    "extraFields": [],
+    "isValid": true
+  },
+  "edgeCases": {
+    "invalidFilter": {
+      "success": true,
+      "error": "column swap_requests.invalid_field does not exist"
+    },
+    "largeLimit": {
+      "success": true,
+      "records": 16
+    },
+    "invalidOrder": {
+      "success": true,
+      "error": "column swap_requests.invalid_field does not exist"
+    },
+    "invalidFields": {
+      "success": true,
+      "error": "column swap_requests.invalid_field1 does not exist"
+    },
+    "concurrent": {
+      "success": true,
+      "timeMs": 469
+    }
+  },
+  "concurrency": {
+    "success": true,
+    "operationCount": 10,
+    "successfulOps": 10,
+    "failedOps": 0,
+    "totalTime": 538,
+    "avgTime": 53.8,
+    "consistent": true
+  },
+  "dataIntegrity": {
+    "success": true,
+    "totalRecords": 16,
+    "validRecords": 16,
+    "invalidRecords": 0,
+    "integrityScore": 100,
+    "isHealthy": true,
+    "issues": []
+  },
+  "recommendations": []
+}
