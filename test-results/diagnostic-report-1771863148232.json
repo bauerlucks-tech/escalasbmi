@@ -1,0 +1,188 @@
+{
+  "timestamp": "2026-02-23T16:12:28.231Z",
+  "summary": {
+    "totalTests": 8,
+    "passedTests": 6,
+    "failedTests": 2
+  },
+  "details": {
+    "userMapping": true,
+    "connection": {
+      "success": true
+    },
+    "tableStructure": {
+      "success": true,
+      "columns": [
+        "id",
+        "requester_id",
+        "target_id",
+        "original_date",
+        "original_shift",
+        "target_date",
+        "target_shift",
+        "status",
+        "responded_at",
+        "responded_by",
+        "admin_approved",
+        "admin_approved_at",
+        "admin_approved_by",
+        "created_at",
+        "requester_name",
+        "target_name"
+      ]
+    },
+    "existingSwaps": {
+      "success": false,
+      "error": "data is not defined"
+    },
+    "insertionTest": {
+      "success": true,
+      "testSwap": {
+        "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+        "requester_name": "LUCAS",
+        "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+        "target_name": "CARLOS",
+        "original_date": "25/02/2026",
+        "original_shift": "meioPeriodo",
+        "target_date": "26/02/2026",
+        "target_shift": "meioPeriodo",
+        "status": "pending"
+      }
+    },
+    "performance": {
+      "success": true,
+      "performance": {
+        "countTime": 0,
+        "limitTime": 0,
+        "totalRecords": 16
+      }
+    },
+    "schemaValidation": {
+      "success": true,
+      "schema": {
+        "fields": [
+          "id",
+          "requester_id",
+          "target_id",
+          "original_date",
+          "original_shift",
+          "target_date",
+          "target_shift",
+          "status",
+          "responded_at",
+          "responded_by",
+          "admin_approved",
+          "admin_approved_at",
+          "admin_approved_by",
+          "created_at",
+          "requester_name",
+          "target_name"
+        ],
+        "missingFields": [
+          "updated_at"
+        ],
+        "extraFields": [
+          "responded_at",
+          "responded_by",
+          "admin_approved",
+          "admin_approved_at",
+          "admin_approved_by"
+        ],
+        "isValid": false
+      }
+    },
+    "usersInDb": {
+      "success": true,
+      "users": [
+        {
+          "id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "name": "LUCAS",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "name": "CARLOS",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "name": "ROSANA",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "name": "HENRIQUE",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "name": "KELLY",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "b5a1b456-e837-4f47-ab41-4734a00a0355",
+          "name": "GUILHERME",
+          "role": "operador",
+          "status": "ativo"
+        },
+        {
+          "id": "bbad7a98-2412-43e6-8dd6-cf52fae171be",
+          "name": "RICARDO",
+          "role": "administrador",
+          "status": "ativo"
+        },
+        {
+          "id": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "name": "ADMIN",
+          "role": "super_admin",
+          "status": "ativo"
+        }
+      ]
+    }
+  },
+  "performance": {
+    "countTime": 0,
+    "limitTime": 0,
+    "totalRecords": 16
+  },
+  "schema": {
+    "fields": [
+      "id",
+      "requester_id",
+      "target_id",
+      "original_date",
+      "original_shift",
+      "target_date",
+      "target_shift",
+      "status",
+      "responded_at",
+      "responded_by",
+      "admin_approved",
+      "admin_approved_at",
+      "admin_approved_by",
+      "created_at",
+      "requester_name",
+      "target_name"
+    ],
+    "missingFields": [
+      "updated_at"
+    ],
+    "extraFields": [
+      "responded_at",
+      "responded_by",
+      "admin_approved",
+      "admin_approved_at",
+      "admin_approved_by"
+    ],
+    "isValid": false
+  },
+  "recommendations": [
+    "Verificar permissões da tabela swap_requests",
+    "Atualizar schema da tabela swap_requests"
+  ]
+}

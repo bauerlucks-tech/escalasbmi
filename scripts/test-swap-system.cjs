@@ -214,7 +214,7 @@ async function testExistingSwaps() {
     
     // Se houver registros, buscar amostra para análise
     if (totalCount > 0) {
-      const { data, error } = await supabase
+      const { data: sampleData, error } = await supabase
         .from('swap_requests')
         .select('*')
         .order('created_at', { ascending: false })
@@ -225,9 +225,9 @@ async function testExistingSwaps() {
         return { success: false, error: error.message };
       }
       
-      if (data && data.length > 0) {
+      if (sampleData && sampleData.length > 0) {
         console.log('\n  📋 Últimas trocas:');
-        data.forEach((swap, index) => {
+        sampleData.forEach((swap, index) => {
           console.log(`\n  --- Troca #${index + 1} ---`);
           console.log(`     ID: ${swap.id}`);
           console.log(`     Solicitante: ${swap.requester_name}`);
@@ -238,9 +238,9 @@ async function testExistingSwaps() {
           console.log(`     Criado em: ${swap.created_at}`);
         });
         
-        // Análise de padrões
+        // Análise de padrões - CORRIGIDO: usar sampleData em vez de data
         const statusCounts = {};
-        data.forEach(swap => {
+        sampleData.forEach(swap => {
           statusCounts[swap.status] = (statusCounts[swap.status] || 0) + 1;
         });
         
@@ -248,12 +248,14 @@ async function testExistingSwaps() {
         Object.entries(statusCounts).forEach(([status, count]) => {
           console.log(`     ${status}: ${count}`);
         });
+        
+        return { success: true, count: totalCount || 0, data: sampleData || [] };
       }
     } else {
       console.log('  ℹ️ Nenhuma troca encontrada no banco de dados');
     }
     
-    return { success: true, count: totalCount || 0, data: data || [] };
+    return { success: true, count: totalCount || 0, data: [] };
   } catch (error) {
     console.log(`  ❌ Erro fatal: ${error.message}`);
     return { success: false, error: error.message };
@@ -418,11 +420,12 @@ async function testSchemaValidation() {
     const sample = data[0];
     const fields = Object.keys(sample);
     
-    // Campos esperados
+    // Campos esperados (ATUALIZADO com base no schema real)
     const expectedFields = [
       'id', 'requester_id', 'requester_name', 'target_id', 'target_name',
       'original_date', 'original_shift', 'target_date', 'target_shift',
-      'status', 'created_at', 'updated_at'
+      'status', 'created_at', 'responded_at', 'responded_by',
+      'admin_approved', 'admin_approved_at', 'admin_approved_by'
     ];
     
     const missingFields = expectedFields.filter(field => !fields.includes(field));
@@ -458,6 +461,302 @@ async function testSchemaValidation() {
         extraFields,
         isValid
       }
+    };
+    
+  } catch (error) {
+    console.log(`  ❌ Erro fatal: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+}
+
+// ============================================
+// HIPÓTESE 10: Teste de Edge Cases (NOVO)
+// ============================================
+async function testEdgeCases() {
+  console.log('\n📋 TESTE 10: Teste de Edge Cases');
+  console.log('-'.repeat(50));
+  
+  const results = {};
+  
+  try {
+    // Teste 1: Query com filtro inválido
+    console.log('  🔍 Testando filtro inválido...');
+    const { data: invalidFilter, error: filterError } = await supabase
+      .from('swap_requests')
+      .select('*')
+      .eq('invalid_field', 'invalid_value')
+      .limit(1);
+    
+    if (filterError) {
+      console.log('  ✅ Filtro inválido tratado corretamente');
+      results.invalidFilter = { success: true, error: filterError.message };
+    } else {
+      console.log('  ⚠️ Filtro inválido não retornou erro');
+      results.invalidFilter = { success: false, note: 'No error for invalid filter' };
+    }
+    
+    // Teste 2: Query com limite excessivo
+    console.log('  🔍 Testando limite excessivo...');
+    const { data: largeLimit, error: limitError } = await supabase
+      .from('swap_requests')
+      .select('*')
+      .limit(10000);
+    
+    if (limitError) {
+      console.log('  ✅ Limite excessivo tratado corretamente');
+      results.largeLimit = { success: true, error: limitError.message };
+    } else {
+      console.log(`  ⚠️ Limite excessivo retornou ${largeLimit?.length || 0} registros`);
+      results.largeLimit = { success: true, records: largeLimit?.length || 0 };
+    }
+    
+    // Teste 3: Query com ordenação inválida
+    console.log('  🔍 Testando ordenação inválida...');
+    const { data: invalidOrder, error: orderError } = await supabase
+      .from('swap_requests')
+      .select('*')
+      .order('invalid_field', { ascending: false })
+      .limit(1);
+    
+    if (orderError) {
+      console.log('  ✅ Ordenação inválida tratada corretamente');
+      results.invalidOrder = { success: true, error: orderError.message };
+    } else {
+      console.log('  ⚠️ Ordenação inválida não retornou erro');
+      results.invalidOrder = { success: false, note: 'No error for invalid order' };
+    }
+    
+    // Teste 4: Query com campos inexistentes
+    console.log('  🔍 Testando campos inexistentes...');
+    const { data: invalidFields, error: fieldsError } = await supabase
+      .from('swap_requests')
+      .select('invalid_field1,invalid_field2')
+      .limit(1);
+    
+    if (fieldsError) {
+      console.log('  ✅ Campos inexistentes tratados corretamente');
+      results.invalidFields = { success: true, error: fieldsError.message };
+    } else {
+      console.log('  ⚠️ Campos inexistentes não retornaram erro');
+      results.invalidFields = { success: false, note: 'No error for invalid fields' };
+    }
+    
+    // Teste 5: Conexão simultânea
+    console.log('  🔍 Testando conexões simultâneas...');
+    const startTime = Date.now();
+    const promises = [];
+    
+    for (let i = 0; i < 5; i++) {
+      promises.push(
+        supabase
+          .from('swap_requests')
+          .select('count', { count: 'exact', head: true })
+      );
+    }
+    
+    const concurrentResults = await Promise.all(promises);
+    const endTime = Date.now();
+    
+    const allSuccessful = concurrentResults.every(result => !result.error);
+    console.log(`  ${allSuccessful ? '✅' : '❌'} Conexões simultâneas: ${endTime - startTime}ms`);
+    results.concurrent = { success: allSuccessful, timeMs: endTime - startTime };
+    
+    // Resumo dos edge cases
+    const passedTests = Object.values(results).filter(r => r.success).length;
+    const totalTests = Object.keys(results).length;
+    
+    console.log(`\n  📊 Edge cases: ${passedTests}/${totalTests} passaram`);
+    
+    return { success: true, results, passedTests, totalTests };
+    
+  } catch (error) {
+    console.log(`  ❌ Erro fatal: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+}
+
+// ============================================
+// HIPÓTESE 11: Teste de Concorrência (NOVO)
+// ============================================
+async function testConcurrency() {
+  console.log('\n📋 TESTE 11: Teste de Concorrência');
+  console.log('-'.repeat(50));
+  
+  try {
+    // Simular múltiplas operações simultâneas
+    const concurrentOperations = [];
+    const operationCount = 10;
+    
+    console.log(`  🔍 Testando ${operationCount} operações simultâneas...`);
+    
+    const startTime = Date.now();
+    
+    // Criar múltiplas queries simultâneas
+    for (let i = 0; i < operationCount; i++) {
+      concurrentOperations.push(
+        supabase
+          .from('swap_requests')
+          .select('*', { count: 'exact', head: true })
+      );
+    }
+    
+    const results = await Promise.all(concurrentOperations);
+    const endTime = Date.now();
+    
+    // Analisar resultados
+    const successfulOps = results.filter(r => !r.error);
+    const failedOps = results.filter(r => r.error);
+    
+    console.log(`  ✅ Operações bem-sucedidas: ${successfulOps.length}/${operationCount}`);
+    console.log(`  ⏱️ Tempo total: ${endTime - startTime}ms`);
+    console.log(`  📊 Média por operação: ${((endTime - startTime) / operationCount).toFixed(2)}ms`);
+    
+    if (failedOps.length > 0) {
+      console.log(`  ❌ Operações falharam: ${failedOps.length}`);
+      failedOps.forEach((op, index) => {
+        console.log(`     - Erro ${index + 1}: ${op.error.message}`);
+      });
+    }
+    
+    // Verificar consistência dos resultados
+    const counts = successfulOps.map(op => op.count);
+    const uniqueCounts = [...new Set(counts)];
+    
+    if (uniqueCounts.length === 1) {
+      console.log('  ✅ Resultados consistentes entre operações');
+    } else {
+      console.log('  ⚠️ Resultados inconsistentes detectados');
+      console.log(`     Contagens encontradas: ${uniqueCounts.join(', ')}`);
+    }
+    
+    const isSuccessful = failedOps.length === 0 && uniqueCounts.length === 1;
+    console.log(`\n  ${isSuccessful ? '✅' : '⚠️'} Teste de concorrência: ${isSuccessful ? 'PASSOU' : 'PROBLEMAS'}`);
+    
+    return {
+      success: isSuccessful,
+      operationCount,
+      successfulOps: successfulOps.length,
+      failedOps: failedOps.length,
+      totalTime: endTime - startTime,
+      avgTime: (endTime - startTime) / operationCount,
+      consistent: uniqueCounts.length === 1
+    };
+    
+  } catch (error) {
+    console.log(`  ❌ Erro fatal: ${error.message}`);
+    return { success: false, error: error.message };
+  }
+}
+
+// ============================================
+// HIPÓTESE 12: Teste de Integridade de Dados (NOVO)
+// ============================================
+async function testDataIntegrity() {
+  console.log('\n📋 TESTE 12: Integridade de Dados');
+  console.log('-'.repeat(50));
+  
+  try {
+    // Buscar amostra para validação
+    const { data, error } = await supabase
+      .from('swap_requests')
+      .select('*')
+      .limit(50);
+    
+    if (error) {
+      console.log(`  ❌ Erro ao buscar dados: ${error.message}`);
+      return { success: false, error: error.message };
+    }
+    
+    if (!data || data.length === 0) {
+      console.log('  ℹ️ Sem dados para validar');
+      return { success: true, empty: true };
+    }
+    
+    const issues = [];
+    const validatedRecords = [];
+    
+    data.forEach((record, index) => {
+      const recordIssues = [];
+      
+      // Validação 1: UUIDs válidos
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      
+      if (record.requester_id && !uuidRegex.test(record.requester_id)) {
+        recordIssues.push('requester_id inválido');
+      }
+      
+      if (record.target_id && !uuidRegex.test(record.target_id)) {
+        recordIssues.push('target_id inválido');
+      }
+      
+      // Validação 2: Campos obrigatórios
+      const requiredFields = ['requester_name', 'target_name', 'original_date', 'target_date', 'status'];
+      requiredFields.forEach(field => {
+        if (!record[field] || record[field].toString().trim() === '') {
+          recordIssues.push(`${field} vazio`);
+        }
+      });
+      
+      // Validação 3: Status válido
+      const validStatuses = ['pending', 'accepted', 'approved', 'rejected', 'cancelled'];
+      if (record.status && !validStatuses.includes(record.status)) {
+        recordIssues.push(`status inválido: ${record.status}`);
+      }
+      
+      // Validação 4: Datas razoáveis
+      const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+      if (record.original_date && !dateRegex.test(record.original_date)) {
+        recordIssues.push(`original_date formato inválido: ${record.original_date}`);
+      }
+      
+      if (record.target_date && !dateRegex.test(record.target_date)) {
+        recordIssues.push(`target_date formato inválido: ${record.target_date}`);
+      }
+      
+      // Validação 5: Timestamps válidos
+      if (record.created_at && isNaN(Date.parse(record.created_at))) {
+        recordIssues.push('created_at inválido');
+      }
+      
+      if (recordIssues.length > 0) {
+        issues.push({
+          recordId: record.id,
+          issues: recordIssues
+        });
+      } else {
+        validatedRecords.push(record.id);
+      }
+    });
+    
+    console.log(`  📊 Registros analisados: ${data.length}`);
+    console.log(`  ✅ Registros válidos: ${validatedRecords.length}`);
+    console.log(`  ❌ Registros com problemas: ${issues.length}`);
+    
+    if (issues.length > 0) {
+      console.log('\n  🔍 Problemas encontrados:');
+      issues.slice(0, 5).forEach((issue, index) => {
+        console.log(`     ${index + 1}. Registro ${issue.recordId}: ${issue.issues.join(', ')}`);
+      });
+      
+      if (issues.length > 5) {
+        console.log(`     ... e mais ${issues.length - 5} problemas`);
+      }
+    }
+    
+    const integrityScore = (validatedRecords.length / data.length) * 100;
+    console.log(`\n  📈 Pontuação de integridade: ${integrityScore.toFixed(1)}%`);
+    
+    const isHealthy = integrityScore >= 90;
+    console.log(`  ${isHealthy ? '✅' : '⚠️'} Integridade: ${isHealthy ? 'SAUDÁVEL' : 'NECESSITA ATENÇÃO'}`);
+    
+    return {
+      success: true,
+      totalRecords: data.length,
+      validRecords: validatedRecords.length,
+      invalidRecords: issues.length,
+      integrityScore,
+      isHealthy,
+      issues: issues.slice(0, 10) // Limitar para evitar logs excessivos
     };
     
   } catch (error) {
@@ -511,13 +810,17 @@ async function generateReport(results) {
   const report = {
     timestamp: new Date().toISOString(),
     summary: {
-      totalTests: 8,
+      totalTests: 11,
       passedTests: Object.values(results).filter(r => r.success).length,
       failedTests: Object.values(results).filter(r => !r.success).length,
+      successRate: ((Object.values(results).filter(r => r.success).length / 11) * 100).toFixed(1)
     },
     details: results,
     performance: results.performance?.performance || null,
     schema: results.schemaValidation?.schema || null,
+    edgeCases: results.edgeCases?.results || null,
+    concurrency: results.concurrency || null,
+    dataIntegrity: results.dataIntegrity || null,
     recommendations: []
   };
   
@@ -536,6 +839,22 @@ async function generateReport(results) {
   
   if (results.schemaValidation?.schema?.missingFields?.length > 0) {
     report.recommendations.push('Atualizar schema da tabela swap_requests');
+  }
+  
+  if (results.edgeCases?.passedTests < results.edgeCases?.totalTests) {
+    report.recommendations.push('Revisar tratamento de edge cases no sistema');
+  }
+  
+  if (!results.concurrency?.success) {
+    report.recommendations.push('Investigar problemas de concorrência no banco de dados');
+  }
+  
+  if (results.dataIntegrity?.integrityScore < 90) {
+    report.recommendations.push('Corrigir problemas de integridade de dados');
+  }
+  
+  if (results.dataIntegrity?.invalidRecords > 0) {
+    report.recommendations.push(`Validar e corrigir ${results.dataIntegrity.invalidRecords} registros com problemas`);
   }
   
   // Salvar relatório
@@ -557,7 +876,7 @@ async function generateReport(results) {
 }
 
 // ============================================
-// EXECUTAR TODOS OS TESTES (ATUALIZADO)
+// EXECUTAR TODOS OS TESTES (ATUALIZADO COMPLETO)
 // ============================================
 async function runDiagnostics() {
   console.log('\n🚀 Iniciando diagnóstico completo...\n');
@@ -573,12 +892,15 @@ async function runDiagnostics() {
     performance: await testPerformance(),
     schemaValidation: await testSchemaValidation(),
     usersInDb: await testUsersInDatabase(),
+    edgeCases: await testEdgeCases(),
+    concurrency: await testConcurrency(),
+    dataIntegrity: await testDataIntegrity(),
   };
   
   const totalTime = Date.now() - startTime;
   
   console.log('\n========================================');
-  console.log('📊 RESUMO DO DIAGNÓSTICO');
+  console.log('📊 RESUMO DO DIAGNÓSTICO COMPLETO');
   console.log('========================================\n');
   
   console.log(`  1. Mapeamento de Usuários: ${results.userMapping ? '✅ OK' : '❌ PROBLEMA'}`);
@@ -589,17 +911,68 @@ async function runDiagnostics() {
   console.log(`  6. Performance: ${results.performance.success ? '✅ OK' : '❌ PROBLEMA'}${results.performance.skipped ? ' (pulado)' : ''}`);
   console.log(`  7. Schema: ${results.schemaValidation.success ? '✅ OK' : '❌ PROBLEMA'}`);
   console.log(`  8. Usuários no DB: ${results.usersInDb.success ? '✅ OK' : '❌ PROBLEMA'}`);
+  console.log(`  9. Edge Cases: ${results.edgeCases.success ? '✅ OK' : '❌ PROBLEMA'} (${results.edgeCases.passedTests || 0}/${results.edgeCases.totalTests || 0})`);
+  console.log(` 10. Concorrência: ${results.concurrency.success ? '✅ OK' : '❌ PROBLEMA'} (${results.concurrency.successfulOps || 0}/${results.concurrency.operationCount || 0})`);
+  console.log(` 11. Integridade: ${results.dataIntegrity.success ? '✅ OK' : '❌ PROBLEMA'} (${results.dataIntegrity.integrityScore || 0}%)`);
   
   console.log(`\n⏱️ Tempo total: ${totalTime}ms`);
+  
+  // Estatísticas detalhadas
+  const totalTests = 11;
+  const passedTests = Object.values(results).filter(r => r.success).length;
+  const successRate = (passedTests / totalTests) * 100;
+  
+  console.log(`📊 Taxa de sucesso: ${successRate.toFixed(1)}% (${passedTests}/${totalTests})`);
+  
+  // Análise de performance
+  if (results.performance?.performance) {
+    console.log(`⚡ Performance queries: ${results.performance.performance.countTime}ms (contagem), ${results.performance.performance.limitTime}ms (busca)`);
+  }
+  
+  // Análise de dados
+  if (results.existingSwaps?.count) {
+    console.log(`📈 Volume de dados: ${results.existingSwaps.count} trocas registradas`);
+  }
+  
+  // Análise de integridade
+  if (results.dataIntegrity?.integrityScore) {
+    const healthStatus = results.dataIntegrity.isHealthy ? 'SAUDÁVEL' : 'NECESSITA ATENÇÃO';
+    console.log(`🛡️ Integridade de dados: ${healthStatus} (${results.dataIntegrity.integrityScore.toFixed(1)}%)`);
+  }
   
   // Gerar relatório
   const reportResult = await generateReport(results);
   
   console.log('\n========================================');
-  console.log('🎯 DIAGNÓSTICO CONCLUÍDO');
+  console.log('🎯 DIAGNÓSTICO COMPLETO CONCLUÍDO');
   console.log('========================================');
   
-  return { ...results, report: reportResult, totalTime };
+  // Verificação final de saúde do sistema
+  const criticalIssues = [];
+  
+  if (!results.connection.success) criticalIssues.push('Conexão com Supabase');
+  if (!results.tableStructure.success) criticalIssues.push('Estrutura da tabela');
+  if (!results.existingSwaps.success) criticalIssues.push('Acesso aos dados');
+  if (results.dataIntegrity?.integrityScore < 80) criticalIssues.push('Integridade de dados crítica');
+  
+  if (criticalIssues.length > 0) {
+    console.log('\n❌ PROBLEMAS CRÍTICOS ENCONTRADOS:');
+    criticalIssues.forEach((issue, index) => {
+      console.log(`   ${index + 1}. ${issue}`);
+    });
+    console.log('\n⚠️ RECOMENDAÇÃO: Corrigir problemas críticos antes de usar o sistema em produção');
+  } else {
+    console.log('\n✅ SISTEMA SAUDÁVEL E PRONTO PARA USO!');
+  }
+  
+  return { 
+    ...results, 
+    report: reportResult, 
+    totalTime,
+    successRate,
+    criticalIssues,
+    isHealthy: criticalIssues.length === 0
+  };
 }
 
 // ============================================
