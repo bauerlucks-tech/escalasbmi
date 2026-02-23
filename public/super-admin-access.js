@@ -219,17 +219,6 @@
         init();
     }
     
-    // Adicionar listener para mudanças no DOM (caso o elemento apareça depois)
-    const domObserver = new MutationObserver(() => {
-        console.log('🔄 DOM modificado, verificando novamente...');
-        setTimeout(addSuperAdminKey, 100);
-    });
-    
-    domObserver.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-    
     console.log('✅ Módulo de acesso Super Admin carregado!');
     
 })();
