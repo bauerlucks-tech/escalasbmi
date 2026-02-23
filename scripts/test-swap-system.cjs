@@ -263,10 +263,10 @@ async function testExistingSwaps() {
 }
 
 // ============================================
-// HIPÓTESE 5: Teste de inserção
+// HIPÓTESE 5: Teste de inserção com rollback
 // ============================================
 async function testInsertion() {
-  console.log('\n📋 TESTE 5: Teste de Inserção (dry run)');
+  console.log('\n📋 TESTE 5: Teste de Inserção com Rollback');
   console.log('-'.repeat(50));
   
   // Simular dados de uma troca
@@ -315,7 +315,105 @@ async function testInsertion() {
   
   console.log('  ✅ UUIDs válidos');
   
-  return { success: true, testSwap };
+  // VERIFICAÇÃO REAL: Contar registros antes da inserção
+  const { count: countBefore, error: countError } = await supabase
+    .from('swap_requests')
+    .select('*', { count: 'exact', head: true });
+  
+  if (countError) {
+    console.log(`  ❌ Erro ao contar registros antes: ${countError.message}`);
+    return { success: false, error: countError.message };
+  }
+  
+  console.log(`  📊 Registros antes do teste: ${countBefore}`);
+  
+  // TESTE REAL: Inserir registro para validar
+  let insertedId = null;
+  try {
+    const { data, error } = await supabase
+      .from('swap_requests')
+      .insert(testSwap)
+      .select('id')
+      .single();
+    
+    if (error) {
+      console.log(`  ❌ Erro na inserção: ${error.message}`);
+      return { success: false, error: error.message };
+    }
+    
+    insertedId = data.id;
+    console.log(`  ✅ Registro inserido com ID: ${insertedId}`);
+    
+  } catch (insertError) {
+    console.log(`  ❌ Erro na inserção: ${insertError.message}`);
+    return { success: false, error: insertError.message };
+  }
+  
+  // VERIFICAÇÃO: Contar registros depois da inserção
+  const { count: countAfter, error: countAfterError } = await supabase
+    .from('swap_requests')
+    .select('*', { count: 'exact', head: true });
+  
+  if (countAfterError) {
+    console.log(`  ❌ Erro ao contar registros depois: ${countAfterError.message}`);
+  } else {
+    console.log(`  📊 Registros depois do teste: ${countAfter}`);
+    
+    if (countAfter === countBefore + 1) {
+      console.log('  ✅ Inserção validada com sucesso');
+    } else {
+      console.log(`  ⚠️ Contagem inconsistente: esperado ${countBefore + 1}, encontrado ${countAfter}`);
+    }
+  }
+  
+  // ROLLBACK: Remover registro inserido
+  try {
+    const { error: deleteError } = await supabase
+      .from('swap_requests')
+      .delete()
+      .eq('id', insertedId);
+    
+    if (deleteError) {
+      console.log(`  ❌ Erro no rollback: ${deleteError.message}`);
+      console.log(`  ⚠️ Registro ${insertedId} não foi removido - POLUIÇÃO DETECTADA!`);
+      return { success: false, error: deleteError.message, insertedId };
+    }
+    
+    console.log(`  ✅ Rollback executado: registro ${insertedId} removido`);
+    
+  } catch (deleteError) {
+    console.log(`  ❌ Erro no rollback: ${deleteError.message}`);
+    console.log(`  ⚠️ Registro ${insertedId} não foi removido - POLUIÇÃO DETECTADA!`);
+    return { success: false, error: deleteError.message, insertedId };
+  }
+  
+  // VERIFICAÇÃO FINAL: Contar registros após rollback
+  const { count: countFinal, error: countFinalError } = await supabase
+    .from('swap_requests')
+    .select('*', { count: 'exact', head: true });
+  
+  if (countFinalError) {
+    console.log(`  ❌ Erro na contagem final: ${countFinalError.message}`);
+  } else {
+    console.log(`  📊 Registros após rollback: ${countFinal}`);
+    
+    if (countFinal === countBefore) {
+      console.log('  ✅ Rollback validado - banco de dados limpo');
+    } else {
+      console.log(`  ⚠️ Rollback falhou: esperado ${countBefore}, encontrado ${countFinal}`);
+      console.log(`  ❌ POLUIÇÃO DO BANCO DE DADOS DETECTADA!`);
+    }
+  }
+  
+  return { 
+    success: true, 
+    testSwap,
+    insertedId,
+    countBefore,
+    countAfter,
+    countFinal,
+    rollbackSuccessful: countFinal === countBefore
+  };
 }
 
 // ============================================
@@ -813,7 +911,7 @@ async function generateReport(results) {
       totalTests: 11,
       passedTests: Object.values(results).filter(r => r.success).length,
       failedTests: Object.values(results).filter(r => !r.success).length,
-      successRate: ((Object.values(results).filter(r => r.success).length / 11) * 100).toFixed(1)
+      successRate: parseFloat(((Object.values(results).filter(r => r.success).length / 11) * 100).toFixed(1))
     },
     details: results,
     performance: results.performance?.performance || null,
@@ -855,6 +953,10 @@ async function generateReport(results) {
   
   if (results.dataIntegrity?.invalidRecords > 0) {
     report.recommendations.push(`Validar e corrigir ${results.dataIntegrity.invalidRecords} registros com problemas`);
+  }
+  
+  if (!results.insertionTest?.rollbackSuccessful) {
+    report.recommendations.push('Investigar falha no rollback do teste de inserção - possível poluição do banco');
   }
   
   // Salvar relatório
