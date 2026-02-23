@@ -7,6 +7,16 @@ on:
     # Backup completo semanal - Domingos 02:00 UTC
     - cron: '0 2 * * 0'
   workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Tipo de backup'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - source_only
+          - database_only
 
 permissions:
   contents: write
@@ -38,6 +48,11 @@ jobs:
         echo "BACKUP_DIR=./backups" >> $GITHUB_ENV
         echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
         echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
+        
+        # Determinar tipo de backup
+        BACKUP_TYPE=${{ github.event.inputs.backup_type || 'full' }}
+        echo "BACKUP_TYPE=$BACKUP_TYPE" >> $GITHUB_ENV
+        echo "Tipo de backup: $BACKUP_TYPE"
 
     - name: Create backup directory
       env:
@@ -45,6 +60,7 @@ jobs:
       run: mkdir -p ${{ env.BACKUP_DIR }}
 
     - name: Backup Source Code
+      if: ${{ env.BACKUP_TYPE == 'full' || env.BACKUP_TYPE == 'source_only' }}
       env:
         BACKUP_DIR: ./backups
         BACKUP_TIMESTAMP: ${{ env.BACKUP_TIMESTAMP }}
@@ -61,8 +77,12 @@ jobs:
         echo "SOURCE_SIZE=$SOURCE_SIZE" >> $GITHUB_ENV
         echo "✅ Código backup: $SOURCE_SIZE"
 
+    - name: Install Supabase client
+      if: ${{ env.BACKUP_TYPE == 'full' || env.BACKUP_TYPE == 'database_only' }}
+      run: npm install @supabase/supabase-js
+
     - name: Backup Database
-      if: ${{ github.event.inputs.backup_type == 'full' || github.event.inputs.backup_type == 'database_only' || github.event.inputs.backup_type == '' }}
+      if: ${{ env.BACKUP_TYPE == 'full' || env.BACKUP_TYPE == 'database_only' }}
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

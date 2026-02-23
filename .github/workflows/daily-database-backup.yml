@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   backup-database:
@@ -21,12 +21,11 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
 
     - name: Install dependencies
       run: |
-        npm install -g supabase
         npm install @supabase/supabase-js
 
     - name: Create backup directory
@@ -49,10 +48,16 @@ jobs:
         PROJECT_REF=$(echo "${{ secrets.SUPABASE_URL }}" | sed -n 's|https://\(.*\)\.supabase\.co.*|\1|p')
         echo "PROJECT_REF=${PROJECT_REF}" >> $GITHUB_ENV
         echo "Database project reference: ${PROJECT_REF}"
+        
+        # O host do banco é diferente da URL HTTPS
+        DB_HOST="db.${PROJECT_REF}.supabase.co"
+        echo "DB_HOST=${DB_HOST}" >> $GITHUB_ENV
+        echo "Database host: ${DB_HOST}"
 
     - name: Create database backup
       env:
         PROJECT_REF: ${{ env.PROJECT_REF }}
+        DB_HOST: ${{ env.DB_HOST }}
         BACKUP_FILENAME: ${{ env.BACKUP_FILENAME }}
         BACKUP_PATH: ${{ env.BACKUP_PATH }}
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -60,84 +65,102 @@ jobs:
       run: |
         echo "🔄 Iniciando backup do banco de dados..."
         echo "Arquivo: ${{ env.BACKUP_FILENAME }}"
+        echo "Host do banco: ${{ env.DB_HOST }}"
         
-        # Criar backup usando pg_dump com a URL do Supabase
-        PGPASSWORD="${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" pg_dump \
-          --host="${{ secrets.SUPABASE_URL }}" \
-          --port=5432 \
-          --username=postgres \
-          --dbname=postgres \
-          --verbose \
-          --clean \
-          --if-exists \
-          --no-owner \
-          --no-privileges \
-          --format=custom \
-          --file="${{ env.BACKUP_PATH }}" || {
-          echo "❌ Falha no backup com pg_dump, tentando método alternativo..."
+        # Usar REST API do Supabase para criar backup (mais confiável)
+        node << 'EOF'
+        const { createClient } = require('@supabase/supabase-js');
+        const fs = require('fs');
+        const path = require('path');
+
+        const supabase = createClient(
+          process.env.SUPABASE_URL,
+          process.env.SUPABASE_SERVICE_ROLE_KEY
+        );
+
+        async function createBackup() {
+          console.log('🔄 Criando backup via Supabase REST API...');
+          console.log('Project: ' + process.env.PROJECT_REF);
           
-          # Método alternativo: usar REST API para exportar dados
-          node << 'EOF'
-          const { createClient } = require('@supabase/supabase-js');
-          const fs = require('fs');
-          const path = require('path');
-
-          const supabase = createClient(
-            process.env.SUPABASE_URL,
-            process.env.SUPABASE_SERVICE_ROLE_KEY
-          );
-
-          async function createBackup() {
-            console.log('🔄 Criando backup via REST API...');
+          const tables = [
+            'users', 
+            'schedules',
+            'month_schedules',
+            'swap_requests',
+            'vacation_requests',
+            'audit_logs',
+            'notifications',
+            'preferences',
+            'operator_requests'
+          ];
+          
+          const backupData = {
+            metadata: {
+              timestamp: new Date().toISOString(),
+              version: '3.0',
+              project_ref: process.env.PROJECT_REF,
+              backup_type: 'full',
+              tables: tables
+            },
+            data: {},
+            errors: []
+          };
+          
+          let totalRecords = 0;
+          
+          for (const table of tables) {
+            console.log(`📊 Exportando tabela: ${table}`);
             
-            const tables = [
-              'users',
-              'schedules', 
-              'swap_requests',
-              'vacation_requests',
-              'audit_logs',
-              'notifications',
-              'preferences'
-            ];
-            
-            const backupData = {
-              metadata: {
-                timestamp: new Date().toISOString(),
-                version: '1.0',
-                project_ref: process.env.PROJECT_REF,
-                tables: tables
-              },
-              data: {}
-            };
-            
-            for (const table of tables) {
-              console.log(`📊 Exportando tabela: ${table}`);
-              
-              const { data, error } = await supabase
+            try {
+              const { data, error, count } = await supabase
                 .from(table)
-                .select('*');
+                .select('*', { count: 'exact' });
               
               if (error) {
-                console.error(`❌ Erro ao exportar ${table}:`, error);
-                throw error;
+                console.error(`❌ Erro ao exportar ${table}:`, error.message);
+                backupData.errors.push({ table, error: error.message });
+                backupData.data[table] = { records: [], count: 0, error: error.message };
+              } else {
+                const recordCount = count || data?.length || 0;
+                backupData.data[table] = { 
+                  records: data || [], 
+                  count: recordCount,
+                  exported_at: new Date().toISOString()
+                };
+                totalRecords += recordCount;
+                console.log(`✅ ${table}: ${recordCount} registros`);
               }
-              
-              backupData.data[table] = data;
+            } catch (err) {
+              console.error(`❌ Exceção ao exportar ${table}:`, err.message);
+              backupData.errors.push({ table, error: err.message });
+              backupData.data[table] = { records: [], count: 0, error: err.message };
             }
-            
-            // Salvar backup como JSON
-            const backupPath = process.env.BACKUP_PATH.replace('.sql', '.json');
-            fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
-            console.log(`✅ Backup salvo em: ${backupPath}`);
-            
-            // Atualizar variáveis de ambiente
-            fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_PATH=${backupPath}\n`);
-            fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_FILENAME=${process.env.BACKUP_FILENAME.replace('.sql', '.json')}\n`);
           }
-
-          createBackup().catch(console.error);
-          EOF
+          
+          backupData.metadata.total_records = totalRecords;
+          backupData.metadata.total_tables = tables.length;
+          backupData.metadata.successful_tables = tables.length - backupData.errors.length;
+          
+          // Salvar backup como JSON
+          const backupPath = process.env.BACKUP_PATH.replace('.sql', '.json');
+          fs.writeFileSync(backupPath, JSON.stringify(backupData, null, 2));
+          
+          const fileSize = fs.statSync(backupPath).size;
+          console.log(`✅ Backup salvo em: ${backupPath}`);
+          console.log(`📊 Total de registros: ${totalRecords}`);
+          console.log(`📊 Tamanho: ${(fileSize / 1024).toFixed(2)} KB`);
+          
+          // Atualizar variáveis de ambiente
+          fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_PATH=${backupPath}\n`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_FILENAME=${path.basename(backupPath)}\n`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `BACKUP_SIZE=${fileSize}\n`);
         }
+
+        createBackup().catch(err => {
+          console.error('❌ Erro fatal no backup:', err);
+          process.exit(1);
+        });
+        EOF
 
     - name: Verify backup file
       env:
