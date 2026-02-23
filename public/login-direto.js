@@ -85,7 +85,8 @@ class DirectAuthManager {
         { id: 2, name: 'LUCAS', password: 'lucas123', role: 'operator', status: 'active' },
         { id: 3, name: 'CARLOS', password: 'carlos123', role: 'operator', status: 'active' },
         { id: 4, name: 'ROSANA', password: 'rosana123', role: 'operator', status: 'active' },
-        { id: 5, name: 'HENRIQUE', password: 'henrique123', role: 'operator', status: 'active' }
+        { id: 5, name: 'HENRIQUE', password: 'henrique123', role: 'operator', status: 'active' },
+        { id: 6, name: 'RICARDO', password: 'ricardo123', role: 'operator', status: 'active' }
       ];
       
       const user = users.find(u => u.name === username && u.password === password);

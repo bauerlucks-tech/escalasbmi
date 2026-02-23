@@ -1003,6 +1003,7 @@ class SystemAuthIntegration {
       // Limpar todos os dados de autenticação
       this.authManager.currentUser = null;
       localStorage.removeItem('directAuth_currentUser');
+      localStorage.removeItem('directAuth_superAdminMode');
       localStorage.removeItem('reactCurrentUser');
       localStorage.removeItem('escala_currentUser');
       localStorage.removeItem('currentUser');
@@ -1037,16 +1038,13 @@ class SystemAuthIntegration {
       const versionHeader = document.getElementById('version-header');
       if (versionHeader) versionHeader.remove();
       
-      // Criar tela de login
-      this.showLoginScreen();
+      // Forçar reload completo para limpar estado do React
+      console.log('🔄 Forçando reload completo...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
       
       console.log('✅ Logout concluído');
-      
-      // Forçar reload completo
-      setTimeout(() => {
-        console.log('🔄 Forçando reload completo...');
-        window.location.reload();
-      }, 1000);
       
     } catch (error) {
       console.error('❌ Erro no logout:', error);
