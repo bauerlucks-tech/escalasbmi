@@ -13,6 +13,7 @@ export const USER_UUIDS: UserMapping = {
   'ROSANA': 'd793d805-3468-4bc4-b7bf-a722b570ec98',
   'HENRIQUE': '2e7e953f-5b4e-44e9-bc69-d463a92fa99a',
   'KELLY': '9a91c13a-cf3a-4a08-af02-986163974acc',
+  'GUILHERME': 'b5a1b456-e837-4f47-ab41-4734a00a0355',
   
   // Administradores
   'RICARDO': 'fd2513b2-3260-4ad2-97b1-6f5fbb88c192',
@@ -21,7 +22,17 @@ export const USER_UUIDS: UserMapping = {
 
 // Função para obter UUID de usuário
 export const getUserUUID = (userName: string): string => {
-  return USER_UUIDS[userName] || userName; // Retorna o nome se não encontrado
+  // Normalizar para maiúsculas para evitar problemas de case sensitivity
+  const normalizedName = userName.toUpperCase();
+  const uuid = USER_UUIDS[normalizedName];
+  
+  if (uuid) {
+    console.log(`[DEBUG getUserUUID] "${userName}" -> "${uuid}"`);
+    return uuid;
+  }
+  
+  console.warn(`[WARN getUserUUID] UUID não encontrado para "${userName}", retornando nome original`);
+  return userName; // Retorna o nome se não encontrado
 };
 
 // Função para obter UUID do admin
