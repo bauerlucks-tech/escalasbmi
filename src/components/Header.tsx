@@ -24,7 +24,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const [showHelp, setShowHelp] = React.useState(false);
   const [showTestPanel, setShowTestPanel] = React.useState(false);
   
-  console.log('Header render - activeTab:', activeTab);
+  // Remover debug log para evitar spam no console
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Header render - activeTab:', activeTab);
+  }
   
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;

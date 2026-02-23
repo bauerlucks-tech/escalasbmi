@@ -823,13 +823,18 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const getRequestsForMe = (userName: string) => {
     const requests = swapRequests.filter(req => req.targetName === userName && req.status === 'pending');
-    console.log('🔍 getRequestsForMe Debug:', {
-      userName,
-      totalSwapRequests: swapRequests.length,
-      pendingRequests: requests.length,
-      allRequestsForUser: swapRequests.filter(req => req.targetName === userName),
-      pendingRequestsDetails: requests
-    });
+    
+    // Remover debug log para evitar spam no console
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 getRequestsForMe Debug:', {
+        userName,
+        totalSwapRequests: swapRequests.length,
+        pendingRequests: requests.length,
+        allRequestsForUser: swapRequests.filter(req => req.targetName === userName),
+        pendingRequestsDetails: requests
+      });
+    }
+    
     return requests;
   };
 
