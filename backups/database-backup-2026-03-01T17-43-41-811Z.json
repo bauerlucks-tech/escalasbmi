@@ -1,0 +1,106 @@
+{
+  "metadata": {
+    "timestamp": "2026-03-01T17:43:41.865Z",
+    "version": "3.0",
+    "source": "supabase_client",
+    "project_ref": "lsxmwwwmgfjwnowlsmzf",
+    "backup_type": "full",
+    "total_records": 0,
+    "total_tables": 9,
+    "successful_tables": 0,
+    "errors": [
+      {
+        "table": "users",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "schedules",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "month_schedules",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "swap_requests",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "vacation_requests",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "audit_logs",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "notifications",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "preferences",
+        "error": "Invalid API key"
+      },
+      {
+        "table": "operator_requests",
+        "error": "Invalid API key"
+      }
+    ]
+  },
+  "tables": {
+    "users": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.237Z"
+    },
+    "schedules": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.388Z"
+    },
+    "month_schedules": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.405Z"
+    },
+    "swap_requests": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.422Z"
+    },
+    "vacation_requests": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.441Z"
+    },
+    "audit_logs": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.458Z"
+    },
+    "notifications": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.475Z"
+    },
+    "preferences": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.492Z"
+    },
+    "operator_requests": {
+      "records": [],
+      "count": 0,
+      "error": "Invalid API key",
+      "exported_at": "2026-03-01T17:43:42.509Z"
+    }
+  }
+}

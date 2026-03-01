@@ -1,0 +1,4621 @@
+{
+  "timestamp": "2026-03-01T17:44:35.349Z",
+  "tables": {
+    "month_schedules": {
+      "records": [
+        {
+          "id": "17e3936b-1d10-4e82-b763-6dc7c8b06485",
+          "month": 1,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/01/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "02/01/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "ROSANA"
+            },
+            {
+              "date": "03/01/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "04/01/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "05/01/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "ROSANA"
+            },
+            {
+              "date": "06/01/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "07/01/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "08/01/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "09/01/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "10/01/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "KELLY"
+            },
+            {
+              "date": "11/01/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "12/01/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "13/01/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "14/01/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "ROSANA"
+            },
+            {
+              "date": "15/01/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "16/01/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "ROSANA"
+            },
+            {
+              "date": "17/01/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "18/01/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "19/01/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "20/01/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "21/01/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "22/01/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "23/01/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "24/01/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "ROSANA"
+            },
+            {
+              "date": "25/01/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "26/01/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "KELLY"
+            },
+            {
+              "date": "27/01/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "28/01/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "ROSANA"
+            },
+            {
+              "date": "29/01/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "30/01/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "31/01/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.11+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:47.790921+00:00",
+          "updated_at": "2026-02-01T07:27:47.790921+00:00"
+        },
+        {
+          "id": "be896473-47aa-46b7-b02f-dffd558d2276",
+          "month": 3,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/03/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "02/03/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "03/03/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "04/03/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "05/03/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "06/03/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "07/03/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "08/03/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "09/03/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "10/03/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "11/03/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "12/03/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "13/03/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "14/03/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "15/03/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "16/03/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "17/03/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "18/03/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "19/03/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "20/03/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "21/03/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "22/03/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "23/03/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "24/03/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "25/03/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "26/03/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "27/03/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "28/03/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "29/03/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "30/03/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "31/03/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.111+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:48.357423+00:00",
+          "updated_at": "2026-02-01T07:27:48.357423+00:00"
+        },
+        {
+          "id": "3d273adf-3011-4fdb-893a-3e528762ed30",
+          "month": 4,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/04/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "02/04/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "03/04/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "04/04/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "05/04/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "06/04/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "07/04/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "08/04/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "09/04/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "10/04/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "11/04/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "12/04/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "13/04/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "14/04/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "15/04/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "16/04/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "17/04/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "18/04/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "19/04/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "20/04/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "21/04/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "22/04/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "23/04/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "24/04/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "25/04/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "26/04/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "27/04/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "28/04/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "29/04/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "30/04/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.111+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:48.654932+00:00",
+          "updated_at": "2026-02-01T07:27:48.654932+00:00"
+        },
+        {
+          "id": "cbe4a3a7-436d-4061-87e7-9c84dcbdf64f",
+          "month": 5,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/05/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "02/05/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "03/05/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "04/05/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "05/05/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "06/05/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "07/05/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "08/05/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "09/05/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "10/05/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "11/05/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "12/05/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "13/05/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "14/05/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "15/05/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "16/05/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "17/05/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "18/05/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "19/05/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "20/05/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "21/05/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "22/05/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "23/05/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "24/05/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "25/05/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "26/05/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "27/05/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "28/05/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "29/05/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "30/05/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "31/05/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.112+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:49.045586+00:00",
+          "updated_at": "2026-02-01T07:27:49.045586+00:00"
+        },
+        {
+          "id": "9e210315-c831-4536-b924-f680a3bb28a9",
+          "month": 6,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/06/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "02/06/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "03/06/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "04/06/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "05/06/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "06/06/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "07/06/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "08/06/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "09/06/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "10/06/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "11/06/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "12/06/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "13/06/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "14/06/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "15/06/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "16/06/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "17/06/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "18/06/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "19/06/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "20/06/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "21/06/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "22/06/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "23/06/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "24/06/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "25/06/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "26/06/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "27/06/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "28/06/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "29/06/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "30/06/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.112+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:49.306712+00:00",
+          "updated_at": "2026-02-01T07:27:49.306712+00:00"
+        },
+        {
+          "id": "a6c56c0b-41a0-46d4-b5c2-0d5a52f3b097",
+          "month": 7,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/07/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "02/07/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "03/07/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "04/07/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "05/07/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "06/07/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "07/07/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "08/07/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "09/07/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "10/07/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "11/07/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "12/07/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "13/07/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "14/07/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "15/07/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "16/07/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "17/07/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "18/07/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "19/07/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "20/07/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "21/07/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "22/07/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "23/07/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "24/07/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "25/07/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "26/07/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "27/07/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "28/07/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "29/07/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "30/07/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "31/07/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.113+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:49.589536+00:00",
+          "updated_at": "2026-02-01T07:27:49.589536+00:00"
+        },
+        {
+          "id": "d1175b4e-d63a-4800-8056-eb105d43fe4f",
+          "month": 8,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/08/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "02/08/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "03/08/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "04/08/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "05/08/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "06/08/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "07/08/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "08/08/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "09/08/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "10/08/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "11/08/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "12/08/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "13/08/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "14/08/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "15/08/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "16/08/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "17/08/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "18/08/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "19/08/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "20/08/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "21/08/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "22/08/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "23/08/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "24/08/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "25/08/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "26/08/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "27/08/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "28/08/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "29/08/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "30/08/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "31/08/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.113+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:49.885876+00:00",
+          "updated_at": "2026-02-01T07:27:49.885876+00:00"
+        },
+        {
+          "id": "4cf762c7-8b8a-4046-b5ad-620133d5c3d9",
+          "month": 10,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/10/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "02/10/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "03/10/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "04/10/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "05/10/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "06/10/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "07/10/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "08/10/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "09/10/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "10/10/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "11/10/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "12/10/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "13/10/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "14/10/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "15/10/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "16/10/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "17/10/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "18/10/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "19/10/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "20/10/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "21/10/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "22/10/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "23/10/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "24/10/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "25/10/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "26/10/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "27/10/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "28/10/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "29/10/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "30/10/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "31/10/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.117+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:50.50462+00:00",
+          "updated_at": "2026-02-04T22:53:33.813866+00:00"
+        },
+        {
+          "id": "78afd20b-7d96-40b1-af56-cdc5788de5a1",
+          "month": 11,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/11/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "02/11/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "03/11/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "04/11/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "05/11/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "06/11/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "07/11/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "08/11/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "09/11/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "10/11/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "11/11/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "12/11/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "13/11/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "14/11/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "15/11/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "16/11/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "17/11/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "18/11/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "19/11/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "20/11/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "21/11/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "22/11/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "23/11/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "24/11/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "25/11/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "26/11/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "27/11/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "28/11/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "29/11/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "30/11/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.119+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:50.750342+00:00",
+          "updated_at": "2026-02-05T01:39:16.413411+00:00"
+        },
+        {
+          "id": "b80d655f-da36-41f2-9ead-9efb58a3ce31",
+          "month": 9,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/09/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "02/09/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "03/09/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "04/09/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "05/09/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "06/09/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "07/09/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "08/09/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "09/09/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "10/09/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "11/09/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "12/09/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "13/09/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "14/09/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "15/09/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "16/09/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "17/09/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "18/09/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "19/09/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "20/09/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "21/09/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "22/09/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "23/09/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "24/09/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "25/09/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "26/09/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "27/09/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "28/09/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "29/09/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "30/09/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.115+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:50.151593+00:00",
+          "updated_at": "2026-02-05T00:26:48.007626+00:00"
+        },
+        {
+          "id": "a675bfa6-fb05-4623-bfcc-be6f20399610",
+          "month": 2,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/02/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "02/02/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "03/02/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "04/02/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "05/02/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "06/02/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "07/02/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "08/02/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "09/02/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "10/02/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "11/02/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "12/02/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "13/02/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "14/02/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "15/02/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "16/02/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "17/02/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "18/02/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "19/02/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "20/02/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "21/02/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "HENRIQUE",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "22/02/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "23/02/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "24/02/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "25/02/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "26/02/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "27/02/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "28/02/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            }
+          ],
+          "imported_by": null,
+          "imported_at": "2026-02-01T07:15:22.111+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T15:02:20.119443+00:00",
+          "updated_at": "2026-02-01T15:02:20.119443+00:00"
+        },
+        {
+          "id": "5fcdf233-2227-4ae3-85f2-6015ca879759",
+          "month": 12,
+          "year": 2026,
+          "entries": [
+            {
+              "date": "01/12/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "02/12/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "03/12/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "04/12/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "05/12/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "06/12/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "CARLOS",
+              "meioPeriodo": "ROSANA"
+            },
+            {
+              "date": "07/12/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "08/12/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "09/12/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "LUCAS"
+            },
+            {
+              "date": "10/12/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "11/12/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "12/12/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "13/12/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "GUILHERME",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "14/12/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "15/12/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "16/12/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "17/12/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "18/12/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "19/12/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "20/12/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "21/12/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "22/12/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "23/12/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "24/12/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "25/12/2026",
+              "dayOfWeek": "SEXTA-FEIRA",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "26/12/2026",
+              "dayOfWeek": "SÁBADO",
+              "fechamento": "KELLY",
+              "meioPeriodo": "GUILHERME"
+            },
+            {
+              "date": "27/12/2026",
+              "dayOfWeek": "DOMINGO",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "CARLOS"
+            },
+            {
+              "date": "28/12/2026",
+              "dayOfWeek": "SEGUNDA-FEIRA",
+              "fechamento": "ROSANA",
+              "meioPeriodo": "KELLY"
+            },
+            {
+              "date": "29/12/2026",
+              "dayOfWeek": "TERÇA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "KELLY"
+            },
+            {
+              "date": "30/12/2026",
+              "dayOfWeek": "QUARTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "HENRIQUE"
+            },
+            {
+              "date": "31/12/2026",
+              "dayOfWeek": "QUINTA-FEIRA",
+              "fechamento": "LUCAS",
+              "meioPeriodo": "GUILHERME"
+            }
+          ],
+          "imported_by": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "imported_at": "2026-02-01T07:15:22.121+00:00",
+          "is_active": true,
+          "created_at": "2026-02-01T07:27:51.019554+00:00",
+          "updated_at": "2026-02-06T00:32:07.004+00:00"
+        }
+      ],
+      "count": 12
+    },
+    "swap_requests": {
+      "records": [
+        {
+          "id": "740a0a4b-6b06-4be6-8227-754d03e8f960",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "03/02/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "04/02/2026",
+          "target_shift": "meioPeriodo",
+          "status": "approved",
+          "responded_at": "2026-02-03T22:34:19.584+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-04T01:20:12.244+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-03T19:22:37.620016+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "9eb1c05f-261b-4fa7-add2-a3356d21a490",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "06/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "10/12/2026",
+          "target_shift": "meioPeriodo",
+          "status": "approved",
+          "responded_at": "2026-02-04T22:32:58.471+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-04T22:33:25.71+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-04T22:32:38.948918+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "0ee73f77-3dc1-4faf-b872-65611768c75b",
+          "requester_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "target_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "original_date": "03/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "06/12/2026",
+          "target_shift": "meioPeriodo",
+          "status": "approved",
+          "responded_at": "2026-02-04T22:36:00.94+00:00",
+          "responded_by": "LUCAS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-04T22:36:38.699+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-04T22:35:51.723798+00:00",
+          "requester_name": "CARLOS",
+          "target_name": "LUCAS"
+        },
+        {
+          "id": "911d2190-3630-4016-98cc-293e60046bf0",
+          "requester_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "target_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "original_date": "03/11/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "13/11/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-04T22:37:46.154+00:00",
+          "responded_by": "LUCAS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-04T22:38:01.889+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-04T22:37:40.749357+00:00",
+          "requester_name": "CARLOS",
+          "target_name": "LUCAS"
+        },
+        {
+          "id": "55054f5e-a07f-4f10-b6a5-97d89a0a46d1",
+          "requester_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "target_id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "original_date": "28/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "31/12/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-04T22:40:11.159+00:00",
+          "responded_by": "KELLY",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-04T22:40:34.679+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-04T22:39:52.350844+00:00",
+          "requester_name": "CARLOS",
+          "target_name": "KELLY"
+        },
+        {
+          "id": "affc9e72-3a84-4020-a02d-e79e31a0e422",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "10/09/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "11/10/2026",
+          "target_shift": "meioPeriodo",
+          "status": "approved",
+          "responded_at": "2026-02-04T22:51:27.532+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-04T22:51:44.243+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-04T22:51:05.824691+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "59590e15-adfe-4171-a3b0-8f8483d22bc6",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "16/09/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "16/09/2026",
+          "target_shift": "meioPeriodo",
+          "status": "approved",
+          "responded_at": "2026-02-04T22:54:48.783112+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-04T22:54:51.722735+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-04T22:54:38.455131+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "9c773b98-71ae-45ba-8e59-b9573e89ed16",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "original_date": "11/12/2026",
+          "original_shift": "fechamento",
+          "target_date": "30/12/2026",
+          "target_shift": "meioPeriodo",
+          "status": "approved",
+          "responded_at": "2026-02-05T01:28:05.386+00:00",
+          "responded_by": "HENRIQUE",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-05T01:28:24.545+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-05T01:26:39.285903+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "HENRIQUE"
+        },
+        {
+          "id": "beed8114-4a60-4c4a-973a-f825abad56a3",
+          "requester_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "target_id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "original_date": "12/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "20/12/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-05T01:31:36.253+00:00",
+          "responded_by": "KELLY",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-05T01:32:06.989+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-05T01:31:12.690416+00:00",
+          "requester_name": "HENRIQUE",
+          "target_name": "KELLY"
+        },
+        {
+          "id": "b228a7c3-cb65-47b3-8950-072e8e701651",
+          "requester_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "05/11/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "03/11/2026",
+          "target_shift": "meioPeriodo",
+          "status": "approved",
+          "responded_at": "2026-02-05T01:33:52.051+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-05T01:34:19.187+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-05T01:33:37.750221+00:00",
+          "requester_name": "HENRIQUE",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "10d6e68e-a6df-45f0-a699-2bffac56a26c",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "30/12/2026",
+          "original_shift": "fechamento",
+          "target_date": "31/12/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-05T01:43:04.826+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-05T01:43:16.234+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-05T01:42:57.149447+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "79f8663b-0c03-477f-a759-def470f2b331",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "original_date": "01/10/2026",
+          "original_shift": "fechamento",
+          "target_date": "02/10/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-05T04:41:46.565+00:00",
+          "responded_by": "ROSANA",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-05T04:42:08.368+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-05T04:41:29.438655+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "ROSANA"
+        },
+        {
+          "id": "fb4f3b1d-2a2a-4dc3-add6-f8efc8ce0e9a",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "original_date": "06/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "07/12/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-05T14:16:50.923+00:00",
+          "responded_by": "ROSANA",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-05T14:17:12.754+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-05T14:12:34.397957+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "ROSANA"
+        },
+        {
+          "id": "267c95b0-8e3c-4ffc-9bda-7b345cc80861",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "06/12/2026",
+          "original_shift": "fechamento",
+          "target_date": "09/12/2026",
+          "target_shift": "meioPeriodo",
+          "status": "accepted",
+          "responded_at": "2026-02-06T00:22:16.687475+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-06T00:22:21.090739+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-06T00:22:08.103105+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        },
+        {
+          "id": "3cb688d4-ad38-4582-8a49-6104d6c21ccc",
+          "requester_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "target_id": "b5a1b456-e837-4f47-ab41-4734a00a0355",
+          "original_date": "10/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "07/12/2026",
+          "target_shift": "meioPeriodo",
+          "status": "accepted",
+          "responded_at": "2026-02-06T00:27:34.85514+00:00",
+          "responded_by": "GUILHERME",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-06T00:27:38.850231+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-06T00:27:26.848025+00:00",
+          "requester_name": "CARLOS",
+          "target_name": "GUILHERME"
+        },
+        {
+          "id": "17aef119-b203-462c-bbaf-2ff1e5ec8f62",
+          "requester_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "target_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "original_date": "08/12/2026",
+          "original_shift": "meioPeriodo",
+          "target_date": "31/12/2026",
+          "target_shift": "fechamento",
+          "status": "approved",
+          "responded_at": "2026-02-06T00:30:49.711+00:00",
+          "responded_by": "CARLOS",
+          "admin_approved": true,
+          "admin_approved_at": "2026-02-06T00:32:06.134+00:00",
+          "admin_approved_by": "RICARDO",
+          "created_at": "2026-02-06T00:30:36.37432+00:00",
+          "requester_name": "LUCAS",
+          "target_name": "CARLOS"
+        }
+      ],
+      "count": 16
+    },
+    "vacation_requests": {
+      "records": [
+        {
+          "id": "d201dd77-8413-46fa-936c-569643b84d34",
+          "operator_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "start_date": "2026-09-20",
+          "end_date": "2026-09-25",
+          "total_days": 5,
+          "reason": "Férias teste",
+          "status": "approved",
+          "requested_at": "2026-02-05T00:16:48.897543+00:00",
+          "approved_by": "RICARDO",
+          "approved_at": "2026-02-05T00:16:52.479091+00:00",
+          "rejection_reason": null,
+          "month": 9,
+          "year": 2026,
+          "operator_name": "LUCAS"
+        },
+        {
+          "id": "c8c802f0-d787-4edf-bfc8-ce99783c1ddb",
+          "operator_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "start_date": "2026-09-22",
+          "end_date": "2026-09-24",
+          "total_days": 3,
+          "reason": "Férias teste CARLOS",
+          "status": "approved",
+          "requested_at": "2026-02-05T00:26:26.272341+00:00",
+          "approved_by": "RICARDO",
+          "approved_at": "2026-02-05T00:26:29.502484+00:00",
+          "rejection_reason": null,
+          "month": 9,
+          "year": 2026,
+          "operator_name": "CARLOS"
+        },
+        {
+          "id": "6596b469-b14d-4d74-bcfe-584a53d04aa8",
+          "operator_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "start_date": "2026-03-04",
+          "end_date": "2026-03-18",
+          "total_days": 15,
+          "reason": "Férias",
+          "status": "pending",
+          "requested_at": "2026-02-22T23:25:15.896219+00:00",
+          "approved_by": null,
+          "approved_at": null,
+          "rejection_reason": null,
+          "month": 3,
+          "year": 2026,
+          "operator_name": "LUCAS"
+        },
+        {
+          "id": "1c3c19ff-2566-4860-ad3e-b6eec57ee524",
+          "operator_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "start_date": "2026-03-04",
+          "end_date": "2026-03-18",
+          "total_days": 15,
+          "reason": "Férias",
+          "status": "approved",
+          "requested_at": "2026-02-22T23:44:34.279006+00:00",
+          "approved_by": "SUPER_ADMIN_HIDDEN",
+          "approved_at": "2026-02-23T01:25:43.22+00:00",
+          "rejection_reason": null,
+          "month": 3,
+          "year": 2026,
+          "operator_name": "LUCAS"
+        }
+      ],
+      "count": 4
+    },
+    "audit_logs": {
+      "records": [
+        {
+          "id": "ea06a865-668f-4814-bc29-0c78980877b6",
+          "user_id": null,
+          "user_name": "SYSTEM",
+          "action": "MIGRATION",
+          "details": "Migração do localStorage para Supabase concluída com sucesso",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T07:09:17.983287+00:00"
+        },
+        {
+          "id": "80925446-3bf5-4b2e-838c-9c08b4942010",
+          "user_id": null,
+          "user_name": "VERIFICATION_TEST",
+          "action": "SYSTEM_CHECK",
+          "details": "Verificação do sistema - 2026-02-01T14:30:32.725Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T14:30:32.725+00:00"
+        },
+        {
+          "id": "25cfbcd1-7603-424f-a847-f4606836cba1",
+          "user_id": null,
+          "user_name": "SYSTEM_CHECK",
+          "action": "FULL_VERIFICATION",
+          "details": "Verificação completa do sistema - 2026-02-01T14:54:25.545Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T14:54:25.545+00:00"
+        },
+        {
+          "id": "9e993af0-25cb-4ec2-9ad6-4fbad8b35bef",
+          "user_id": null,
+          "user_name": "FINAL_CHECK",
+          "action": "SYSTEM_READY",
+          "details": "Verificação final concluída - 2026-02-01T14:58:17.303Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T14:58:17.303+00:00"
+        },
+        {
+          "id": "e5660da9-45a9-4762-adab-61d5b0fcbb1d",
+          "user_id": null,
+          "user_name": "INTEGRITY_CHECK",
+          "action": "DATA_VERIFICATION",
+          "details": "Verificação de integridade - 2026-02-01T15:01:37.163Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:01:37.163+00:00"
+        },
+        {
+          "id": "0778371f-3aba-43ff-895d-87e69cf48381",
+          "user_id": null,
+          "user_name": "INTEGRITY_CHECK",
+          "action": "DATA_VERIFICATION",
+          "details": "Verificação de integridade - 2026-02-01T15:02:47.584Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:02:47.584+00:00"
+        },
+        {
+          "id": "d0d4d94b-2a22-4b5e-b973-c55b007a01d2",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T15:27:08.130Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:27:08.13+00:00"
+        },
+        {
+          "id": "eb03e953-a040-418f-9e75-3b0addb8611a",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGOUT",
+          "details": "Logout realizado - 2026-02-01T15:27:08.389Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:27:08.389+00:00"
+        },
+        {
+          "id": "7694cfb8-ef90-49e1-a5d0-d3dea68a4902",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T15:27:50.795Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:27:50.795+00:00"
+        },
+        {
+          "id": "95cf883a-44fb-46ac-8327-fa2c0c371fae",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGOUT",
+          "details": "Logout realizado - 2026-02-01T15:27:51.112Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:27:51.112+00:00"
+        },
+        {
+          "id": "1c80e27f-7dfc-43df-ac71-2d0ec8ad43eb",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T15:30:13.272Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:30:13.272+00:00"
+        },
+        {
+          "id": "136d8157-2a2a-4853-8990-8c5f41b18b3d",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGOUT",
+          "details": "Logout realizado - 2026-02-01T15:30:13.651Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:30:13.651+00:00"
+        },
+        {
+          "id": "6a34037e-875a-48d4-afbf-4c762a759cd6",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T15:48:21.234Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:48:21.234+00:00"
+        },
+        {
+          "id": "ee18855c-123f-44e1-9e95-db19e16d3fc4",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGOUT",
+          "details": "Logout realizado - 2026-02-01T15:58:27.050Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T15:58:27.05+00:00"
+        },
+        {
+          "id": "9273fe23-e71a-4fa7-8db4-ec7af7e78b30",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T16:13:52.547Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T16:13:52.547+00:00"
+        },
+        {
+          "id": "f42856fe-dacc-41b5-9a52-69f76568a257",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGOUT",
+          "details": "Logout realizado - 2026-02-01T16:16:53.407Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T16:16:53.407+00:00"
+        },
+        {
+          "id": "b3393051-3ae3-42c2-95bb-3d08c3540c67",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T16:28:45.775Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T16:28:45.775+00:00"
+        },
+        {
+          "id": "c31db857-62a8-46f4-9363-f3afb8609669",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T16:34:10.555Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T16:34:10.555+00:00"
+        },
+        {
+          "id": "218a610a-dfdb-40ce-b6b4-f39ff32f8a95",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T16:59:20.193Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T16:59:20.193+00:00"
+        },
+        {
+          "id": "d8c57178-8ae5-4dfa-8fc1-b3fcd61a7ebf",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T17:00:01.203Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T17:00:01.203+00:00"
+        },
+        {
+          "id": "85e8ab0a-4173-47cf-ad07-f7edd0aabbb8",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T17:00:28.319Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T17:00:28.319+00:00"
+        },
+        {
+          "id": "9deb8a1b-800e-4b97-a1dd-6a0f5aec0b26",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T17:04:18.634Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T17:04:18.634+00:00"
+        },
+        {
+          "id": "6e3338fb-4a5d-44e7-897c-048d292abe7b",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T17:06:49.144Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T17:06:49.144+00:00"
+        },
+        {
+          "id": "e057bc7b-b1cb-4ce9-87f8-f4345d6cc06a",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T17:08:38.947Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T17:08:38.948+00:00"
+        },
+        {
+          "id": "44b786ca-3e8c-49c5-ad5d-3a5d7c935c92",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-01T17:12:46.124Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-01T17:12:46.124+00:00"
+        },
+        {
+          "id": "c1203860-a583-4117-9310-adedaa6f6903",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T12:32:01.731Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T12:32:01.731+00:00"
+        },
+        {
+          "id": "a1997ee3-c728-4bf3-9995-05408c12e63c",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T12:55:58.879Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T12:55:58.879+00:00"
+        },
+        {
+          "id": "4e33c856-9d0e-442c-b62b-95e7d8f44b55",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T12:56:39.514Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T12:56:39.514+00:00"
+        },
+        {
+          "id": "708710be-dc5f-41b3-975c-d09abd797e4e",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:16:43.671Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:16:43.671+00:00"
+        },
+        {
+          "id": "df52bdab-5658-4ab1-a5ce-fa119deb6a22",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:17:06.147Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:17:06.147+00:00"
+        },
+        {
+          "id": "cf12c910-083c-470a-bd2a-f267806c8a2f",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:23:20.728Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:23:20.728+00:00"
+        },
+        {
+          "id": "1e5647eb-17b3-423a-9937-55c738573f43",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:24:57.322Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:24:57.322+00:00"
+        },
+        {
+          "id": "aaa8ffeb-1e23-41af-adaf-29818765f1d5",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:40:15.734Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:40:15.734+00:00"
+        },
+        {
+          "id": "b9cfe0c2-3356-4f88-90a4-03147a11f8db",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:44:58.800Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:44:58.8+00:00"
+        },
+        {
+          "id": "06a99350-308c-481d-b0ce-04aae651221b",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:49:37.785Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:49:37.785+00:00"
+        },
+        {
+          "id": "3629fb0a-1a47-40ee-9362-bb5a02de247d",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:57:52.814Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:57:52.814+00:00"
+        },
+        {
+          "id": "71fa375c-7a61-4020-a0cc-8000a5754ff9",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T13:58:56.967Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T13:58:56.967+00:00"
+        },
+        {
+          "id": "23c51c89-2b64-478d-8179-363e00939a74",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:11:53.600Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:11:53.6+00:00"
+        },
+        {
+          "id": "1d83b06a-d5a4-4cf9-bf8f-b6b161c1d415",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:11:54.004Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:11:54.004+00:00"
+        },
+        {
+          "id": "88d7dfdf-2631-46a1-9ff6-fa820e3983d5",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:11:54.324Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:11:54.324+00:00"
+        },
+        {
+          "id": "a852ce21-eba7-4076-bb2c-9e94814d88f8",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:11:54.582Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:11:54.582+00:00"
+        },
+        {
+          "id": "5d55009a-600a-4b26-9f57-59f69590041c",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:11:54.825Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:11:54.825+00:00"
+        },
+        {
+          "id": "56f8ff71-91ec-45df-8b18-e762e6381738",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:12:37.613Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:12:37.613+00:00"
+        },
+        {
+          "id": "5797507c-49c4-4b8e-a021-cb701b0ec1fb",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:16:55.436Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:16:55.436+00:00"
+        },
+        {
+          "id": "3ea9a544-94de-452f-a0a8-848626b8b28b",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:23:38.067Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:23:38.067+00:00"
+        },
+        {
+          "id": "74e405a9-e70c-454e-9452-f39e579b6d45",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:26:32.855Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:26:32.855+00:00"
+        },
+        {
+          "id": "a370763b-4991-4fca-a113-d39d1c56ac9d",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:32:47.909Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:32:47.909+00:00"
+        },
+        {
+          "id": "1366fcab-d3a0-4df6-bfbf-45cac5e8b33b",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:41:26.505Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:41:26.505+00:00"
+        },
+        {
+          "id": "81edb274-d1ca-45fc-b502-5f851a53df19",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:45:01.647Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:45:01.647+00:00"
+        },
+        {
+          "id": "0d3183f8-f93f-46f4-89b0-6bc42cd608bb",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:45:18.013Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:45:18.013+00:00"
+        },
+        {
+          "id": "a52cdefe-3fe7-4ec7-a450-db9e1a144d05",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:46:02.508Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:46:02.508+00:00"
+        },
+        {
+          "id": "5aa39dc2-7a0a-4bc6-8815-f7ee96e9bff7",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:47:55.192Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:47:55.192+00:00"
+        },
+        {
+          "id": "dd5f9f14-a86d-4119-a388-d306eb588c6e",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:53:33.239Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:53:33.239+00:00"
+        },
+        {
+          "id": "24be271a-5fd2-4fe1-8a1b-607fabe992ed",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:57:35.641Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:57:35.641+00:00"
+        },
+        {
+          "id": "09a0ba8c-ac3e-46fa-bed3-59f8094f9c41",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T14:59:02.261Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T14:59:02.261+00:00"
+        },
+        {
+          "id": "79938b77-db1a-42bf-b86f-33dc738c95f6",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T15:02:07.481Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T15:02:07.481+00:00"
+        },
+        {
+          "id": "864d34b7-630e-4031-b2bf-1eefd7464c5e",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T15:19:00.797Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T15:19:00.797+00:00"
+        },
+        {
+          "id": "06adb03c-df1d-4907-90ae-3faf168b0f98",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T15:29:47.827Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T15:29:47.827+00:00"
+        },
+        {
+          "id": "473e6086-ae20-4c84-861d-dd14f8afe8fa",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T15:32:47.865Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T15:32:47.865+00:00"
+        },
+        {
+          "id": "474ebbff-c6d7-41bc-ad32-836ca2da3409",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T16:04:59.978Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T16:04:59.978+00:00"
+        },
+        {
+          "id": "43b76cd0-3cf6-43da-82ff-a1ea1e687eea",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T16:32:28.042Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T16:32:28.042+00:00"
+        },
+        {
+          "id": "956bf5c1-df26-4bab-ac2a-4c3659b2ae67",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T16:36:54.192Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T16:36:54.192+00:00"
+        },
+        {
+          "id": "29e11eda-0487-40fa-ae6d-e79e223cbc56",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T16:43:15.007Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T16:43:15.007+00:00"
+        },
+        {
+          "id": "8a611f5b-7842-429f-b3e6-97af3379d740",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T16:49:09.725Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T16:49:09.725+00:00"
+        },
+        {
+          "id": "cf58f39a-46b4-4526-a629-52f0342da9bd",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T17:02:55.065Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T17:02:55.065+00:00"
+        },
+        {
+          "id": "daca731a-e99d-4a48-8b81-589cad166896",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T17:17:32.765Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T17:17:32.765+00:00"
+        },
+        {
+          "id": "4ccafae8-00ac-46fe-88ef-4fa8cbe43fc8",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T17:20:02.841Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T17:20:02.841+00:00"
+        },
+        {
+          "id": "80732407-b363-42c7-9eb4-9f99204d2769",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T17:22:35.648Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T17:22:35.648+00:00"
+        },
+        {
+          "id": "8005ac95-542b-4246-8d2e-2764d0158755",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T18:40:16.931Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T18:40:16.931+00:00"
+        },
+        {
+          "id": "dd81c1db-0d97-4cd5-a5c2-bf23312298dd",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T18:52:28.338Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T18:52:28.338+00:00"
+        },
+        {
+          "id": "40114f1a-75c1-462e-a197-c2d0bfc36b72",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T18:53:02.610Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T18:53:02.61+00:00"
+        },
+        {
+          "id": "031659f0-b3fb-474a-8c76-a806b8948860",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T18:58:14.602Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T18:58:14.602+00:00"
+        },
+        {
+          "id": "a0f9372d-eebe-408d-a441-692accf28262",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T18:58:31.380Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T18:58:31.38+00:00"
+        },
+        {
+          "id": "365da7c1-1520-47a7-8ffc-bb4db6f41bd8",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:00:55.187Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:00:55.187+00:00"
+        },
+        {
+          "id": "d7a87dc0-1f53-42fe-b515-8bd60fb08e19",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:01:08.004Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:01:08.004+00:00"
+        },
+        {
+          "id": "5bc16d82-3d5c-4045-939b-11791360cb92",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:15:08.742Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:15:08.742+00:00"
+        },
+        {
+          "id": "74aee8cc-2d56-4748-94db-572c5fc9bf94",
+          "user_id": null,
+          "user_name": "RICARDO",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:15:54.460Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:15:54.46+00:00"
+        },
+        {
+          "id": "605c5a38-a442-4a70-9b53-be2f74fceca9",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:16:48.810Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:16:48.81+00:00"
+        },
+        {
+          "id": "e55b76b4-0b3a-4e29-a723-2756af439bd1",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:29:10.784Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:29:10.784+00:00"
+        },
+        {
+          "id": "3363d0a5-c7bd-4ecb-8729-1f9857f452b1",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:29:39.444Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:29:39.444+00:00"
+        },
+        {
+          "id": "802dcbde-a156-48e1-a982-f01a4a6c4081",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T19:50:04.107Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T19:50:04.107+00:00"
+        },
+        {
+          "id": "9546b57b-afda-484b-b803-008b1d52e431",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T20:07:19.645Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T20:07:19.645+00:00"
+        },
+        {
+          "id": "9be4e0b5-dba8-4a57-ba1b-eecb2979cd96",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T20:08:03.748Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T20:08:03.748+00:00"
+        },
+        {
+          "id": "aac2c3a6-405f-4930-80cc-81e320968b97",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T20:20:35.345Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T20:20:35.345+00:00"
+        },
+        {
+          "id": "348b330d-35fb-4efe-9c90-08c7e940322d",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T20:35:56.692Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T20:35:56.692+00:00"
+        },
+        {
+          "id": "91f983e3-3591-4690-b429-6eb175366233",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T20:37:48.587Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T20:37:48.587+00:00"
+        },
+        {
+          "id": "72b76a51-5896-456e-a441-9b1759c1690c",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:07:05.442Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:07:05.442+00:00"
+        },
+        {
+          "id": "12f2083e-348e-47a8-9a2c-a33def460ee0",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:12:12.154Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:12:12.154+00:00"
+        },
+        {
+          "id": "9ab81d58-5fc4-46bf-b090-3598c8dcc6db",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:13:02.382Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:13:02.382+00:00"
+        },
+        {
+          "id": "2af6e485-606d-4c65-ace3-0d09b5b6485c",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:13:21.037Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:13:21.037+00:00"
+        },
+        {
+          "id": "8a939cff-27e4-42d1-87e7-2f42befe5599",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:18:54.659Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:18:54.659+00:00"
+        },
+        {
+          "id": "508eb2d2-88dc-4f09-adfc-984f23614bf1",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:23:06.718Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:23:06.718+00:00"
+        },
+        {
+          "id": "2a75aec6-c60f-49ba-a1d6-5734eb4cb7b6",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:27:11.349Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:27:11.349+00:00"
+        },
+        {
+          "id": "0ca0de2c-d94c-4c14-8897-439a6e64ef17",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:40:31.252Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:40:31.252+00:00"
+        },
+        {
+          "id": "61015f93-211e-420c-ae56-cd5c2dfb0450",
+          "user_id": null,
+          "user_name": "HENRIQUE",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:41:25.603Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:41:25.603+00:00"
+        },
+        {
+          "id": "fa205747-c19a-4e5f-a3b2-d1afde3dfef0",
+          "user_id": null,
+          "user_name": "HENRIQUE",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:46:40.276Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:46:40.276+00:00"
+        },
+        {
+          "id": "ea332728-d68f-460f-9404-15ee24cb32b4",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:50:27.334Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:50:27.334+00:00"
+        },
+        {
+          "id": "a454139f-1b3c-491b-bd56-dc80bd926bed",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 03/02/2026 ⇄ 04/02/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:55:05.097+00:00"
+        },
+        {
+          "id": "3d649049-fe98-4692-8939-b992035f2efb",
+          "user_id": null,
+          "user_name": "RICARDO",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:55:21.506Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:55:21.506+00:00"
+        },
+        {
+          "id": "042bfcc4-35bf-40b8-a3da-83b3bc630154",
+          "user_id": null,
+          "user_name": "RICARDO",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:55:54.206Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:55:54.206+00:00"
+        },
+        {
+          "id": "2706cad7-5592-477b-8094-1815f9bd5dd4",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:56:12.272Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:56:12.272+00:00"
+        },
+        {
+          "id": "3c09592d-1df1-466c-9703-e9a4af1d8767",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:57:05.771Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:57:05.771+00:00"
+        },
+        {
+          "id": "381c85b2-408b-45a9-b076-186a2e135ec4",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 03/02/2026 ⇄ 04/02/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:57:10.936+00:00"
+        },
+        {
+          "id": "8e68c16e-9e3b-4605-a6e7-941dc24b790f",
+          "user_id": null,
+          "user_name": "RICARDO",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:57:21.612Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:57:21.612+00:00"
+        },
+        {
+          "id": "9acca9d0-8eb6-4e7a-b211-21bafcfef052",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:57:43.685Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:57:43.685+00:00"
+        },
+        {
+          "id": "13ae77e8-54e0-4493-89ba-8565648a3835",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T21:58:00.507Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T21:58:00.507+00:00"
+        },
+        {
+          "id": "de8e0d1d-0d4a-4801-a197-8e4711940fc0",
+          "user_id": null,
+          "user_name": "ADMIN",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:09:38.293Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:09:38.293+00:00"
+        },
+        {
+          "id": "ea4a4c9b-6f15-438a-b676-33066a8f9be5",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:09:52.983Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:09:52.983+00:00"
+        },
+        {
+          "id": "bd2a5a10-d053-4e09-957a-62e7bd927312",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:10:11.425Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:10:11.425+00:00"
+        },
+        {
+          "id": "8e185585-c923-4a86-ab1c-31ea92f258a7",
+          "user_id": null,
+          "user_name": "HENRIQUE",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:18:57.609Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:18:57.609+00:00"
+        },
+        {
+          "id": "403699dd-1aa0-4066-b4c1-c87fa2a1e839",
+          "user_id": null,
+          "user_name": "HENRIQUE",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:19:17.229Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:19:17.229+00:00"
+        },
+        {
+          "id": "9413ce4f-bcc9-420e-bf3e-df0df9441902",
+          "user_id": null,
+          "user_name": "HENRIQUE",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:19:26.630Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:19:26.63+00:00"
+        },
+        {
+          "id": "2bc52aad-4f56-4ccc-bb3d-dc4aaef28f38",
+          "user_id": null,
+          "user_name": "CARLOS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:34:10.215Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:34:10.215+00:00"
+        },
+        {
+          "id": "678cb826-1d06-4b18-a6d3-be6a1e8b0ac6",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 03/02/2026 ⇄ 04/02/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:34:21.012+00:00"
+        },
+        {
+          "id": "6008923a-17ce-4931-b5b3-60c162802fb8",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:51:48.217Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:51:48.217+00:00"
+        },
+        {
+          "id": "4a66a016-51b2-447f-89e8-192ccbdcad62",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T22:53:31.858Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T22:53:31.858+00:00"
+        },
+        {
+          "id": "5f40d7be-c5d4-4132-863d-6e027a49a9ed",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T23:54:19.155Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T23:54:19.155+00:00"
+        },
+        {
+          "id": "b5394b92-c54d-4057-8bbd-722347b459f3",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-03T23:56:49.938Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-03T23:56:49.938+00:00"
+        },
+        {
+          "id": "d95d8d67-b7d7-49a8-a5fd-7e6b14d82190",
+          "user_id": null,
+          "user_name": "LUCAS",
+          "action": "LOGIN",
+          "details": "Login realizado - 2026-02-04T00:27:11.111Z",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T00:27:11.111+00:00"
+        },
+        {
+          "id": "24425ad4-2fd4-4292-aca7-8933a4006903",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "✅ TROCA APROVADA: 03/02/2026 ⇄ 04/02/2026 com CARLOS - Aprovada por RICARDO",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T01:20:13.84+00:00"
+        },
+        {
+          "id": "35d67e7b-4e76-4a7f-9470-f3e9a708126d",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: LUCAS ⇄ CARLOS - 06/12/2026 ⇄ 10/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:32:35.973+00:00"
+        },
+        {
+          "id": "d6757cd2-eede-4f2a-bf65-ae86ab28f4c6",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 06/12/2026 ⇄ 10/12/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:32:58.649+00:00"
+        },
+        {
+          "id": "110b05bc-ac18-4339-afd5-79b3d035d287",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 06/12/2026 ⇄ 10/12/2026 com CARLOS - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:32:58.824+00:00"
+        },
+        {
+          "id": "49e20887-043a-4727-982b-48dcce85dc89",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 06/12/2026 ⇄ 10/12/2026 com CARLOS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:33:25.866+00:00"
+        },
+        {
+          "id": "72b4b7f7-a041-424f-bb47-1cc11758e6cc",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 06/12/2026 ⇄ 10/12/2026 com LUCAS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:33:26.032+00:00"
+        },
+        {
+          "id": "ce385c79-cf17-4f79-bbfc-ee7346d8f6ca",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: CARLOS ⇄ LUCAS - 03/12/2026 ⇄ 06/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:35:48.714+00:00"
+        },
+        {
+          "id": "8213b639-16c1-4fe0-8189-bf33a3198464",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 03/12/2026 ⇄ 06/12/2026 com CARLOS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:36:01.125+00:00"
+        },
+        {
+          "id": "94bea30a-0285-4184-94d3-1e0eb709464b",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 03/12/2026 ⇄ 06/12/2026 com LUCAS - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:36:01.287+00:00"
+        },
+        {
+          "id": "29f8f611-116a-46a3-8b19-64430f84f908",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 03/12/2026 ⇄ 06/12/2026 com LUCAS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:36:38.856+00:00"
+        },
+        {
+          "id": "744204ff-37fa-44bf-9a3a-4d7d949a6a31",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 03/12/2026 ⇄ 06/12/2026 com CARLOS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:36:39.014+00:00"
+        },
+        {
+          "id": "e8fc5e17-5ca1-4870-bc6d-7fb7ab584b13",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: CARLOS ⇄ LUCAS - 03/11/2026 ⇄ 13/11/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:37:37.73+00:00"
+        },
+        {
+          "id": "64875fb7-9610-4fed-8c02-89117a08ebe9",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 03/11/2026 ⇄ 13/11/2026 com CARLOS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:37:46.347+00:00"
+        },
+        {
+          "id": "8b87f845-9ab8-4979-a26e-becbf9ad6e9b",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 03/11/2026 ⇄ 13/11/2026 com LUCAS - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:37:46.513+00:00"
+        },
+        {
+          "id": "a578c9ea-7809-47fb-b4d5-f7ae4fd34303",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 03/11/2026 ⇄ 13/11/2026 com LUCAS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:38:02.062+00:00"
+        },
+        {
+          "id": "a4963227-3455-45c2-867f-01a086ce3020",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 03/11/2026 ⇄ 13/11/2026 com CARLOS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:38:02.222+00:00"
+        },
+        {
+          "id": "fa71d7fe-a224-4b02-be04-43ce3a7cde8a",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: CARLOS ⇄ KELLY - 28/12/2026 ⇄ 31/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:39:49.33+00:00"
+        },
+        {
+          "id": "00df4d36-8419-4a97-8184-1fbbcc85ffd1",
+          "user_id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "user_name": "KELLY",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 28/12/2026 ⇄ 31/12/2026 com CARLOS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:40:11.353+00:00"
+        },
+        {
+          "id": "661044ec-2e1d-40f6-829c-203167c88288",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 28/12/2026 ⇄ 31/12/2026 com KELLY - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:40:34.836+00:00"
+        },
+        {
+          "id": "d1d8b290-5b55-45da-947a-07ff858e0486",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 28/12/2026 ⇄ 31/12/2026 com KELLY - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:40:11.512+00:00"
+        },
+        {
+          "id": "c80c01e3-7d93-4b4e-96d2-7b565eafc175",
+          "user_id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "user_name": "KELLY",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 28/12/2026 ⇄ 31/12/2026 com CARLOS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:40:34.996+00:00"
+        },
+        {
+          "id": "d23d6e7f-fbae-4fd3-a79f-9c1dfacf71f2",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: LUCAS ⇄ CARLOS - 10/09/2026 ⇄ 11/10/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:51:02.778+00:00"
+        },
+        {
+          "id": "44b59ed5-d219-40fa-bacb-39fdc6a532c2",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 10/09/2026 ⇄ 11/10/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:51:27.719+00:00"
+        },
+        {
+          "id": "0147eb45-9c6e-4acd-a360-9808fb6338e3",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 10/09/2026 ⇄ 11/10/2026 com CARLOS - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:51:27.879+00:00"
+        },
+        {
+          "id": "1d4584d6-ab88-4eef-8119-8dd96c17ba78",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 10/09/2026 ⇄ 11/10/2026 - Erro: Entradas não encontradas para as datas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:51:44.392+00:00"
+        },
+        {
+          "id": "26436ac2-772a-4f0e-97d4-127ce92af7e5",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 10/09/2026 ⇄ 11/10/2026 - Erro: Entradas não encontradas para as datas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-04T22:51:44.555+00:00"
+        },
+        {
+          "id": "779528ef-3bb4-46c8-bd93-c225e7277f5b",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "VACATION_APPROVAL",
+          "details": "Férias aprovadas: 2026-09-20 até 2026-09-25 - Aprovado por RICARDO",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T00:26:22.11328+00:00"
+        },
+        {
+          "id": "cabe3efd-9011-406a-8c18-10288d5ec7e3",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "VACATION_APPROVAL",
+          "details": "Férias aprovadas: 2026-09-22 até 2026-09-24 - Aprovado por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T00:26:50.743481+00:00"
+        },
+        {
+          "id": "3e27581b-56da-4ab5-affc-fc113260ea94",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: LUCAS ⇄ HENRIQUE - 11/12/2026 ⇄ 30/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:26:35.72+00:00"
+        },
+        {
+          "id": "5e62baa6-c2eb-422d-8456-1e1e4aed33fd",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 11/12/2026 ⇄ 30/12/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:28:05.599+00:00"
+        },
+        {
+          "id": "770d023c-5250-45e5-bf2a-ba71d8f8e411",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 11/12/2026 ⇄ 30/12/2026 com HENRIQUE - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:28:05.765+00:00"
+        },
+        {
+          "id": "987703f2-38a6-4ebb-a905-4916fa0f5d1a",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 11/12/2026 ⇄ 30/12/2026 - Erro: Escalas mensais não encontradas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:28:24.703+00:00"
+        },
+        {
+          "id": "dfa7c7ef-e097-499c-baab-4300fa4a4a13",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 11/12/2026 ⇄ 30/12/2026 - Erro: Escalas mensais não encontradas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:28:24.872+00:00"
+        },
+        {
+          "id": "e5235439-d41b-4f93-9c5a-8ae466dfeb3c",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: HENRIQUE ⇄ KELLY - 12/12/2026 ⇄ 20/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:31:09.069+00:00"
+        },
+        {
+          "id": "e95ec25d-c7dd-4cdf-b43e-eb636025aa5b",
+          "user_id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "user_name": "KELLY",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 12/12/2026 ⇄ 20/12/2026 com HENRIQUE",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:31:36.425+00:00"
+        },
+        {
+          "id": "38de01d3-75fa-4577-95e0-07de03248857",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 12/12/2026 ⇄ 20/12/2026 com KELLY - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:31:36.591+00:00"
+        },
+        {
+          "id": "3681477e-5d95-4878-a089-d9da1123206e",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 12/12/2026 ⇄ 20/12/2026 - Erro: Escalas mensais não encontradas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:32:07.308+00:00"
+        },
+        {
+          "id": "abe2c715-7c57-4b81-b02c-db9c69c589a9",
+          "user_id": "9a91c13a-cf3a-4a08-af02-986163974acc",
+          "user_name": "KELLY",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 12/12/2026 ⇄ 20/12/2026 - Erro: Escalas mensais não encontradas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:32:07.603+00:00"
+        },
+        {
+          "id": "eaec4c80-7c1a-474f-9130-f0711a5fc6da",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: HENRIQUE ⇄ CARLOS - 05/11/2026 ⇄ 03/11/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:33:34.121+00:00"
+        },
+        {
+          "id": "e3ac0c93-67e8-44d7-bd6a-732e0cd77022",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 05/11/2026 ⇄ 03/11/2026 com HENRIQUE",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:33:52.239+00:00"
+        },
+        {
+          "id": "6cdde030-887a-4b69-9c6c-5c7cca1bd7bc",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 05/11/2026 ⇄ 03/11/2026 com CARLOS - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:33:52.415+00:00"
+        },
+        {
+          "id": "eaf483b3-f348-4453-ba92-5a196d5959a7",
+          "user_id": "2e7e953f-5b4e-44e9-bc69-d463a92fa99a",
+          "user_name": "HENRIQUE",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 05/11/2026 ⇄ 03/11/2026 - Erro: Entradas não encontradas para as datas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:34:19.342+00:00"
+        },
+        {
+          "id": "b513e725-e63a-4f15-867a-343eec239adc",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 05/11/2026 ⇄ 03/11/2026 - Erro: Entradas não encontradas para as datas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:34:19.523+00:00"
+        },
+        {
+          "id": "06dae875-a7b3-4012-8e57-88f549d21899",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: LUCAS ⇄ CARLOS - 30/12/2026 ⇄ 31/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:42:53.496+00:00"
+        },
+        {
+          "id": "7a5f7370-659e-4ddd-9d98-815af246165c",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 30/12/2026 ⇄ 31/12/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:43:05.007+00:00"
+        },
+        {
+          "id": "bbebb13e-5958-40f1-b738-a59effabe4cf",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 30/12/2026 ⇄ 31/12/2026 com CARLOS - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:43:05.169+00:00"
+        },
+        {
+          "id": "1594456c-bc66-4a6d-8c2f-877d735e7aeb",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 30/12/2026 ⇄ 31/12/2026 - Erro: Escalas mensais não encontradas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:43:16.562+00:00"
+        },
+        {
+          "id": "355bd510-27cf-4abe-a0b6-ba3a2d3a1672",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 30/12/2026 ⇄ 31/12/2026 - Erro: Escalas mensais não encontradas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T01:43:16.715+00:00"
+        },
+        {
+          "id": "a1f77a50-4c21-4f28-9eb5-a1dcc3e1345b",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: LUCAS ⇄ ROSANA - 01/10/2026 ⇄ 02/10/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T04:41:25.224+00:00"
+        },
+        {
+          "id": "c6dd72f6-a483-4c75-b33d-3af9286b6d9e",
+          "user_id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "user_name": "ROSANA",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 01/10/2026 ⇄ 02/10/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T04:41:46.757+00:00"
+        },
+        {
+          "id": "9d4d7a50-62be-412b-a864-1267401391fd",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 01/10/2026 ⇄ 02/10/2026 com ROSANA - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T04:41:46.934+00:00"
+        },
+        {
+          "id": "1645f590-120d-4785-bca8-3b18d1241df5",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 01/10/2026 ⇄ 02/10/2026 - Erro: Error: Entradas não encontradas para as datas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T04:42:08.944+00:00"
+        },
+        {
+          "id": "0199241c-9458-4c08-b307-a225f79ae403",
+          "user_id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "user_name": "ROSANA",
+          "action": "SWAP_APPROVAL",
+          "details": "❌ FALHA NA PUBLICAÇÃO: 01/10/2026 ⇄ 02/10/2026 - Erro: Error: Entradas não encontradas para as datas",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T04:42:09.099+00:00"
+        },
+        {
+          "id": "a5640c9d-748a-45dc-8665-1eb19c20ed31",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: LUCAS ⇄ ROSANA - 06/12/2026 ⇄ 07/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T14:12:32.693+00:00"
+        },
+        {
+          "id": "28c0c993-226e-4bdd-9144-9983e8d5d77e",
+          "user_id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "user_name": "ROSANA",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 06/12/2026 ⇄ 07/12/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T14:16:51.179+00:00"
+        },
+        {
+          "id": "f1c6262b-1e1d-43fa-8422-9d9c469b81b6",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 06/12/2026 ⇄ 07/12/2026 com ROSANA - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T14:16:51.364+00:00"
+        },
+        {
+          "id": "f3c2934b-b76c-4169-a976-899dde1d426b",
+          "user_id": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "user_name": "RICARDO",
+          "action": "SWAP_APPROVAL",
+          "details": "APROVAÇÃO DE TROCA: LUCAS ⇄ ROSANA - 06/12/2026 ⇄ 07/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T14:17:12.916+00:00"
+        },
+        {
+          "id": "6dbf371a-a716-4bc1-9733-886113b8319c",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 06/12/2026 ⇄ 07/12/2026 com ROSANA - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T14:17:14.056+00:00"
+        },
+        {
+          "id": "502939f5-d297-4860-b116-5e6ea37a833a",
+          "user_id": "d793d805-3468-4bc4-b7bf-a722b570ec98",
+          "user_name": "ROSANA",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 06/12/2026 ⇄ 07/12/2026 com LUCAS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-05T14:17:14.207+00:00"
+        },
+        {
+          "id": "7adbbbff-22c2-4d4e-bbe3-44f98774e313",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "Troca solicitada: 06/12/2026 (fechamento) com 09/12/2026 (meioPeriodo) - CARLOS",
+          "ip_address": "127.0.0.1",
+          "user_agent": "System Test",
+          "created_at": "2026-02-06T00:23:01.693409+00:00"
+        },
+        {
+          "id": "06e4caa0-bbfe-445d-85a1-a269e00856c1",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_ACCEPT",
+          "details": "Troca aceita: 06/12/2026 (fechamento) com 09/12/2026 (meioPeriodo) - LUCAS",
+          "ip_address": "127.0.0.1",
+          "user_agent": "System Test",
+          "created_at": "2026-02-06T00:23:01.693409+00:00"
+        },
+        {
+          "id": "f6de437c-85ab-4e41-8917-b61af7cefe2a",
+          "user_id": "bbad7a98-2412-43e6-8dd6-cf52fae171be",
+          "user_name": "RICARDO",
+          "action": "SWAP_APPROVE",
+          "details": "Troca aprovada: 06/12/2026 (fechamento) com 09/12/2026 (meioPeriodo) - LUCAS/CARLOS",
+          "ip_address": "127.0.0.1",
+          "user_agent": "System Test",
+          "created_at": "2026-02-06T00:23:01.693409+00:00"
+        },
+        {
+          "id": "dcdbf66e-7b3b-40c9-a5f0-c475ce1b98fa",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_REQUEST",
+          "details": "Troca solicitada: 10/12/2026 (meioPeriodo) com 07/12/2026 (meioPeriodo) - GUILHERME",
+          "ip_address": "127.0.0.1",
+          "user_agent": "System Test",
+          "created_at": "2026-02-06T00:27:57.603069+00:00"
+        },
+        {
+          "id": "f4f898c9-1a41-4fce-beb6-d35f6b73c053",
+          "user_id": "b5a1b456-e837-4f47-ab41-4734a00a0355",
+          "user_name": "GUILHERME",
+          "action": "SWAP_ACCEPT",
+          "details": "Troca aceita: 10/12/2026 (meioPeriodo) com 07/12/2026 (meioPeriodo) - CARLOS",
+          "ip_address": "127.0.0.1",
+          "user_agent": "System Test",
+          "created_at": "2026-02-06T00:27:57.603069+00:00"
+        },
+        {
+          "id": "d70cd5bb-525b-4f04-ae91-05ac283eb6e6",
+          "user_id": "bbad7a98-2412-43e6-8dd6-cf52fae171be",
+          "user_name": "RICARDO",
+          "action": "SWAP_APPROVE",
+          "details": "Troca aprovada: 10/12/2026 (meioPeriodo) com 07/12/2026 (meioPeriodo) - CARLOS/GUILHERME",
+          "ip_address": "127.0.0.1",
+          "user_agent": "System Test",
+          "created_at": "2026-02-06T00:27:57.603069+00:00"
+        },
+        {
+          "id": "d52d1283-ff86-4cef-82da-c28e74d79ade",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_REQUEST",
+          "details": "SOLICITAÇÃO DE TROCA: LUCAS ⇄ CARLOS - 08/12/2026 ⇄ 31/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-06T00:30:32.527+00:00"
+        },
+        {
+          "id": "eac68abd-975a-4518-a0f7-a315bacd5a4f",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_RESPONSE",
+          "details": "Resposta à solicitação de troca: ACEITA - 08/12/2026 ⇄ 31/12/2026 com LUCAS",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-06T00:30:49.883+00:00"
+        },
+        {
+          "id": "8bbd00fc-39f2-442c-a96b-cfd7df52e9ac",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_RESPONSE",
+          "details": "✅ TROCA ACEITA: 08/12/2026 ⇄ 31/12/2026 com CARLOS - Aguardando aprovação admin",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-06T00:30:50.037+00:00"
+        },
+        {
+          "id": "2a7e5a70-dc60-46f8-8c0f-a2f4df6ae354",
+          "user_id": "fd2513b2-3260-4ad2-97b1-6f5fbb88c192",
+          "user_name": "RICARDO",
+          "action": "SWAP_APPROVAL",
+          "details": "APROVAÇÃO DE TROCA: LUCAS ⇄ CARLOS - 08/12/2026 ⇄ 31/12/2026",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-06T00:32:06.304+00:00"
+        },
+        {
+          "id": "1dc3d991-74e7-4e68-80da-341104eb36ea",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 08/12/2026 ⇄ 31/12/2026 com CARLOS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-06T00:32:07.468+00:00"
+        },
+        {
+          "id": "e7d0fbd6-d542-4478-962f-2c4f7708fa6b",
+          "user_id": "fd38b592-2986-430e-98be-d9d104d90442",
+          "user_name": "CARLOS",
+          "action": "SWAP_APPROVAL",
+          "details": "✅ TROCA PUBLICADA: 08/12/2026 ⇄ 31/12/2026 com LUCAS - Aprovada por RICARDO - ESCALA ATUALIZADA",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-06T00:32:07.62+00:00"
+        },
+        {
+          "id": "3318b35e-6855-4700-b509-9ec819088a4a",
+          "user_id": "3826fb9b-439b-49e2-bfb5-a85e6d3aba23",
+          "user_name": "LUCAS",
+          "action": "VACATION_APPROVAL",
+          "details": "Férias aprovadas: 2026-03-04 até 2026-03-18 - Aprovado por SUPER_ADMIN_HIDDEN",
+          "ip_address": null,
+          "user_agent": null,
+          "created_at": "2026-02-23T01:25:46.373+00:00"
+        }
+      ],
+      "count": 191
+    }
+  }
+}
