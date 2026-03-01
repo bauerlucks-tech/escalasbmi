@@ -50,9 +50,9 @@ jobs:
         echo "COMMIT_MESSAGE=$(git log -1 --pretty=format:'%s')" >> $GITHUB_ENV
         
         # Determinar tipo de backup
-        BACKUP_TYPE=${{ github.event.inputs.backup_type || 'full' }}
-        echo "BACKUP_TYPE=$BACKUP_TYPE" >> $GITHUB_ENV
-        echo "Tipo de backup: $BACKUP_TYPE"
+        BACKUP_TYPE="${{ github.event.inputs.backup_type || 'full' }}"
+        echo "BACKUP_TYPE=${BACKUP_TYPE}" >> $GITHUB_ENV
+        echo "Tipo de backup: ${BACKUP_TYPE}"
 
     - name: Create backup directory
       env:
