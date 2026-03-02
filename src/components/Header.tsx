@@ -40,7 +40,8 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });
   }
 
-  if (currentUser && isSuperAdmin(currentUser)) {
+  // Adicionar aba de administração para administradores (não apenas super admins)
+  if (currentUser && isAdmin(currentUser)) {
     tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
   }
 
