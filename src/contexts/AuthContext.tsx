@@ -462,8 +462,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  return (
-    <AuthContext.Provider value={{
+  // Debug: verificar se o contexto está sendo fornecido corretamente
+  console.log('🔍 AuthProvider - context being provided:', {
+    hasCurrentUser: !!currentUser,
+    currentUserName: currentUser?.name,
+    usersCount: users.length,
+    hasUpdateUserPassword: typeof updateUserPassword === 'function',
+    hasUpdateUserProfile: typeof updateUserProfile === 'function',
+    contextKeys: Object.keys({
       currentUser,
       users,
       activeUsers,
@@ -484,10 +490,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       switchToSuperAdmin,
       switchBackToUser,
       isHiddenSuperAdmin,
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    })
+  });
 };
 
 export const useAuth = () => {
