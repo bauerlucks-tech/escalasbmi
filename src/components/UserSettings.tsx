@@ -29,13 +29,10 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Debug: verificar o que useAuth está retornando
-  console.log('🔍 UserSettings - useAuth result:', {
-    hasCurrentUser: !!currentUser,
-    currentUserName: currentUser?.name,
-    contextKeys: Object.keys(authContext),
-    hasUpdateUserPassword: typeof updateUserPassword === 'function',
-    hasUpdateUserProfile: typeof updateUserProfile === 'function'
-  });
+  console.log('🔍 UserSettings - useAuth result:', authContext);
+  console.log('🔍 UserSettings - context keys:', Object.keys(authContext));
+  console.log('🔍 UserSettings - has updateUserPassword:', typeof authContext.updateUserPassword);
+  console.log('🔍 UserSettings - has currentUser:', !!authContext.currentUser);
   
   // Password form
   const [currentPassword, setCurrentPassword] = useState('');
