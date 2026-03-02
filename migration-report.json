@@ -1,0 +1,67 @@
+{
+  "migrated": [
+    {
+      "name": "ADMIN",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "ADMIN",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "ADMIN",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "CARLOS",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "GUILHERME",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "HENRIQUE",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "KELLY",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "LUCAS",
+      "originalLength": 8,
+      "hashedLength": 64
+    },
+    {
+      "name": "MATHEUS",
+      "originalLength": 4,
+      "hashedLength": 64
+    },
+    {
+      "name": "RICARDO",
+      "originalLength": 10,
+      "hashedLength": 64
+    },
+    {
+      "name": "ROSANA",
+      "originalLength": 9,
+      "hashedLength": 64
+    },
+    {
+      "name": "SUPER_ADMIN_HIDDEN",
+      "originalLength": 17,
+      "hashedLength": 64
+    }
+  ],
+  "alreadyHashed": [],
+  "errors": [],
+  "skipped": []
+}
