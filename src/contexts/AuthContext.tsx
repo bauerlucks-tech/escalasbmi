@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import CryptoJS from 'crypto-js';
 import { User, UserRole, UserStatus } from '@/data/scheduleData';
 import { logLogin, logLogout, logPasswordChange, logUserManagement, logAdminLogin } from '@/data/auditLogs';
@@ -386,7 +386,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('❌ Erro ao alterar senha:', error);
       throw error;
     }
-  };
+  }, [users]);
 
   const updateUserProfile = async (userId: string, profileImage: string) => {
     try {

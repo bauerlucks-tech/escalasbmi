@@ -259,10 +259,10 @@ export class SupabaseAPI {
     return data;
   }
 
-  static async updateUserProfile(id: string, profileImage: string): Promise<User> {
+  static async updateUserPassword(id: string, newPasswordHash: string): Promise<User> {
     const { data, error } = await supabase
       .from('users')
-      .update({ profile_image: profileImage })
+      .update({ password: newPasswordHash })
       .eq('id', id)
       .select()
       .single();
