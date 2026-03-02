@@ -341,40 +341,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateUserStatus(userId, 'arquivado');
   };
 
-  const updateUserPassword = async (userId: string, currentPassword: string, newPassword: string): Promise<boolean> => {
-    let user = users.find(u => u.id === userId);
+  const updateUserPassword = useCallback(async (userId: string, currentPassword: string, newPassword: string): Promise<boolean> => {
+    console.log('🔍 updateUserPassword called with:', { userId, currentPassword: '***', newPassword: '***' });
+    console.log('🔍 CryptoJS available:', typeof CryptoJS, !!CryptoJS?.SHA256);
+    console.log('🔍 users array:', users.length, 'users');
+
     try {
-      if (!user || !verifyPassword(currentPassword, user.password)) {
-        if (user) {
-          logPasswordChange(user.id, user.name, false, 'Senha atual incorreta');
-        }
-        return false;
+      // Validate current password
+      const user = users.find(u => u.id === userId);
+      console.log('🔍 Found user:', !!user, user?.name);
+
+      if (!user) {
+        throw new Error('Usuário não encontrado');
       }
 
-      const newPasswordHash = hashPassword(newPassword);
+      // Validate current password
+      const currentPasswordHash = CryptoJS.SHA256(currentPassword).toString();
+      console.log('🔍 Password validation:', currentPasswordHash === user.password ? '✅ Match' : '❌ No match');
 
-      // 🔄 Sincronizar com Supabase primeiro
+      if (currentPasswordHash !== user.password) {
+        throw new Error('Senha atual incorreta');
+      }
+
+      // Hash the new password
+      const newPasswordHash = CryptoJS.SHA256(newPassword).toString();
+      console.log('🔍 New password hashed');
+
+      // Update in Supabase
+      console.log('🔍 Calling SupabaseAPI.updateUserPassword');
       await SupabaseAPI.updateUserPassword(userId, newPasswordHash);
+      console.log('🔍 Supabase update successful');
 
-      // ✅ Atualizar estado local apenas após sucesso no Supabase
-      setUsers(prev => prev.map(u =>
-        u.id === userId ? { ...u, password: newPasswordHash } : u
+      // Update local state
+      setUsers(prev => prev.map(u => 
+        u.id === userId 
+          ? { ...u, password: newPasswordHash }
+          : u
       ));
+      console.log('🔍 Local state updated');
 
-      logPasswordChange(user.id, user.name, true);
-
-      // Update current user if it's the same user
-      if (currentUser?.id === userId) {
-        setCurrentUser(prev => prev ? { ...prev, password: newPasswordHash } : null);
-      }
-
+      console.log('✅ Senha alterada com sucesso');
       return true;
     } catch (error) {
       console.error('❌ Erro ao alterar senha:', error);
-      if (user) {
-        logPasswordChange(user.id, user.name, false, 'Erro na sincronização com Supabase');
-      }
-      return false;
+      throw error;
     }
   };
 
