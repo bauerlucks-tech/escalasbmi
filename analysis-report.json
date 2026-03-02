@@ -5,61 +5,61 @@
       "category": "UserMapping",
       "description": "UUID CARLOS no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.136Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID GUILHERME no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.136Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID HENRIQUE no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID KELLY no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID LUCAS no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID MATHEUS no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID RICARDO no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID ROSANA no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "UUID ADMIN no userMapping não existe no banco",
       "details": "Usuário pode estar inativo ou removido",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     },
     {
       "category": "UserMapping",
       "description": "8 usuários ativos não estão no userMapping",
       "details": "CARLOS, GUILHERME, HENRIQUE, KELLY, LUCAS, MATHEUS, RICARDO, ROSANA",
-      "timestamp": "2026-03-02T13:59:20.137Z"
+      "timestamp": "2026-03-02T18:06:49.783Z"
     }
   ],
   "medium": [
@@ -67,7 +67,7 @@
       "category": "Security",
       "description": "Muitos usuários com emails padrão",
       "details": "Considerar emails únicos para todos os usuários",
-      "timestamp": "2026-03-02T13:59:21.486Z"
+      "timestamp": "2026-03-02T18:06:51.747Z"
     }
   ],
   "low": [],
