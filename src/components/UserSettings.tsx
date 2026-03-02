@@ -23,9 +23,19 @@ interface UserSettingsProps {
 }
 
 const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
-  const { currentUser, updateUserPassword, updateUserProfile } = useAuth();
+  const authContext = useAuth();
+  const { currentUser, updateUserPassword, updateUserProfile } = authContext;
   const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Debug: verificar o que useAuth está retornando
+  console.log('🔍 UserSettings - useAuth result:', {
+    hasCurrentUser: !!currentUser,
+    currentUserName: currentUser?.name,
+    contextKeys: Object.keys(authContext),
+    hasUpdateUserPassword: typeof updateUserPassword === 'function',
+    hasUpdateUserProfile: typeof updateUserProfile === 'function'
+  });
   
   // Password form
   const [currentPassword, setCurrentPassword] = useState('');
