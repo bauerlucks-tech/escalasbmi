@@ -259,10 +259,10 @@ export class SupabaseAPI {
     return data;
   }
 
-  static async updateUser(id: string, updates: Partial<User>): Promise<User> {
+  static async updateUserProfile(id: string, profileImage: string): Promise<User> {
     const { data, error } = await supabase
       .from('users')
-      .update(updates)
+      .update({ profile_image: profileImage })
       .eq('id', id)
       .select()
       .single();

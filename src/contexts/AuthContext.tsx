@@ -21,7 +21,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isAdmin: (user: User | null) => boolean;
   isSuperAdmin: (user: User | null) => boolean;
-  updateUserPassword: (userId: string, currentPassword: string, newPassword: string) => boolean;
+  updateUserPassword: (userId: string, currentPassword: string, newPassword: string) => Promise<boolean>;
   updateUserProfile: (userId: string, profileImage: string) => void;
   switchToSuperAdmin: () => void;
   switchBackToUser: () => void;
@@ -319,38 +319,60 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateUserStatus(userId, 'arquivado');
   };
 
-  const updateUserPassword = (userId: string, currentPassword: string, newPassword: string): boolean => {
-    const user = users.find(u => u.id === userId);
-    if (!user || !verifyPassword(currentPassword, user.password)) {
+  const updateUserPassword = async (userId: string, currentPassword: string, newPassword: string): Promise<boolean> => {
+    let user = users.find(u => u.id === userId);
+    try {
+      if (!user || !verifyPassword(currentPassword, user.password)) {
+        if (user) {
+          logPasswordChange(user.id, user.name, false, 'Senha atual incorreta');
+        }
+        return false;
+      }
+
+      const newPasswordHash = hashPassword(newPassword);
+
+      // 🔄 Sincronizar com Supabase primeiro
+      await SupabaseAPI.updateUserPassword(userId, newPasswordHash);
+
+      // ✅ Atualizar estado local apenas após sucesso no Supabase
+      setUsers(prev => prev.map(u =>
+        u.id === userId ? { ...u, password: newPasswordHash } : u
+      ));
+
+      logPasswordChange(user.id, user.name, true);
+
+      // Update current user if it's the same user
+      if (currentUser?.id === userId) {
+        setCurrentUser(prev => prev ? { ...prev, password: newPasswordHash } : null);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao alterar senha:', error);
       if (user) {
-        logPasswordChange(user.id, user.name, false, 'Senha atual incorreta');
+        logPasswordChange(user.id, user.name, false, 'Erro na sincronização com Supabase');
       }
       return false;
     }
-
-    const newPasswordHash = hashPassword(newPassword);
-    setUsers(prev => prev.map(u => 
-      u.id === userId ? { ...u, password: newPasswordHash } : u
-    ));
-    
-    logPasswordChange(user.id, user.name, true);
-    
-    // Update current user if it's the same user
-    if (currentUser?.id === userId) {
-      setCurrentUser(prev => prev ? { ...prev, password: newPasswordHash } : null);
-    }
-    
-    return true;
   };
 
-  const updateUserProfile = (userId: string, profileImage: string) => {
-    setUsers(prev => prev.map(u => 
-      u.id === userId ? { ...u, profileImage } : u
-    ));
-    
-    // Update current user if it's the same user
-    if (currentUser?.id === userId) {
-      setCurrentUser(prev => prev ? { ...prev, profileImage } : null);
+  const updateUserProfile = async (userId: string, profileImage: string) => {
+    try {
+      // 🔄 Sincronizar com Supabase primeiro
+      await SupabaseAPI.updateUserProfile(userId, profileImage);
+
+      // ✅ Atualizar estado local apenas após sucesso no Supabase
+      setUsers(prev => prev.map(u =>
+        u.id === userId ? { ...u, profileImage } : u
+      ));
+
+      // Update current user if it's the same user
+      if (currentUser?.id === userId) {
+        setCurrentUser(prev => prev ? { ...prev, profileImage } : null);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao atualizar foto de perfil:', error);
+      throw error; // Propagar erro para componente lidar
     }
   };
 

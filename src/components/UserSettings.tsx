@@ -42,7 +42,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2);
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast.error('Preencha todos os campos');
       return;
@@ -58,19 +58,24 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
       return;
     }
 
-    const success = updateUserPassword(currentUser.id, currentPassword, newPassword);
-    
-    if (success) {
-      toast.success('Senha alterada com sucesso!');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } else {
-      toast.error('Senha atual incorreta');
+    try {
+      const success = await updateUserPassword(currentUser.id, currentPassword, newPassword);
+      
+      if (success) {
+        toast.success('Senha alterada com sucesso!');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+      } else {
+        toast.error('Senha atual incorreta');
+      }
+    } catch (error) {
+      console.error('Erro ao alterar senha:', error);
+      toast.error('Erro ao alterar senha. Tente novamente.');
     }
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -87,17 +92,27 @@ const UserSettings: React.FC<UserSettingsProps> = ({ trigger }) => {
     }
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const base64 = e.target?.result as string;
-      updateUserProfile(currentUser.id, base64);
-      toast.success('Foto de perfil atualizada!');
+      try {
+        await updateUserProfile(currentUser.id, base64);
+        toast.success('Foto de perfil atualizada!');
+      } catch (error) {
+        console.error('Erro ao atualizar foto de perfil:', error);
+        toast.error('Erro ao salvar foto de perfil. Tente novamente.');
+      }
     };
     reader.readAsDataURL(file);
   };
 
-  const handleRemoveImage = () => {
-    updateUserProfile(currentUser.id, '');
-    toast.success('Foto de perfil removida');
+  const handleRemoveImage = async () => {
+    try {
+      await updateUserProfile(currentUser.id, '');
+      toast.success('Foto de perfil removida');
+    } catch (error) {
+      console.error('Erro ao remover foto de perfil:', error);
+      toast.error('Erro ao remover foto de perfil. Tente novamente.');
+    }
   };
 
   const themeOptions = [
