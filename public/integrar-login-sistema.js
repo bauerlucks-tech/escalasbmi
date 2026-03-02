@@ -556,7 +556,7 @@ class SystemAuthIntegration {
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
             <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-              <span id="auth-version-display" data-version-display="login" style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0.021130</span> <span style="color: rgba(255, 255, 255, 0.35);">(162f344)</span></span>
+              <span id="auth-version-display" data-version-display="login" style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0.021130</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span></span>
             </div>
           </div>
 

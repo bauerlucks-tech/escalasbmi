@@ -10,6 +10,7 @@ interface AuthContextType {
   users: User[];
   activeUsers: User[];
   operators: User[];
+  loading: boolean;
   login: (name: string, password: string) => boolean;
   logout: () => void;
   resetPassword: (userId: string, newPassword: string) => void;
@@ -85,7 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const convertedUsers = supabaseUsers.map(user => ({
           id: user.id,
           name: user.name,
-          password: user.password || '',
+          password: user.password || hashPassword(crypto.randomUUID()), // Hash seguro em vez de vazio
           role: user.role,
           status: user.status,
           email: user.email,
@@ -424,6 +425,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       users,
       activeUsers,
       operators,
+      loading,
       login,
       logout,
       resetPassword,
