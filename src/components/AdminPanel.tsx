@@ -47,6 +47,7 @@ import { validateAndParseCSV, downloadCSVTemplate, downloadScheduleCSV } from '@
 import { downloadCompleteBackup, restoreCompleteBackup } from '@/utils/backupUtils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import CSVImportContent from '@/components/CSVImportContent';
+import versionInfo from '@/config/version.json';
 
 interface CSVValidationResult {
   isValid: boolean;
@@ -845,7 +846,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground">Versão:</span>
-                    <span className="ml-2 font-mono">2.0</span>
+                    <span className="ml-2 font-mono">{versionInfo.version}</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Ambiente:</span>
@@ -1168,7 +1169,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </div>
         </TabsContent>
 
-        {/* Swaps Tab */}
+        {/* Schedule Tab */}
         <TabsContent value="schedule" className="space-y-4">
           {/* Import Section */}
           <div className="glass-card p-4">
