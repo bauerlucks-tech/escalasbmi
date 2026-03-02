@@ -260,7 +260,10 @@ export class SupabaseAPI {
   }
 
   static async updateUserPassword(id: string, newPasswordHash: string): Promise<User> {
-    const { data, error } = await supabase
+    // Criar cliente com service key para operações admin
+    const serviceClient = createClient(supabaseUrl, this.getServiceKey());
+    
+    const { data, error } = await serviceClient
       .from('users')
       .update({ password: newPasswordHash })
       .eq('id', id)
