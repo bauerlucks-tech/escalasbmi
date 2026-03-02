@@ -90,28 +90,26 @@ async function debugMatheusFrontend() {
       try {
         const fullPath = path.join(__dirname, filePath);
         const content = fs.readFileSync(fullPath, 'utf8');
-        
+
         if (content.includes('MATHEUS')) {
           console.log(`✅ Matheus encontrado em: ${filePath}`);
-          
+
           // Verificar se está em alguma lista/array
           const lines = content.split('\n');
-          const matheusLines = lines.filter(line => line.includes('MATHEUS'));
-          
+          const matheusLines = lines.filter((line) => line.includes('MATHEUS'));
+
           console.log(`🔍 Linhas com MATHEUS (${matheusLines.length}):`);
           matheusLines.forEach((line, index) => {
             console.log(`  ${index + 1}. ${line.trim()}`);
           });
+        } else {
+          console.log(`❌ Matheus NÃO encontrado em: ${filePath}`);
         }
-      } else {
-        console.log(`❌ Matheus NÃO encontrado em: ${filePath}`);
-      }
-    } catch (fileError) {
+      } catch (fileError) {
         console.log(`❌ Erro ao ler ${filePath}: ${fileError.message}`);
       }
     }
-    }
-    
+
     // 4. Verificar se há algum filtro bloqueando Matheus
     console.log('\n📋 PASSO 4: Verificando possíveis filtros...');
     

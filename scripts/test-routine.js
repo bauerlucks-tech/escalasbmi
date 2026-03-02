@@ -66,6 +66,15 @@ function runCommand(command, description) {
   }
 }
 
+
+function getPortCheckCommand(port) {
+  if (process.platform === 'win32') {
+    return `netstat -an | findstr :${port}`;
+  }
+
+  return `netstat -an | grep :${port}`;
+}
+
 function checkFileExists(filePath, description) {
   try {
     const fullPath = join(PROJECT_ROOT, filePath);
@@ -195,7 +204,7 @@ async function runAllTests() {
   
   // 8. Testes de Servidor
   log('\n🌐 TESTES DE SERVIDOR DE DESENVOLVIMENTO', 'yellow');
-  const devServerCheck = runCommand('netstat -an | findstr :8081', 'Verificar servidor dev na porta 8081');
+  const devServerCheck = runCommand(getPortCheckCommand(8081), 'Verificar servidor dev na porta 8081');
   if (!devServerCheck.success) {
     log('⚠️ Servidor de desenvolvimento não está rodando na porta 8081', 'yellow');
   }
