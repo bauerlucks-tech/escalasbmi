@@ -89,8 +89,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           password: user.password || hashPassword(crypto.randomUUID()), // Hash seguro em vez de vazio
           role: user.role,
           status: user.status,
-          email: user.email,
-          profileImage: user.profileImage,
+          profileImage: user.profile_image, // Campo do Supabase é profile_image
           hideFromSchedule: user.hide_from_schedule
         }));
         
