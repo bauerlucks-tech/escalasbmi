@@ -492,6 +492,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       isHiddenSuperAdmin,
     })
   });
+
+  return (
+    <AuthContext.Provider value={{
+      currentUser,
+      users,
+      activeUsers,
+      operators,
+      loading,
+      login,
+      logout,
+      resetPassword,
+      updateUserRole,
+      updateUserStatus,
+      createUser,
+      archiveUser,
+      isAuthenticated: currentUser !== null,
+      isAdmin,
+      isSuperAdmin,
+      updateUserPassword,
+      updateUserProfile,
+      switchToSuperAdmin,
+      switchBackToUser,
+      isHiddenSuperAdmin,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
