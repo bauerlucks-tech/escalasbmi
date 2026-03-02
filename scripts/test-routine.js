@@ -66,6 +66,15 @@ function runCommand(command, description) {
   }
 }
 
+
+function getPortCheckCommand(port) {
+  if (process.platform === 'win32') {
+    return `netstat -an | findstr :${port}`;
+  }
+
+  return `netstat -an | grep :${port}`;
+}
+
 function checkFileExists(filePath, description) {
   try {
     const fullPath = join(PROJECT_ROOT, filePath);
@@ -140,7 +149,7 @@ function checkImport(filePath, importStatement, description) {
 
 async function runAllTests() {
   log('\n🚀 INICIANDO ROTINA DE TESTES COMPLETA - Sistema de Escalas BMI', 'blue');
-  log('=' * 60, 'blue');
+  log('='.repeat(60), 'blue');
   
   // 1. Testes de Build e Compilação
   log('\n📦 TESTES DE BUILD E COMPILAÇÃO', 'yellow');
@@ -195,15 +204,15 @@ async function runAllTests() {
   
   // 8. Testes de Servidor
   log('\n🌐 TESTES DE SERVIDOR DE DESENVOLVIMENTO', 'yellow');
-  const devServerCheck = runCommand('netstat -an | findstr :8081', 'Verificar servidor dev na porta 8081');
+  const devServerCheck = runCommand(getPortCheckCommand(8081), 'Verificar servidor dev na porta 8081');
   if (!devServerCheck.success) {
     log('⚠️ Servidor de desenvolvimento não está rodando na porta 8081', 'yellow');
   }
   
   // Relatório Final
-  log('\n' + '=' * 60, 'blue');
+  log('\n' + '='.repeat(60), 'blue');
   log('📊 RELATÓRIO FINAL DE TESTES', 'blue');
-  log('=' * 60, 'blue');
+  log('='.repeat(60), 'blue');
   
   log(`\n📈 ESTATÍSTICAS:`, 'cyan');
   log(`   Total de testes: ${TEST_RESULTS.total}`, 'cyan');
