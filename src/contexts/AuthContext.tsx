@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import CryptoJS from 'crypto-js';
-import { User, UserRole, UserStatus, initialUsers } from '@/data/scheduleData';
+import { User, UserRole, UserStatus } from '@/data/scheduleData';
 import { logLogin, logLogout, logPasswordChange, logUserManagement, logAdminLogin } from '@/data/auditLogs';
 import { authStorage, preferenceStorage } from '@/utils/secureStorage';
+import { SupabaseAPI } from '@/lib/supabase';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -48,48 +49,8 @@ const migratePasswordToHash = (password: string): string => {
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [users, setUsers] = useState<User[]>(() => {
-    const saved = preferenceStorage.get('escala_users');
-    let userList: User[];
-    if (saved) {
-      // Migration: add role/status if missing AND migrate passwords to hash
-    userList = saved.map((u: any) => ({
-      ...u,
-      role: u.role || (u.isAdmin ? 'administrador' : 'operador'),
-      status: u.status || 'ativo',
-      password: migratePasswordToHash(u.password)
-    }));
-    } else {
-      userList = initialUsers;
-    }
-    
-    // Ensure admin user exists with correct password and settings
-    const adminUser = userList.find(u => u.name.toUpperCase() === 'ADMIN');
-    if (adminUser) {
-      // Update admin user if password is not hash of 1234 or missing hideFromSchedule
-      const adminPasswordHash = hashPassword('1234');
-      if (adminUser.password !== adminPasswordHash || adminUser.hideFromSchedule !== true) {
-        userList = userList.map(u => 
-          u.id === adminUser.id 
-            ? { ...u, password: adminPasswordHash, hideFromSchedule: true }
-            : u
-        );
-      }
-    } else {
-      // Create admin user if it doesn't exist
-      const newAdmin: User = {
-        id: String(Date.now()),
-        name: 'ADMIN',
-        password: hashPassword('1234'),
-        role: 'administrador',
-        status: 'ativo',
-        hideFromSchedule: true,
-      };
-      userList = [...userList, newAdmin];
-    }
-    
-    return userList;
-  });
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
   
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     // Verificar se há usuário do login externo PRIMEIRO
@@ -112,6 +73,48 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Estado para controlar acesso ao Super Admin escondido
   const [originalUser, setOriginalUser] = useState<User | null>(null);
   const [isHiddenSuperAdmin, setIsHiddenSuperAdmin] = useState(false);
+
+  // Carregar usuários do Supabase na inicialização
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        console.log('🔄 Carregando usuários do Supabase...');
+        const supabaseUsers = await SupabaseAPI.getUsers();
+        
+        // Converter usuários do Supabase para o formato do AuthContext
+        const convertedUsers = supabaseUsers.map(user => ({
+          id: user.id,
+          name: user.name,
+          password: user.password || '',
+          role: user.role,
+          status: user.status,
+          email: user.email,
+          profileImage: user.profileImage,
+          hideFromSchedule: user.hide_from_schedule
+        }));
+        
+        console.log(`✅ Carregados ${convertedUsers.length} usuários do Supabase`);
+        setUsers(convertedUsers);
+      } catch (error) {
+        console.error('❌ Erro ao carregar usuários do Supabase:', error);
+        // Fallback para usuários locais se Supabase falhar
+        const saved = preferenceStorage.get('escala_users');
+        if (saved) {
+          const userList = saved.map((u: any) => ({
+            ...u,
+            role: u.role || (u.isAdmin ? 'administrador' : 'operador'),
+            status: u.status || 'ativo',
+            password: migratePasswordToHash(u.password)
+          }));
+          setUsers(userList);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   // Verificar usuário externo periodicamente
   useEffect(() => {

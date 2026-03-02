@@ -29,11 +29,22 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
   const tabs = [
     { id: 'schedule', label: 'Escala SBMIBZ', icon: Calendar },
-    { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight },
+    // Administradores não solicitam trocas - apenas gerenciam
+    // { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight },
     { id: 'requests', label: 'Solicitações', icon: Bell, badge: pendingCount },
-    // Férias ativadas
-    { id: 'vacations', label: 'Férias', icon: Plane },
+    // Administradores não solicitam férias - apenas gerenciam
+    // { id: 'vacations', label: 'Férias', icon: Plane },
   ];
+
+  // Adicionar aba de Solicitar Troca apenas para OPERADORES (não administradores)
+  if (currentUser && !isAdmin(currentUser)) {
+    tabs.splice(1, 0, { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight });
+  }
+
+  // Adicionar aba de Férias apenas para OPERADORES (não administradores)
+  if (currentUser && !isAdmin(currentUser)) {
+    tabs.splice(3, 0, { id: 'vacations', label: 'Férias', icon: Plane });
+  }
 
   // Adicionar aba de ajuda para operadores (não administradores)
   if (currentUser && !isAdmin(currentUser)) {

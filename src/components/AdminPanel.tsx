@@ -1082,7 +1082,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                               </div>
                               <div>
                                 <h5 className="font-medium text-sm">{operator.name}</h5>
-                                <p className="text-xs text-muted-foreground">{operator.email}</p>
+                                <p className="text-xs text-muted-foreground">Operador</p>
                               </div>
                             </div>
                             <div className="text-right">

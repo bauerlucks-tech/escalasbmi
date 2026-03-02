@@ -505,7 +505,7 @@ class SystemAuthIntegration {
     
     versionElements.forEach(element => {
       if (element.dataset.versionDisplay === 'login') {
-        element.innerHTML = `Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>`;
+        element.innerHTML = `Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0.021130</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span>`;
       } else if (element.dataset.versionDisplay === 'header') {
         element.textContent = `v2.0`; // Mostrar apenas v2.0 sem o hash
       }
@@ -556,7 +556,7 @@ class SystemAuthIntegration {
               Sistema de Gestão de Escalas - Área Branca SBMI
             </p>
             <div style="margin-top: 0.5rem; padding: 0.25rem 0.75rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.375rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-              <span id="auth-version-display" data-version-display="login" style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0</span> <span style="color: rgba(255, 255, 255, 0.35);">(${commitHash})</span></span>
+              <span id="auth-version-display" data-version-display="login" style="color: rgba(255, 255, 255, 0.9); font-size: 0.75rem; font-weight: 600;">Versão: <span style="color: #60a5fa; font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;">2.0.021130</span> <span style="color: rgba(255, 255, 255, 0.35);">(162f344)</span></span>
             </div>
           </div>
 
@@ -580,6 +580,7 @@ class SystemAuthIntegration {
                   <option value="HENRIQUE" style="background: #1e293b; color: #fff;">HENRIQUE</option>
                   <option value="KELLY" style="background: #1e293b; color: #fff;">KELLY</option>
                   <option value="GUILHERME" style="background: #1e293b; color: #fff;">GUILHERME</option>
+                  <option value="MATHEUS" style="background: #1e293b; color: #fff;">MATHEUS</option>
                   <option value="RICARDO" style="background: #1e293b; color: #fff;">RICARDO</option>
                 </select>
               </div>
