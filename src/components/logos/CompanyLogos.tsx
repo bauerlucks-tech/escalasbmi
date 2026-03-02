@@ -5,14 +5,17 @@ interface LogoProps {
   showName?: boolean;
 }
 
-// Petrobras - Logo com a imagem real da empresa
+// Petrobras - Logo exato baseado na imagem real
 export const PetrobrasLogo: React.FC<LogoProps> = ({ className, showName = true }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <img 
-      src="https://s3-symbol-logo.tradingview.com/brasileiro-petrobras--600.png" 
-      alt="Petrobras" 
-      className="w-16 h-16 object-contain"
-    />
+    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
+      {/* Background green rectangle */}
+      <rect x="2" y="8" width="36" height="24" rx="2" fill="#006B3F"/>
+      {/* PETROBRAS text */}
+      <text x="20" y="22" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontWeight="bold" fontFamily="Arial, sans-serif">PETROBRAS</text>
+      {/* Yellow horizontal bar */}
+      <rect x="2" y="26" width="36" height="2" fill="#FFD700"/>
+    </svg>
     {showName && <span className="text-xs font-semibold text-muted-foreground">Petrobras</span>}
   </div>
 );

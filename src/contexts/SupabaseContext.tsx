@@ -200,14 +200,17 @@ export const SupabaseProvider: React.FC<SupabaseProviderProps> = ({ children }) 
   // Funções de Autenticação
   const signIn = async (email: string, password: string) => {
     try {
-      // Para login com nome de usuário, precisamos buscar o email
-      const user = users.find(u => u.name === email);
-      if (!user) {
-        throw new Error('Usuário não encontrado');
-      }
+      // Usar login direto via SupabaseAPI
+      const { user } = await SupabaseAPI.signIn(email, password);
       
-      // Simular login (em produção, usar autenticação real)
-      setCurrentUser(user);
+      // Adicionar campos faltantes para compatibilidade com tipo User
+      const userWithTimestamps = {
+        ...user,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      setCurrentUser(userWithTimestamps);
       
       toast({
         title: "✅ Login realizado",

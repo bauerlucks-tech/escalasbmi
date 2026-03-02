@@ -3,6 +3,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { SwapRequest } from '@/data/scheduleData';
+import CryptoJS from 'crypto-js';
 
 // Configuração do Supabase
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -92,27 +93,137 @@ export interface AuditLog {
   created_at: string;
 }
 
+// Funções de segurança para senhas
+const hashPassword = (password: string): string => {
+  return CryptoJS.SHA256(password).toString();
+};
+
+const verifyPassword = (password: string, hashedPassword: string): boolean => {
+  return hashPassword(password) === hashedPassword;
+};
+
+// Função para migrar senhas antigas para hash
+const migratePasswordToHash = (password: string): string => {
+  // Se já for hash (64 caracteres hex), retornar como está
+  if (password.length === 64 && /^[a-f0-9]{64}$/i.test(password)) {
+    return password;
+  }
+  // Senha em texto plano, converter para hash
+  return hashPassword(password);
+};
+
 // API Functions
 export class SupabaseAPI {
-  // AUTENTICAÇÃO
+  // Obter service role key das variáveis de ambiente
+  private static getServiceKey(): string {
+    const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceKey) {
+      console.error('❌ Service Role Key não configurada nas variáveis de ambiente');
+      throw new Error('Configuração de segurança incompleta');
+    }
+    return serviceKey;
+  }
+
+  // AUTENTICAÇÃO - LOGIN DIRETO
   static async signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    
-    if (error) throw error;
-    return data;
+    try {
+      // Criar cliente com service role key das variáveis de ambiente
+      const serviceClient = createClient(
+        supabaseUrl,
+        this.getServiceKey()
+      );
+      
+      // Buscar usuário diretamente na tabela users
+      const { data: user, error: userError } = await serviceClient
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .eq('status', 'ativo')
+        .single();
+      
+      if (userError || !user) {
+        throw new Error('Usuário não encontrado ou inativo');
+      }
+      
+      // Verificar senha usando hash (suporta senhas antigas em texto plano)
+      const storedPassword = user.password;
+      const isValidPassword = storedPassword.length === 64 
+        ? verifyPassword(password, storedPassword) 
+        : storedPassword === password; // Compatibilidade com senhas em texto plano
+
+      if (!isValidPassword) {
+        throw new Error('Senha incorreta');
+      }
+      
+      // Criar sessão manual
+      const session = {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          status: user.status
+        },
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      };
+      
+      // Salvar sessão no localStorage
+      localStorage.setItem('escala_session', JSON.stringify(session));
+      
+      return {
+        user: session.user,
+        session: {
+          access_token: 'direct_login_' + Date.now(),
+          expires_at: session.expiresAt
+        }
+      };
+      
+    } catch (error) {
+      console.error('❌ Erro no login direto:', error);
+      throw error;
+    }
   }
 
   static async signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    // Remover sessão do localStorage
+    localStorage.removeItem('escala_session');
+    
+    // Tentar signOut do Supabase Auth (se existir)
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) console.log('Aviso: Supabase Auth signOut falhou:', error.message);
+    } catch (e) {
+      // Ignorar erros do Supabase Auth
+    }
   }
 
   static async getCurrentUser() {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user;
+    // Primeiro tentar obter do localStorage (login direto)
+    const sessionData = localStorage.getItem('escala_session');
+    if (sessionData) {
+      try {
+        const session = JSON.parse(sessionData);
+        
+        // Verificar se a sessão não expirou
+        if (new Date(session.expiresAt) > new Date()) {
+          return session.user;
+        } else {
+          // Sessão expirada, remover
+          localStorage.removeItem('escala_session');
+        }
+      } catch (e) {
+        // Dados corrompidos, remover
+        localStorage.removeItem('escala_session');
+      }
+    }
+    
+    // Fallback para Supabase Auth
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    } catch (e) {
+      return null;
+    }
   }
 
   // USUÁRIOS

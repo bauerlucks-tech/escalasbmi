@@ -6,10 +6,14 @@ let appRoot: Root | null = null;
 
 // Verificar se usuário está logado antes de renderizar React
 const checkAuthAndRender = () => {
-  const currentUser = localStorage.getItem('directAuth_currentUser');
+  // Verificar ambas as chaves de sessão para compatibilidade
+  const directAuthUser = localStorage.getItem('directAuth_currentUser');
+  const escalaSession = localStorage.getItem('escala_session');
   
-  if (currentUser) {
-  // ✅ Usuário logado, renderizando React
+  const hasSession = directAuthUser || escalaSession;
+  
+  if (hasSession) {
+    // ✅ Usuário logado, renderizando React
     const root = document.getElementById("root");
     if (root && !appRoot) {
       appRoot = createRoot(root);
@@ -18,7 +22,7 @@ const checkAuthAndRender = () => {
       appRoot.render(<App />);
     }
   } else {
-  // ❌ Usuário não logado, aguardando login...
+    // ❌ Usuário não logado, aguardando login...
     // Não renderizar React até que usuário faça login
   }
 };
@@ -27,14 +31,11 @@ const checkAuthAndRender = () => {
 checkAuthAndRender();
 
 // Ouvir evento de login do sistema externo
-window.addEventListener('externalLogin', (event: CustomEvent) => {
+window.addEventListener('externalLogin', ((event: CustomEvent) => {
   console.log('🔄 Evento externalLogin recebido:', event.detail);
-  
-  // Pequeno delay para garantir que localStorage foi atualizado
-  setTimeout(() => {
-    checkAuthAndRender();
-  }, 100);
-});
+  // Forçar re-renderização após login externo
+  checkAuthAndRender();
+}) as EventListener);
 
 // Ouvir evento de logout do sistema externo
 window.addEventListener('externalLogout', () => {
