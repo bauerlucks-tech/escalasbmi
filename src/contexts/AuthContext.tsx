@@ -174,20 +174,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, [currentUser, users]);
 
-  // Escutar evento de logout externo
+  // Escutar evento de login externo
   useEffect(() => {
-    const handleExternalLogout = () => {
-      // 🔄 AuthContext recebeu evento externalLogout
-      setCurrentUser(null);
-      authStorage.removeUser();
+    const handleExternalLogin = (event: any) => {
+      // 🔄 AuthContext recebeu evento externalLogin
+      const externalUser = event.detail?.user;
+
+      if (externalUser) {
+        console.log('🔄 External login event received:', externalUser.name);
+
+        // Encontrar usuário correspondente na lista carregada do Supabase
+        const matchedUser = users.find(u => u.name === externalUser.name && u.status === 'ativo');
+
+        if (matchedUser) {
+          // Usar dados do Supabase, mas manter informações adicionais do login externo
+          const userWithExternalData = {
+            ...matchedUser, // Dados completos do Supabase
+            ...externalUser, // Dados adicionais do login externo (se houver)
+          };
+
+          setCurrentUser(userWithExternalData);
+          console.log('✅ React AuthContext updated with user:', matchedUser.name);
+          console.log('✅ Available functions:', Object.keys({ updateUserPassword: true, updateUserProfile: true }));
+
+        } else {
+          console.error('❌ Usuário logado externamente não encontrado no Supabase:', externalUser.name);
+          console.log('📋 Usuários disponíveis:', users.map(u => u.name));
+        }
+      }
     };
 
-    window.addEventListener('externalLogout', handleExternalLogout);
-    
+    window.addEventListener('externalLogin', handleExternalLogin);
+
     return () => {
-      window.removeEventListener('externalLogout', handleExternalLogout);
+      window.removeEventListener('externalLogin', handleExternalLogin);
     };
-  }, []);
+  }, [users]); // Dependência em users para garantir que a lista esteja carregada
 
   // Computed lists
   const activeUsers = users.filter(u => u.status === 'ativo');
