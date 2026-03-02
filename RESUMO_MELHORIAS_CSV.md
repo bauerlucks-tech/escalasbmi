@@ -54,7 +54,7 @@ export function calculateDayOfWeek(dateStr: string): string {
    - Interface atualizada para refletir novo formato
    - Mensagens informativas melhoradas
 
-3. **`INSTRUÇOES_CSV.md`**:
+3. **`INSTRUCOES_CSV.md`**:
    - Documentação completamente atualizada
    - Novos exemplos e vantagens explicadas
 
