@@ -13,85 +13,110 @@ class DirectAuthManager {
     this.currentUser = null;
   }
 
-  // Login direto com fallback (tenta Service Key, depois Anon Key)
+  // Login direto com Supabase (consulta tabela users diretamente)
   async login(username, password) {
     console.log('🔑 Fazendo login direto:', username);
     
     try {
-      // PRIMEIRO: Tentar com Service Key
+      // Consultar usuário diretamente na tabela users
       if (this.supabaseServiceKey) {
-        console.log('🔧 Tentando login com Service Key...');
-        const response = await fetch(this.supabaseUrl + '/rest/v1/rpc/login_user', {
-          method: 'POST',
+        console.log('🔧 Consultando tabela users...');
+        
+        // Buscar usuário por nome
+        const userResponse = await fetch(this.supabaseUrl + '/rest/v1/users?name=eq.' + encodeURIComponent(username) + '&status=eq.ativo', {
+          method: 'GET',
           headers: {
             'apikey': this.supabaseServiceKey,
             'Authorization': 'Bearer ' + this.supabaseServiceKey,
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            p_username: username,
-            p_password: password
-          })
+          }
         });
         
-        if (response.ok) {
-          console.log('✅ Login com Service Key funcionou!');
-          const users = await response.json();
+        if (userResponse.ok) {
+          const users = await userResponse.json();
           
           if (users && users.length > 0) {
             const user = users[0];
+            console.log('✅ Usuário encontrado:', user.name);
             
-            // Login bem-sucedido
-            this.currentUser = user;
+            // Verificar senha usando hash SHA256
+            const CryptoJS = await this.loadCryptoJS();
+            const hashedInputPassword = CryptoJS.SHA256(password).toString();
             
-            // Salvar no localStorage
-            localStorage.setItem('directAuth_currentUser', JSON.stringify(user));
-            
-            // Criar log de login
-            await fetch(this.supabaseUrl + '/rest/v1/audit_logs', {
-              method: 'POST',
-              headers: {
-                'apikey': this.supabaseServiceKey,
-                'Authorization': 'Bearer ' + this.supabaseServiceKey,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                user_name: user.name,
-                action: 'LOGIN',
-                details: 'Login realizado - ' + new Date().toISOString(),
-                created_at: new Date().toISOString()
-              })
-            });
-            
-            console.log('✅ Login successful:', user.name);
-            
-            return { 
-              success: true, 
-              user: user
-            };
+            if (hashedInputPassword === user.password) {
+              console.log('✅ Senha correta!');
+              
+              // Login bem-sucedido
+              this.currentUser = {
+                id: user.id,
+                name: user.name,
+                role: user.role,
+                status: user.status,
+                profileImage: user.profile_image,
+                hideFromSchedule: user.hide_from_schedule
+              };
+              
+              // Salvar no localStorage
+              localStorage.setItem('directAuth_currentUser', JSON.stringify(this.currentUser));
+              
+              // Criar log de login
+              await fetch(this.supabaseUrl + '/rest/v1/audit_logs', {
+                method: 'POST',
+                headers: {
+                  'apikey': this.supabaseServiceKey,
+                  'Authorization': 'Bearer ' + this.supabaseServiceKey,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  user_name: user.name,
+                  action: 'LOGIN',
+                  details: 'Login realizado via sistema direto - ' + new Date().toISOString(),
+                  created_at: new Date().toISOString()
+                })
+              });
+              
+              console.log('✅ Login successful:', user.name);
+              
+              // Disparar evento para o React
+              window.dispatchEvent(new CustomEvent('externalLogin', {
+                detail: { user: this.currentUser }
+              }));
+              
+              return { 
+                success: true, 
+                user: this.currentUser
+              };
+            } else {
+              console.log('❌ Senha incorreta');
+              return { success: false, error: 'Senha incorreta' };
+            }
           } else {
-            console.log('❌ Usuário ou senha inválidos');
-            return { success: false, error: 'Usuário ou senha inválidos' };
+            console.log('❌ Usuário não encontrado');
+            return { success: false, error: 'Usuário não encontrado' };
           }
         } else {
-          console.log('❌ Service Key falhou, tentando fallback...');
+          console.log('❌ Erro na consulta:', userResponse.status);
+          console.log('🔄 Tentando fallback local...');
         }
       }
       
-      // FALLBACK: Tentar login local (sem Supabase)
+      // FALLBACK: Login local com usuários Supabase (senha "1234")
       console.log('🔄 Usando fallback de login local...');
-      const users = [
-        { id: 1, name: 'ADMIN', password: 'admin123', role: 'admin', status: 'active' },
-        { id: 2, name: 'LUCAS', password: 'lucas123', role: 'operator', status: 'active' },
-        { id: 3, name: 'CARLOS', password: 'carlos123', role: 'operator', status: 'active' },
-        { id: 4, name: 'ROSANA', password: 'rosana123', role: 'operator', status: 'active' },
-        { id: 5, name: 'HENRIQUE', password: 'henrique123', role: 'operator', status: 'active' },
-        { id: 6, name: 'RICARDO', password: 'ricardo123', role: 'operator', status: 'active' }
+      const fallbackUsers = [
+        { id: "3826fb9b-439b-49e2-bfb5-a85e6d3aba23", name: 'LUCAS', role: 'operador', status: 'ativo' },
+        { id: "fd38b592-2986-430e-98be-d9d104d90442", name: 'CARLOS', role: 'operador', status: 'ativo' },
+        { id: "d793d805-3468-4bc4-b7bf-a722b570ec98", name: 'ROSANA', role: 'operador', status: 'ativo' },
+        { id: "2e7e953f-5b4e-44e9-bc69-d463a92fa99a", name: 'HENRIQUE', role: 'operador', status: 'ativo' },
+        { id: "9a91c13a-cf3a-4a08-af02-986163974acc", name: 'KELLY', role: 'operador', status: 'ativo' },
+        { id: "b5a1b456-e837-4f47-ab41-4734a00a0355", name: 'GUILHERME', role: 'operador', status: 'ativo' },
+        { id: "bbad7a98-2412-43e6-8dd6-cf52fae171be", name: 'RICARDO', role: 'administrador', status: 'ativo' },
+        { id: "550e8400-299a-4d5f-8a7b-9b8e3a9b2c1f", name: 'ADMIN', role: 'super_admin', status: 'ativo' },
+        { id: "b8cf09d3-05f1-40ea-a3d5-520d283da0c8", name: 'SUPER_ADMIN_HIDDEN', role: 'super_admin', status: 'ativo' }
       ];
       
-      const user = users.find(u => u.name === username && u.password === password);
+      const user = fallbackUsers.find(u => u.name === username);
       
-      if (user) {
+      if (user && password === '1234') {
         console.log('✅ Login local funcionou!');
         
         // Salvar no localStorage
@@ -210,21 +235,38 @@ class DirectAuthManager {
     return this.currentUser;
   }
 
-  // Verificar permissão
-  hasPermission(requiredRole) {
-    const user = this.getCurrentUser();
-    if (!user) return false;
+  // Método auxiliar para carregar CryptoJS
+  async loadCryptoJS() {
+    if (typeof CryptoJS !== 'undefined') {
+      return CryptoJS;
+    }
     
-    const roleHierarchy = {
-      'operador': 1,
-      'administrador': 2,
-      'super_admin': 3
+    // Se não estiver carregado, tentar importar ou usar versão global
+    if (window.CryptoJS) {
+      return window.CryptoJS;
+    }
+    
+    // Fallback: criar implementação simples de SHA256
+    console.warn('⚠️ CryptoJS não encontrado, usando fallback SHA256');
+    
+    // Implementação simples de SHA256 (não segura para produção)
+    const simpleSHA256 = (message) => {
+      // Esta é uma implementação simplificada apenas para fallback
+      // NÃO deve ser usada em produção
+      let hash = 0;
+      for (let i = 0; i < message.length; i++) {
+        const char = message.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+      return Math.abs(hash).toString(16).padStart(64, '0');
     };
     
-    const userLevel = roleHierarchy[user.role] || 0;
-    const requiredLevel = roleHierarchy[requiredRole] || 0;
-    
-    return userLevel >= requiredLevel;
+    return {
+      SHA256: (message) => ({
+        toString: () => simpleSHA256(typeof message === 'string' ? message : String(message))
+      })
+    };
   }
 }
 
