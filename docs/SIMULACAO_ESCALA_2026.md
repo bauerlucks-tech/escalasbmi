@@ -36,6 +36,14 @@ Artefatos (gerados via script):
 npm run simulate:2026
 ```
 
+## Como validar a regra de férias (obrigatório)
+
+```bash
+npm run test:simulation
+```
+
+Esta validação garante que nenhum operador apareça escalado em dias dentro do seu próprio período de férias e também valida a consistência de `total_days` com o intervalo informado.
+
 ## Uso seguro com Supabase (sem afetar produção)
 
 > O script **não conecta automaticamente** no Supabase. Ele apenas gera arquivos locais.

@@ -19,7 +19,8 @@
     "validate:all": "npm run validate:full && npm run validate:components && npm run lint && npm run build",
     "fix:issues": "node scripts/auto-fix-issues.cjs",
     "test:battery": "node scripts/ai-test-battery.cjs",
-    "simulate:2026": "node scripts/generate-2026-supabase-simulation.cjs"
+    "simulate:2026": "node scripts/generate-2026-supabase-simulation.cjs",
+    "test:simulation": "node scripts/validate-2026-simulation.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
