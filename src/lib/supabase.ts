@@ -20,6 +20,7 @@ export interface User {
   role: 'operador' | 'administrador' | 'super_admin';
   status: 'ativo' | 'arquivado';
   hide_from_schedule?: boolean;
+  profileImage?: string;
   created_at: string;
   updated_at: string;
 }
@@ -266,6 +267,21 @@ export class SupabaseAPI {
     const { data, error } = await serviceClient
       .from('users')
       .update({ password: newPasswordHash })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+
+  static async updateUserProfile(id: string, profileImage: string): Promise<User> {
+    // Criar cliente com service key para operações admin
+    const serviceClient = createClient(supabaseUrl, this.getServiceKey());
+    
+    const { data, error } = await serviceClient
+      .from('users')
+      .update({ profile_image: profileImage, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();

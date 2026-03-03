@@ -51,9 +51,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });
   }
 
-  // Adicionar aba de administração para administradores (não apenas super admins)
-  if (currentUser && isAdmin(currentUser)) {
-    tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
+  // Adicionar aba de administração para administradores e operadores
+  if (currentUser && (isAdmin(currentUser) || currentUser.role === 'operador')) {
+    const label = currentUser.role === 'operador' ? 'Painel' : 'Administração';
+    tabs.push({ id: 'admin', label, icon: Settings, badge: isAdmin(currentUser) ? adminPendingCount : 0 });
   }
 
   // Adicionar aba de Backup apenas para Super Admin

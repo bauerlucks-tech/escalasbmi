@@ -111,13 +111,25 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const [newUserRole, setNewUserRole] = useState<UserRole>('operador');
   const [showArchivedUsers, setShowArchivedUsers] = useState(false);
 
-  if (!isAdmin(currentUser)) {
+  if (!currentUser) {
     return (
       <div className="glass-card p-12 text-center animate-fade-in">
         <AlertTriangle className="w-12 h-12 text-warning mx-auto mb-4" />
         <h3 className="text-lg font-medium mb-2">Acesso Restrito</h3>
         <p className="text-sm text-muted-foreground">
-          Apenas administradores podem acessar este painel.
+          Faça login para acessar este painel.
+        </p>
+      </div>
+    );
+  }
+
+  if (!isAdmin(currentUser) && currentUser.role !== 'operador') {
+    return (
+      <div className="glass-card p-12 text-center animate-fade-in">
+        <AlertTriangle className="w-12 h-12 text-warning mx-auto mb-4" />
+        <h3 className="text-lg font-medium mb-2">Acesso Restrito</h3>
+        <p className="text-sm text-muted-foreground">
+          Apenas administradores e operadores podem acessar este painel.
         </p>
       </div>
     );
@@ -126,6 +138,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const pendingApproval = getPendingAdminApproval();
   const approvedSwaps = getApprovedSwaps();
   const rejectedSwaps = swapRequests.filter(r => r.status === 'rejected');
+
+  // Calculate tab count based on user role
+  const tabCount = isSuperAdmin(currentUser) ? 7 : isAdmin(currentUser) ? 5 : 4;
 
   const handleBackupDownload = () => {
     downloadCompleteBackup();
@@ -741,20 +756,20 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className={`grid ${isSuperAdmin(currentUser) ? 'grid-cols-7' : 'grid-cols-5'} w-full`}>
+        <TabsList className={`grid grid-cols-${tabCount} w-full`}>
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             Visão Geral
           </TabsTrigger>
           
-          {isAdmin(currentUser) && (
+          {(isAdmin(currentUser) || currentUser?.role === 'operador') && (
             <TabsTrigger value="vacations" className="flex items-center gap-2">
               <Plane className="w-4 h-4" />
               Férias
             </TabsTrigger>
           )}
           
-          {isSuperAdmin(currentUser) && (
+          {isAdmin(currentUser) && (
             <TabsTrigger value="swaps" className="flex items-center gap-2">
               <ArrowLeftRight className="w-4 h-4" />
               Trocas
