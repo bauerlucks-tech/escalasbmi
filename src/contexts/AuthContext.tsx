@@ -389,18 +389,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [users]);
 
   const updateUserProfile = async (userId: string, profileImage: string) => {
+    // Authorization check
+    if (!currentUser || (currentUser.id !== userId && !isAdmin(currentUser))) {
+      throw new Error('Unauthorized to update profile');
+    }
+
     try {
       // 🔄 Sincronizar com Supabase primeiro
       await SupabaseAPI.updateUserProfile(userId, profileImage);
 
       // ✅ Atualizar estado local apenas após sucesso no Supabase
       setUsers(prev => prev.map(u =>
-        u.id === userId ? { ...u, profileImage } : u
+        u.id === userId ? { ...u, profile_image: profileImage } : u
       ));
 
       // Update current user if it's the same user
       if (currentUser?.id === userId) {
-        setCurrentUser(prev => prev ? { ...prev, profileImage } : null);
+        setCurrentUser(prev => prev ? { ...prev, profile_image: profileImage } : null);
       }
     } catch (error) {
       console.error('❌ Erro ao atualizar foto de perfil:', error);

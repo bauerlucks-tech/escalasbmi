@@ -4,11 +4,19 @@
  */
 
 const { createClient } = require('@supabase/supabase-js');
+const { config: loadEnv } = require('dotenv');
 
-const supabaseUrl = 'https://lsxmwwwmgfjwnowlsmzf.supabase.co';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.iwOL-8oLeeYeb4BXZxXqrley453FgvJo9OEGLBDdv94';
+loadEnv();
 
-const supabase = createClient(supabaseUrl, serviceRoleKey);
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Variáveis de ambiente do Supabase não configuradas (VITE_SUPABASE_URL e chave).');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Utilitário de teste
 const testResults = { passed: 0, failed: 0, warnings: 0 };
@@ -38,13 +46,14 @@ async function validateSystem() {
   console.log('📋 1. USUÁRIOS E AUTENTICAÇÃO');
   console.log('─'.repeat(76));
 
-  const { data: users } = await supabase.from('users').select('*').order('name');
-  
-  test('Tabela de usuários acessível', users !== null, users?.length || 0);
-  test('Usuários ativos existem', users?.filter(u => u.status === 'ativo').length > 0, '');
-  
-  const activeUsers = users.filter(u => u.status === 'ativo');
-  console.log(`  📊 Total de usuários: ${users.length}, Ativos: ${activeUsers.length}`);
+  const { data: users, error: usersError } = await supabase.from('users').select('*').order('name');
+  const safeUsers = users || [];
+
+  test('Tabela de usuários acessível', usersError === null, usersError?.message || `${safeUsers.length} registros`);
+  test('Usuários ativos existem', safeUsers.filter(u => u.status === 'ativo').length > 0, '');
+
+  const activeUsers = safeUsers.filter(u => u.status === 'ativo');
+  console.log(`  📊 Total de usuários: ${safeUsers.length}, Ativos: ${activeUsers.length}`);
 
   // Verificar campos obrigatórios
   let hasAllFields = true;
@@ -72,7 +81,7 @@ async function validateSystem() {
   console.log(`  📊 Senhas em hash: ${usersWithHash.length}, Em texto: ${usersWithPlainText.length}`);
 
   // Verificar duplicatas de ADMIN
-  const adminUsers = users.filter(u => u.name === 'ADMIN');
+  const adminUsers = safeUsers.filter(u => u.name === 'ADMIN');
   test('ADMIN não duplicado', adminUsers.length <= 1, `${adminUsers.length} registros`);
   if (adminUsers.length > 1) {
     console.log(`  ⚠️  IDs duplicados: ${adminUsers.map(a => a.id).join(', ')}`);
@@ -101,7 +110,7 @@ async function validateSystem() {
     
     // Verificar estrutura da escala
     const hasEntries = latestSchedule.entries && latestSchedule.entries.length > 0;
-    test('Escala tem entradas', hasLoaded = hasEntries, '');
+    test('Escala tem entradas', hasEntries, '');
     
     if (hasEntries) {
       console.log(`  📊 Entradas na escala: ${latestSchedule.entries.length}`);
@@ -224,7 +233,7 @@ async function validateSystem() {
 
   let mappingIssues = 0;
   Object.entries(USER_UUIDS).forEach(([name, uuid]) => {
-    const userInDb = users.find(u => u.id === uuid);
+    const userInDb = safeUsers.find(u => u.id === uuid);
     if (!userInDb) {
       mappingIssues++;
     }

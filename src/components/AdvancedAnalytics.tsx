@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { TrendingUp, TrendingDown, Users, Calendar, Clock, BarChart3, Activity, Download, Filter, Calendar as CalendarIcon } from 'lucide-react';
+import { SupabaseAPI } from '@/lib/supabase';
 
 interface AnalyticsData {
   monthlyStats: Array<{
@@ -40,46 +41,197 @@ const AdvancedAnalytics: React.FC = () => {
     loadAnalyticsData();
   }, [dateRange, selectedMetric]);
 
+  const getStartDateByRange = () => {
+    const now = new Date();
+    const start = new Date(now);
+
+    if (dateRange === '7d') start.setDate(now.getDate() - 7);
+    if (dateRange === '30d') start.setDate(now.getDate() - 30);
+    if (dateRange === '90d') start.setDate(now.getDate() - 90);
+    if (dateRange === '1y') start.setFullYear(now.getFullYear() - 1);
+
+    return start;
+  };
+
+  const normalizeEntryDate = (value: string): Date | null => {
+    if (!value) return null;
+
+    if (value.includes('/')) {
+      const parts = value.split('/').map(Number);
+      let day, month, year;
+      if (parts[0] > 12) {
+        // Likely DD/MM/YYYY
+        [day, month, year] = parts;
+      } else {
+        // Ambiguous, try DD/MM/YYYY first
+        [day, month, year] = parts;
+        const date1 = new Date(year, month - 1, day);
+        if (isNaN(date1.getTime()) || date1.getFullYear() !== year || date1.getMonth() !== month - 1 || date1.getDate() !== day) {
+          // Try MM/DD/YYYY
+          [month, day] = [parts[0], parts[1]];
+        }
+      }
+      const parsed = new Date(year, month - 1, day);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    const parsed = new Date(value);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  };
+
   const loadAnalyticsData = async () => {
     setLoading(true);
     try {
-      // Simulate API call - in real app, this would fetch from backend
-      const mockData: AnalyticsData = {
-        monthlyStats: [
-          { month: 'Jan', swaps: 45, vacations: 12, approvals: 38, rejections: 7 },
-          { month: 'Fev', swaps: 52, vacations: 15, approvals: 44, rejections: 8 },
-          { month: 'Mar', swaps: 38, vacations: 18, approvals: 35, rejections: 3 },
-          { month: 'Abr', swaps: 61, vacations: 10, approvals: 55, rejections: 6 },
-          { month: 'Mai', swaps: 48, vacations: 22, approvals: 42, rejections: 6 },
-          { month: 'Jun', swaps: 55, vacations: 14, approvals: 48, rejections: 7 },
-        ],
-        operatorPerformance: [
-          { name: 'LUCAS', shifts: 45, swaps: 8, vacations: 2, efficiency: 92 },
-          { name: 'CARLOS', shifts: 42, swaps: 6, vacations: 3, efficiency: 88 },
-          { name: 'ROSANA', shifts: 48, swaps: 10, vacations: 1, efficiency: 95 },
-          { name: 'HENRIQUE', shifts: 44, swaps: 7, vacations: 2, efficiency: 90 },
-          { name: 'KELLY', shifts: 46, swaps: 9, vacations: 2, efficiency: 93 },
-          { name: 'GUILHERME', shifts: 43, swaps: 5, vacations: 3, efficiency: 87 },
-        ],
-        workloadDistribution: [
-          { range: '0-10 dias', count: 2, percentage: 33 },
-          { range: '11-15 dias', count: 3, percentage: 50 },
-          { range: '16-20 dias', count: 1, percentage: 17 },
-        ],
-        trends: [
-          { date: '01/01', productivity: 85, satisfaction: 88, workload: 75 },
-          { date: '08/01', productivity: 88, satisfaction: 90, workload: 78 },
-          { date: '15/01', productivity: 92, satisfaction: 92, workload: 82 },
-          { date: '22/01', productivity: 87, satisfaction: 89, workload: 76 },
-          { date: '29/01', productivity: 90, satisfaction: 91, workload: 80 },
-          { date: '05/02', productivity: 93, satisfaction: 93, workload: 85 },
-          { date: '12/02', productivity: 91, satisfaction: 92, workload: 83 },
-        ]
+      const [monthSchedules, swapRequests, vacationRequests] = await Promise.all([
+        SupabaseAPI.getMonthSchedules(),
+        SupabaseAPI.getSwapRequests(),
+        SupabaseAPI.getVacationRequests(),
+      ]);
+
+      const startDate = getStartDateByRange();
+      const monthLabel = (date: Date) =>
+        date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').replace(/^./, (c) => c.toUpperCase());
+
+      const monthlyMap = new Map<string, { month: string; swaps: number; vacations: number; approvals: number; rejections: number; workload: number }>();
+
+      const ensureMonth = (date: Date) => {
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (!monthlyMap.has(key)) {
+          monthlyMap.set(key, {
+            month: monthLabel(date),
+            swaps: 0,
+            vacations: 0,
+            approvals: 0,
+            rejections: 0,
+            workload: 0,
+          });
+        }
+        return monthlyMap.get(key)!;
       };
 
-      setData(mockData);
+      const filteredSwaps = swapRequests.filter((item) => {
+        const d = new Date(item.created_at);
+        return !isNaN(d.getTime()) && d >= startDate;
+      });
+
+      filteredSwaps.forEach((swap) => {
+        const d = new Date(swap.created_at);
+        const month = ensureMonth(d);
+        month.swaps += 1;
+        if (swap.status === 'accepted' || swap.status === 'approved') month.approvals += 1;
+        if (swap.status === 'rejected') month.rejections += 1;
+      });
+
+      const filteredVacations = vacationRequests.filter((item) => {
+        const d = new Date(item.requested_at);
+        return !isNaN(d.getTime()) && d >= startDate;
+      });
+
+      filteredVacations.forEach((vacation) => {
+        const d = new Date(vacation.requested_at);
+        const month = ensureMonth(d);
+        month.vacations += 1;
+        if (vacation.status === 'approved') month.approvals += 1;
+        if (vacation.status === 'rejected') month.rejections += 1;
+      });
+
+      const operatorStats = new Map<string, { name: string; shifts: number; swaps: number; vacations: number; efficiency: number }>();
+
+      const addOperator = (name: string) => {
+        if (!operatorStats.has(name)) {
+          operatorStats.set(name, { name, shifts: 0, swaps: 0, vacations: 0, efficiency: 0 });
+        }
+        return operatorStats.get(name)!;
+      };
+
+      monthSchedules.forEach((schedule) => {
+        (schedule.entries || []).forEach((entry) => {
+          const d = normalizeEntryDate(entry.date);
+          if (!d || d < startDate) return;
+
+          if (entry.meioPeriodo) addOperator(entry.meioPeriodo).shifts += 1;
+          if (entry.fechamento) addOperator(entry.fechamento).shifts += 1;
+        });
+      });
+
+      filteredSwaps.forEach((swap) => {
+        addOperator(swap.requester_name || 'N/A').swaps += 1;
+        addOperator(swap.target_name || 'N/A').swaps += 1;
+      });
+
+      filteredVacations.forEach((vacation) => {
+        addOperator(vacation.operator_name || 'N/A').vacations += 1;
+      });
+
+      const operatorPerformance = Array.from(operatorStats.values())
+        .filter((operator) => operator.name !== 'N/A')
+        .map((operator) => {
+          const penalty = operator.swaps * 1.5 + operator.vacations * 2;
+          const baseline = operator.shifts > 0 ? 100 - penalty / Math.max(operator.shifts, 1) * 10 : 0;
+          return {
+            ...operator,
+            efficiency: Math.max(0, Math.min(100, Math.round(baseline))),
+          };
+        })
+        .sort((a, b) => b.shifts - a.shifts)
+        .slice(0, 12);
+
+      const shiftTotals = operatorPerformance.map((op) => op.shifts);
+      const buckets = [
+        { range: '0-10 dias', min: 0, max: 10 },
+        { range: '11-20 dias', min: 11, max: 20 },
+        { range: '21-30 dias', min: 21, max: 30 },
+        { range: '31+ dias', min: 31, max: Number.MAX_SAFE_INTEGER },
+      ];
+
+      const workloadDistribution = buckets
+        .map((bucket) => {
+          const count = shiftTotals.filter((value) => value >= bucket.min && value <= bucket.max).length;
+          const percentage = shiftTotals.length > 0 ? Math.round((count / shiftTotals.length) * 100) : 0;
+          return { range: bucket.range, count, percentage };
+        })
+        .filter((item) => item.count > 0);
+
+      const trends = Array.from(monthlyMap.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([, month]) => {
+          const demand = month.swaps + month.vacations;
+          const approvalRate = demand > 0 ? (month.approvals / demand) * 100 : 100;
+          return {
+            date: month.month,
+            productivity: Math.round(Math.max(0, Math.min(100, approvalRate))),
+            satisfaction: Math.round(Math.max(0, Math.min(100, approvalRate - month.rejections * 2))),
+            workload: Math.round(Math.max(0, Math.min(100, demand * 5))),
+          };
+        });
+
+      let monthlyStats = Array.from(monthlyMap.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([, month]) => month);
+
+      if (selectedMetric !== 'all') {
+        monthlyStats = monthlyStats.map((item) => ({
+          ...item,
+          swaps: selectedMetric === 'swaps' ? item.swaps : 0,
+          vacations: selectedMetric === 'vacations' ? item.vacations : 0,
+          performance: selectedMetric === 'performance' ? item.workload : 0,
+        }));
+      }
+
+      setData({
+        monthlyStats,
+        operatorPerformance,
+        workloadDistribution,
+        trends,
+      });
     } catch (error) {
       console.error('Error loading analytics:', error);
+      setData({
+        monthlyStats: [],
+        operatorPerformance: [],
+        workloadDistribution: [],
+        trends: [],
+      });
     } finally {
       setLoading(false);
     }

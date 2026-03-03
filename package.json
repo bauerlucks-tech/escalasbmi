@@ -17,7 +17,11 @@
     "validate:full": "node scripts/full-system-validation.cjs",
     "validate:components": "node scripts/component-integration-test.cjs",
     "validate:all": "npm run validate:full && npm run validate:components && npm run lint && npm run build",
-    "fix:issues": "node scripts/auto-fix-issues.cjs"
+    "fix:issues": "node scripts/auto-fix-issues.cjs",
+    "test:battery": "node scripts/ai-test-battery.cjs",
+    "simulate:2026": "node scripts/generate-2026-supabase-simulation.cjs",
+    "test:simulation": "node scripts/validate-2026-simulation.cjs",
+    "test:flows": "node scripts/verify-supabase-flows.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

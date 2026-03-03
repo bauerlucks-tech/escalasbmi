@@ -127,6 +127,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const approvedSwaps = getApprovedSwaps();
   const rejectedSwaps = swapRequests.filter(r => r.status === 'rejected');
 
+  // Calculate tab count based on user role
+  const tabCount = isSuperAdmin(currentUser) ? 7 : isAdmin(currentUser) ? 5 : 4;
+
   const handleBackupDownload = () => {
     downloadCompleteBackup();
   };
@@ -741,20 +744,20 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
       {/* Tabs */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className={`grid ${isSuperAdmin(currentUser) ? 'grid-cols-7' : 'grid-cols-5'} w-full`}>
+        <TabsList className={`grid grid-cols-${tabCount} w-full`}>
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="w-4 h-4" />
             Visão Geral
           </TabsTrigger>
           
-          {isAdmin(currentUser) && (
+          {(isAdmin(currentUser) || currentUser?.role === 'operador') && (
             <TabsTrigger value="vacations" className="flex items-center gap-2">
               <Plane className="w-4 h-4" />
               Férias
             </TabsTrigger>
           )}
           
-          {isSuperAdmin(currentUser) && (
+          {isAdmin(currentUser) && (
             <TabsTrigger value="swaps" className="flex items-center gap-2">
               <ArrowLeftRight className="w-4 h-4" />
               Trocas

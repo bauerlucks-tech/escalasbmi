@@ -1,0 +1,44 @@
+{
+  "CARLOS": {
+    "total": 88,
+    "meioPeriodo": 44,
+    "fechamento": 44,
+    "weekends": 24
+  },
+  "GUILHERME": {
+    "total": 88,
+    "meioPeriodo": 44,
+    "fechamento": 44,
+    "weekends": 24
+  },
+  "HENRIQUE": {
+    "total": 88,
+    "meioPeriodo": 44,
+    "fechamento": 44,
+    "weekends": 24
+  },
+  "KELLY": {
+    "total": 87,
+    "meioPeriodo": 44,
+    "fechamento": 43,
+    "weekends": 24
+  },
+  "LUCAS": {
+    "total": 87,
+    "meioPeriodo": 43,
+    "fechamento": 44,
+    "weekends": 24
+  },
+  "MATHEUS": {
+    "total": 87,
+    "meioPeriodo": 43,
+    "fechamento": 44,
+    "weekends": 25
+  },
+  "ROSANA": {
+    "total": 87,
+    "meioPeriodo": 44,
+    "fechamento": 43,
+    "weekends": 29
+  }
+}

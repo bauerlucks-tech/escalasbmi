@@ -80,9 +80,11 @@ const parseEntry = (headers: string[], values: string[]): ScheduleEntry | null =
     return null;
   }
 
+  const normalizedDate = normalizeDate(date);
+
   return {
-    date: normalizeDate(date),
-    dayOfWeek: calculateDayOfWeek(date),
+    date: normalizedDate,
+    dayOfWeek: calculateDayOfWeek(normalizedDate),
     meioPeriodo: posto.toLowerCase().includes('meio') ? colaborador.toUpperCase() : '',
     fechamento: posto.toLowerCase().includes('fechamento') ? colaborador.toUpperCase() : '',
   };
