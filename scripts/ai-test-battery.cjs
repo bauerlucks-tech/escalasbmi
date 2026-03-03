@@ -17,6 +17,7 @@ const REPORT_FILE = path.join(REPORT_DIR, `ai-test-battery-${Date.now()}.json`);
 const checks = [];
 
 function run(command, name, options = {}) {
+  const { silent = false } = options;
   const startedAt = new Date().toISOString();
   try {
     const output = execSync(command, {
@@ -24,7 +25,6 @@ function run(command, name, options = {}) {
       stdio: 'pipe',
       encoding: 'utf8',
       maxBuffer: 1024 * 1024 * 10,
-      ...options,
     });
 
     checks.push({
@@ -36,7 +36,7 @@ function run(command, name, options = {}) {
       output: output.trim(),
     });
 
-    console.log(`✅ ${name}`);
+    if (!silent) console.log(`✅ ${name}`);
     return { ok: true, output };
   } catch (error) {
     const output = [error.stdout, error.stderr, error.message].filter(Boolean).join('\n').trim();
@@ -50,13 +50,13 @@ function run(command, name, options = {}) {
       output,
     });
 
-    console.log(`❌ ${name}`);
+    if (!silent) console.log(`❌ ${name}`);
     return { ok: false, output };
   }
 }
 
 function runNonBlocking(command, name) {
-  const result = run(command, name);
+  const result = run(command, name, { silent: true });
   if (!result.ok) {
     const last = checks[checks.length - 1];
     last.status = 'warn';

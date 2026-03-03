@@ -146,7 +146,7 @@ async function main() {
       addCheck('Status de swap_requests válidos', invalid.length === 0, `${invalid.length} inválidos`);
 
       const approvedWithoutAdmin = (swaps || []).filter(
-        (s) => s.status === 'approved' && s.admin_approved === false
+        (s) => s.status === 'approved' && s.admin_approved !== true
       );
 
       if (approvedWithoutAdmin.length > 0) {

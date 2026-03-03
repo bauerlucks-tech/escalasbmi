@@ -20,7 +20,7 @@ export interface User {
   role: 'operador' | 'administrador' | 'super_admin';
   status: 'ativo' | 'arquivado';
   hide_from_schedule?: boolean;
-  profileImage?: string;
+  profile_image?: string;
   created_at: string;
   updated_at: string;
 }
@@ -128,10 +128,10 @@ export class SupabaseAPI {
   // AUTENTICAÇÃO - LOGIN DIRETO
   static async signIn(email: string, password: string) {
     try {
-      // Criar cliente com service role key das variáveis de ambiente
+      // Criar cliente com anon key
       const serviceClient = createClient(
         supabaseUrl,
-        this.getServiceKey()
+        supabaseKey
       );
       
       // Buscar usuário diretamente na tabela users
@@ -261,8 +261,8 @@ export class SupabaseAPI {
   }
 
   static async updateUserPassword(id: string, newPasswordHash: string): Promise<User> {
-    // Criar cliente com service key para operações admin
-    const serviceClient = createClient(supabaseUrl, this.getServiceKey());
+    // Criar cliente com anon key
+    const serviceClient = createClient(supabaseUrl, supabaseKey);
     
     const { data, error } = await serviceClient
       .from('users')
@@ -276,8 +276,13 @@ export class SupabaseAPI {
   }
 
   static async updateUserProfile(id: string, profileImage: string): Promise<User> {
-    // Criar cliente com service key para operações admin
-    const serviceClient = createClient(supabaseUrl, this.getServiceKey());
+    // Input validation
+    if (!profileImage || profileImage.length > 1000) {
+      throw new Error('Invalid profile image');
+    }
+
+    // Criar cliente com anon key
+    const serviceClient = createClient(supabaseUrl, supabaseKey);
     
     const { data, error } = await serviceClient
       .from('users')

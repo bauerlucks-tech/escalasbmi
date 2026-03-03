@@ -57,7 +57,20 @@ const AdvancedAnalytics: React.FC = () => {
     if (!value) return null;
 
     if (value.includes('/')) {
-      const [day, month, year] = value.split('/').map(Number);
+      const parts = value.split('/').map(Number);
+      let day, month, year;
+      if (parts[0] > 12) {
+        // Likely DD/MM/YYYY
+        [day, month, year] = parts;
+      } else {
+        // Ambiguous, try DD/MM/YYYY first
+        [day, month, year] = parts;
+        const date1 = new Date(year, month - 1, day);
+        if (isNaN(date1.getTime()) || date1.getFullYear() !== year || date1.getMonth() !== month - 1 || date1.getDate() !== day) {
+          // Try MM/DD/YYYY
+          [month, day] = [parts[0], parts[1]];
+        }
+      }
       const parsed = new Date(year, month - 1, day);
       return isNaN(parsed.getTime()) ? null : parsed;
     }
@@ -79,7 +92,7 @@ const AdvancedAnalytics: React.FC = () => {
       const monthLabel = (date: Date) =>
         date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '').replace(/^./, (c) => c.toUpperCase());
 
-      const monthlyMap = new Map<string, { month: string; swaps: number; vacations: number; approvals: number; rejections: number }>();
+      const monthlyMap = new Map<string, { month: string; swaps: number; vacations: number; approvals: number; rejections: number; workload: number }>();
 
       const ensureMonth = (date: Date) => {
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -90,6 +103,7 @@ const AdvancedAnalytics: React.FC = () => {
             vacations: 0,
             approvals: 0,
             rejections: 0,
+            workload: 0,
           });
         }
         return monthlyMap.get(key)!;
@@ -200,6 +214,7 @@ const AdvancedAnalytics: React.FC = () => {
           ...item,
           swaps: selectedMetric === 'swaps' ? item.swaps : 0,
           vacations: selectedMetric === 'vacations' ? item.vacations : 0,
+          performance: selectedMetric === 'performance' ? item.workload : 0,
         }));
       }
 

@@ -111,25 +111,13 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const [newUserRole, setNewUserRole] = useState<UserRole>('operador');
   const [showArchivedUsers, setShowArchivedUsers] = useState(false);
 
-  if (!currentUser) {
+  if (!isAdmin(currentUser)) {
     return (
       <div className="glass-card p-12 text-center animate-fade-in">
         <AlertTriangle className="w-12 h-12 text-warning mx-auto mb-4" />
         <h3 className="text-lg font-medium mb-2">Acesso Restrito</h3>
         <p className="text-sm text-muted-foreground">
-          Faça login para acessar este painel.
-        </p>
-      </div>
-    );
-  }
-
-  if (!isAdmin(currentUser) && currentUser.role !== 'operador') {
-    return (
-      <div className="glass-card p-12 text-center animate-fade-in">
-        <AlertTriangle className="w-12 h-12 text-warning mx-auto mb-4" />
-        <h3 className="text-lg font-medium mb-2">Acesso Restrito</h3>
-        <p className="text-sm text-muted-foreground">
-          Apenas administradores e operadores podem acessar este painel.
+          Apenas administradores podem acessar este painel.
         </p>
       </div>
     );
