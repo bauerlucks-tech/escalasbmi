@@ -150,7 +150,7 @@ npm run safe-edit
 - ✅ **TypeScript**: Sempre deve compilar
 - ✅ **Imports**: Todos devem funcionar
 - ✅ **Arquivos**: Todos devem existir
-- ⚠️ **ESLint**: Warnings permitidos (não críticos)
+- ✅ **ESLint**: Sem warnings (bloqueia com `--max-warnings=0`)
 
 ### Critérios de Falha
 
@@ -158,7 +158,7 @@ npm run safe-edit
 - ❌ **TypeScript erro**: Bloqueia commit
 - ❌ **Arquivo ausente**: Bloqueia commit
 - ❌ **Import quebrado**: Bloqueia commit
-- ⚠️ **ESLint warning**: Permite commit com aviso
+- ❌ **ESLint warning**: Bloqueia commit
 
 ## 🔧 Configuração
 
