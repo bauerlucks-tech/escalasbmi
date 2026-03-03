@@ -59,3 +59,18 @@ Para aplicar em ambiente isolado:
 
 - O SQL limpa apenas o recorte `month_schedules`/`vacation_requests` de 2026 (meses 3-12) com motivo de simulação.
 - A escala ativa é marcada em dezembro/2026 na simulação.
+
+## Validação de fluxos com sincronização no Supabase
+
+Após aplicar o schema e o seed no projeto de teste, execute:
+
+```bash
+npm run test:flows
+```
+
+Essa checagem valida cautelosamente:
+- acesso às tabelas `users`, `month_schedules`, `vacation_requests` e `swap_requests`;
+- consistência da regra de férias (operador aprovado em férias não pode estar escalado no período);
+- status válidos em `swap_requests` e indícios de inconsistência de aprovação administrativa.
+
+Um relatório JSON é salvo em `test-results/flow-validation-<timestamp>.json`.
