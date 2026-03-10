@@ -1,9 +1,9 @@
 // Environment configuration - Using Anon Key
 window.ENV = {
-  SUPABASE_URL: 'https://lsxmwwwmgfjwnowlsmzf.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MjMzNjQsImV4cCI6MjA4NTQ5OTM2NH0.EarBTpSeSO9JcA_6jH6wmz0l_iVwg8pVO7_ASWXkOK8',
-  SUPABASE_SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeG13d3dtZ2Zqd25vd2xzbXpmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTkyMzM2NCwiZXhwIjoyMDg1NDk5MzY0fQ.5vQhKjM6YQF9HxLqY8sXJzL9kF4xN7pP2wR3sT8Y',
-  VITE_ADMIN_PASSWORD: 'admin123'
+  SUPABASE_URL: 'https://fxslbhpjiqtzimtosira.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2xiaHBqaXF0emltdG9zaXJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MDIxNjUsImV4cCI6MjA4ODA3ODE2NX0.78M7903IsRcx5vmDHbZx2dJPRw-hUy6_8Qpn4qIPqqs',
+  SUPABASE_SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2xiaHBqaXF0emltdG9zaXJhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjUwMjE2NSwiZXhwIjoyMDg4MDc4MTY1fQ.n5H8Lk7x9V6q8kZ4Y8M2pP7R9S8T4U2V6W8X0Y2Z4',
+  VITE_ADMIN_PASSWORD: '1234'
 };
 
 console.log('🔑 ENV loaded:', window.ENV.SUPABASE_ANON_KEY ? '✅ Key configured' : '❌ Key missing');

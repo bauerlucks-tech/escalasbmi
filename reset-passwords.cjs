@@ -1,9 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
-// Environment variables
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+// Environment variables for active TESTESB project
+const supabaseUrl = 'https://fxslbhpjiqtzimtosira.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4c2xiaHBqaXF0emltdG9zaXJhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjUwMjE2NSwiZXhwIjoyMDg4MDc4MTY1fQ.n5H8Lk7x9V6q8kZ4Y8M2pP7R9S8T4U2V6W8X0Y2Z4';
 
 // Validate environment
 if (!supabaseUrl || !supabaseKey) {

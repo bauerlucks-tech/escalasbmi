@@ -154,7 +154,7 @@
             console.log('✅ Chave do Super Admin adicionada com sucesso!');
             
         } else {
-            console.log('❌ Elemento "Lucas Pott" não encontrado');
+            console.log('❌ Elemento "LUCAS" não encontrado');
             
             // Tentar novamente se ainda não excedeu o limite
             retryCount++;
