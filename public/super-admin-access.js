@@ -25,9 +25,9 @@
             observer = null;
         }
         
-        console.log('🔍 Procurando elemento "Lucas Pott"...');
+        console.log('🔍 Procurando elemento "LUCAS"...');
         
-        // Múltiplos seletores para encontrar o elemento "Lucas Pott"
+        // Múltiplos seletores para encontrar o elemento "LUCAS"
         const selectors = [
             'p',
             'span',
@@ -46,7 +46,7 @@
         for (const selector of selectors) {
             const elements = document.querySelectorAll(selector);
             for (const element of elements) {
-                if (element.textContent && element.textContent.includes('Lucas Pott')) {
+                if (element.textContent && element.textContent.includes('LUCAS')) {
                     targetElement = element;
                     console.log('✅ Elemento encontrado via seletor:', selector);
                     break;
@@ -60,7 +60,7 @@
             console.log('🔍 Tentando busca por texto...');
             const allElements = document.querySelectorAll('*');
             for (const element of allElements) {
-                if (element.children.length === 0 && element.textContent && element.textContent.includes('Lucas Pott')) {
+                if (element.children.length === 0 && element.textContent && element.textContent.includes('LUCAS')) {
                     targetElement = element;
                     console.log('✅ Elemento encontrado via texto');
                     break;
@@ -69,7 +69,7 @@
         }
         
         if (targetElement) {
-            console.log('✅ Elemento "Lucas Pott" encontrado:', targetElement);
+            console.log('✅ Elemento "LUCAS" encontrado:', targetElement);
             
             // Verificar se já tem chave
             if (targetElement.querySelector('.super-admin-key')) {
@@ -179,7 +179,7 @@
                     // Verificar se algum nó adicionado contém "Lucas Pott"
                     mutation.addedNodes.forEach((node) => {
                         if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-                            if (node.textContent && node.textContent.includes('Lucas Pott')) {
+                            if (node.textContent && node.textContent.includes('LUCAS')) {
                                 shouldRetry = true;
                             }
                         }
