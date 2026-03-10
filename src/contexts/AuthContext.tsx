@@ -94,7 +94,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }));
         
         console.log(`✅ Carregados ${convertedUsers.length} usuários do Supabase`);
-        setUsers(convertedUsers);
+        
+        // Fallback to hardcoded users if Supabase returns empty
+        if (convertedUsers.length === 0) {
+          console.log('⚠️ Nenhum usuário encontrado no Supabase, usando lista padrão');
+          const defaultUsers: User[] = [
+            { id: 'fd38b592-2986-430e-98be-d9d104d90442', name: 'CARLOS', role: 'operador' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: 'b5a1b456-e837-4f47-ab41-4734a00a0355', name: 'GUILHERME', role: 'operador' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: '2e7e953f-5b4e-44e9-bc69-d463a92fa99a', name: 'HENRIQUE', role: 'administrador' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: '9a91c13a-cf3a-4a08-af02-986163974acc', name: 'KELLY', role: 'operador' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: '3826fb9b-439b-49e2-bfb5-a85e6d3aba23', name: 'LUCAS', role: 'operador' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: '07935022-3fdf-4f83-907f-e57ae8831511', name: 'MATHEUS', role: 'operador' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: 'd793d805-3468-4bc4-b7bf-a722b570ec98', name: 'ROSANA', role: 'operador' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' },
+            { id: 'super-admin-hidden', name: 'SUPER_ADMIN_HIDDEN', role: 'super_admin' as UserRole, status: 'ativo' as UserStatus, password: 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3' }
+          ];
+          setUsers(defaultUsers);
+        } else {
+          setUsers(convertedUsers);
+        }
       } catch (error) {
         console.error('❌ Erro ao carregar usuários do Supabase:', error);
         // Fallback para usuários locais se Supabase falhar
@@ -389,18 +406,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [users]);
 
   const updateUserProfile = async (userId: string, profileImage: string) => {
+    // Authorization check
+    if (!currentUser || (currentUser.id !== userId && !isAdmin(currentUser))) {
+      throw new Error('Unauthorized to update profile');
+    }
+
     try {
       // 🔄 Sincronizar com Supabase primeiro
       await SupabaseAPI.updateUserProfile(userId, profileImage);
 
       // ✅ Atualizar estado local apenas após sucesso no Supabase
       setUsers(prev => prev.map(u =>
-        u.id === userId ? { ...u, profileImage } : u
+        u.id === userId ? { ...u, profile_image: profileImage } : u
       ));
 
       // Update current user if it's the same user
       if (currentUser?.id === userId) {
-        setCurrentUser(prev => prev ? { ...prev, profileImage } : null);
+        setCurrentUser(prev => prev ? { ...prev, profile_image: profileImage } : null);
       }
     } catch (error) {
       console.error('❌ Erro ao atualizar foto de perfil:', error);

@@ -5,7 +5,7 @@
  * Verifica código antes de aplicar edições para minimizar erros
  */
 
-import { readFileSync, existsSync, writeFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const PROJECT_ROOT = process.cwd();
@@ -24,7 +24,10 @@ class CodeValidator {
       red: '\x1b[31m',
       yellow: '\x1b[33m',
       blue: '\x1b[34m',
-      cyan: '\x1b[36m'
+      cyan: '\x1b[36m',
+      success: '\x1b[32m',
+      warning: '\x1b[33m',
+      info: '\x1b[36m'
     };
     
     const icons = {
@@ -154,6 +157,25 @@ class CodeValidator {
     return issues.length === 0;
   }
 
+
+  validateCSVParserDateConsistency(filePath) {
+    if (!this.validateFileExists(filePath)) return false;
+
+    const content = readFileSync(join(PROJECT_ROOT, filePath), 'utf8');
+    const usesNormalizedDate = content.includes('dayOfWeek: calculateDayOfWeek(normalizedDate)');
+
+    if (!usesNormalizedDate) {
+      this.errors.push(
+        `Parser CSV deve calcular dayOfWeek usando data normalizada em ${filePath}`
+      );
+      this.success = false;
+      return false;
+    }
+
+    this.log(`Consistência de data validada em ${filePath}`, 'success');
+    return true;
+  }
+
   validateReactComponent(filePath) {
     if (!this.validateFileExists(filePath)) return false;
     
@@ -213,7 +235,7 @@ class CodeValidator {
     const report = this.getReport();
     
     console.log('\n📋 RELATÓRIO DE VALIDAÇÃO DE CÓDIGO');
-    console.log('=' * 50);
+    console.log('='.repeat(50));
     
     if (report.success && report.warnings.length === 0) {
       console.log('✅ Código validado com sucesso!');
@@ -267,6 +289,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   validator.validateFunction('src/utils/csv/validator.ts', 'validateCSV');
   validator.validateFunction('src/contexts/AuthContext.tsx', 'isAdmin');
   
+  // Validar consistência do parser CSV
+  validator.validateCSVParserDateConsistency('src/utils/csv/parser.ts');
+
   // Validar TypeScript
   validator.validateTypeScript('src/components/SwapRequestView.tsx');
   
