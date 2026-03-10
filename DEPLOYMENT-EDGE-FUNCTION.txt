@@ -1,0 +1,145 @@
+DEPLOYMENT MANUAL - EDGE FUNCTION SECURITY FIX
+===========================================
+
+CRITICAL: Deploy esta função IMEDIATAMENTE para corrigir vulnerabilidade de segurança!
+
+DATA: 10/03/2026
+HORA: 03:45
+PROJETO: lsxmwwwmgfjwnowlsmzf
+
+===========================================
+
+CÓDIGO DA FUNÇÃO (copie tudo abaixo):
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+interface RequestData {
+  userId: string
+  newPasswordHash: string
+  currentUserId: string // For audit logging
+  currentUserName: string // For audit logging
+}
+
+export const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    // Only allow POST requests
+    if (req.method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Get the request data
+    const { userId, newPasswordHash, currentUserId, currentUserName }: RequestData = await req.json()
+
+    // Validate required fields
+    if (!userId || !newPasswordHash || !currentUserId || !currentUserName) {
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Validate password hash format (should be SHA256)
+    if (newPasswordHash.length !== 64 || !/^[a-f0-9]{64}$/i.test(newPasswordHash)) {
+      return new Response(JSON.stringify({ error: 'Invalid password hash format' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Create Supabase client with service role key (server-side only)
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
+
+    // Update the user's password
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('users')
+      .update({ password: newPasswordHash })
+      .eq('id', userId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Error updating password:', updateError)
+      return new Response(JSON.stringify({ error: 'Failed to update password' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    if (!updatedUser) {
+      return new Response(JSON.stringify({ error: 'User not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Log the password change for audit purposes
+    const { error: auditError } = await supabase
+      .from('audit_logs')
+      .insert({
+        user_id: currentUserId,
+        user_name: currentUserName,
+        action: 'UPDATE_USER_PASSWORD',
+        details: `Password updated for user ${updatedUser.name}`,
+        created_at: new Date().toISOString()
+      })
+
+    if (auditError) {
+      console.error('Error logging audit:', auditError)
+      // Don't fail the request if audit logging fails
+    }
+
+    // Return success response (don't include sensitive data)
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Password updated successfully',
+      userId: updatedUser.id,
+      userName: updatedUser.name
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+
+  } catch (error) {
+    console.error('Unexpected error:', error)
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+})
+
+===========================================
+
+DEPLOYMENT CHECKLIST:
+☐ Abrir https://supabase.com/dashboard
+☐ Selecionar projeto: lsxmwwwmgfjwnowlsmzf
+☐ Ir para "Edge Functions" no menu lateral
+☐ Clicar "Create Function"
+☐ Nome da função: update-password
+☐ Colar TODO o código acima
+☐ Clicar "Deploy Function"
+☐ Verificar se deployment foi bem-sucedido
+☐ Testar alteração de senha no sistema
+
+===========================================

@@ -20,6 +20,7 @@ export interface User {
   role: 'operador' | 'administrador' | 'super_admin';
   status: 'ativo' | 'arquivado';
   hide_from_schedule?: boolean;
+  profile_image?: string;
   created_at: string;
   updated_at: string;
 }
@@ -114,47 +115,34 @@ const migratePasswordToHash = (password: string): string => {
 
 // API Functions
 export class SupabaseAPI {
-  // Obter service role key das variáveis de ambiente
-  private static getServiceKey(): string {
-    const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
-    if (!serviceKey) {
-      console.error('❌ Service Role Key não configurada nas variáveis de ambiente');
-      throw new Error('Configuração de segurança incompleta');
-    }
-    return serviceKey;
-  }
+  // REMOVED: getServiceKey() method - Service role key no longer used client-side
 
-  // AUTENTICAÇÃO - LOGIN DIRETO
+  // AUTENTICAÇÃO - LOGIN DIRETO (SECURITY NOTE: This method still uses direct DB access for compatibility)
   static async signIn(email: string, password: string) {
     try {
-      // Criar cliente com service role key das variáveis de ambiente
-      const serviceClient = createClient(
-        supabaseUrl,
-        this.getServiceKey()
-      );
-      
-      // Buscar usuário diretamente na tabela users
-      const { data: user, error: userError } = await serviceClient
+      // SECURITY WARNING: This method directly queries the database
+      // Consider migrating to Supabase Auth for better security
+      const { data: user, error: userError } = await supabase
         .from('users')
         .select('*')
         .eq('email', email)
         .eq('status', 'ativo')
         .single();
-      
+
       if (userError || !user) {
         throw new Error('Usuário não encontrado ou inativo');
       }
-      
+
       // Verificar senha usando hash (suporta senhas antigas em texto plano)
       const storedPassword = user.password;
-      const isValidPassword = storedPassword.length === 64 
-        ? verifyPassword(password, storedPassword) 
+      const isValidPassword = storedPassword.length === 64
+        ? verifyPassword(password, storedPassword)
         : storedPassword === password; // Compatibilidade com senhas em texto plano
 
       if (!isValidPassword) {
         throw new Error('Senha incorreta');
       }
-      
+
       // Criar sessão manual
       const session = {
         user: {
@@ -166,10 +154,10 @@ export class SupabaseAPI {
         },
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
       };
-      
+
       // Salvar sessão no localStorage
       localStorage.setItem('escala_session', JSON.stringify(session));
-      
+
       return {
         user: session.user,
         session: {
@@ -177,7 +165,7 @@ export class SupabaseAPI {
           expires_at: session.expiresAt
         }
       };
-      
+
     } catch (error) {
       console.error('❌ Erro no login direto:', error);
       throw error;
@@ -259,13 +247,52 @@ export class SupabaseAPI {
     return data;
   }
 
-  static async updateUserPassword(id: string, newPasswordHash: string): Promise<User> {
-    // Criar cliente com service key para operações admin
-    const serviceClient = createClient(supabaseUrl, this.getServiceKey());
-    
-    const { data, error } = await serviceClient
+  static async updateUserPassword(id: string, newPasswordHash: string, currentUserId: string, currentUserName: string): Promise<User> {
+    // SECURITY FIX: Use Edge Function instead of client-side service role key
+    // This prevents the service role key from being exposed in the client bundle
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    const response = await fetch(`${supabaseUrl}/functions/v1/update-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseKey}`,
+      },
+      body: JSON.stringify({
+        userId: id,
+        newPasswordHash,
+        currentUserId,
+        currentUserName,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(errorData.error || 'Failed to update password');
+    }
+
+    const result = await response.json();
+
+    // Fetch the updated user data to return
+    const { data: updatedUser, error } = await supabase
       .from('users')
-      .update({ password: newPasswordHash })
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+    return updatedUser;
+  }
+
+  static async updateUserProfile(id: string, profileImage: string): Promise<User> {
+    const { data, error } = await supabase
+      .from('users')
+      .update({ 
+        profile_image: profileImage,
+        updated_at: new Date().toISOString()
+      })
       .eq('id', id)
       .select()
       .single();

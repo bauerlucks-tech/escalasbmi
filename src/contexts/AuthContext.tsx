@@ -369,7 +369,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // Update in Supabase
       console.log('🔍 Calling SupabaseAPI.updateUserPassword');
-      await SupabaseAPI.updateUserPassword(userId, newPasswordHash);
+      await SupabaseAPI.updateUserPassword(userId, newPasswordHash, currentUser?.id || 'system', currentUser?.name || 'system');
       console.log('🔍 Supabase update successful');
 
       // Update local state
