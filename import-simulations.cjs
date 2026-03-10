@@ -3,7 +3,13 @@ const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing required environment variables: VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function replaceSchedule(month, year, entries, importedBy) {
@@ -16,7 +22,7 @@ async function replaceSchedule(month, year, entries, importedBy) {
       imported_by: importedBy,
       imported_at: new Date().toISOString(),
       is_active: true
-    });
+    }, { onConflict: 'month,year' });
   if (error) throw error;
 }
 
@@ -33,7 +39,17 @@ async function importSimulations() {
 
     // Delete existing schedules
     console.log('Deleting existing schedules for 2026 Mar-Dec...');
-    await supabase.from('month_schedules').delete().eq('year', 2026).gte('month', 3).lte('month', 12);
+    const { error: deleteError } = await supabase
+      .from('month_schedules')
+      .delete()
+      .eq('year', 2026)
+      .gte('month', 3)
+      .lte('month', 12);
+
+    if (deleteError) {
+      console.error('Error deleting existing schedules:', deleteError);
+      throw deleteError;
+    }
 
     // Import schedules
     const schedulesPath = path.join(__dirname, 'simulations', '2026-mar-dez', 'month-schedules.json');
@@ -59,6 +75,7 @@ async function importSimulations() {
     console.log('Import completed successfully!');
   } catch (error) {
     console.error('Error during import:', error);
+    process.exit(1);
   }
 }
 

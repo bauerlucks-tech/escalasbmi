@@ -176,7 +176,7 @@
             
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
-                    // Verificar se algum nó adicionado contém "Lucas Pott"
+                    // Verificar se algum nó adicionado contém "LUCAS"
                     mutation.addedNodes.forEach((node) => {
                         if (node.nodeType === Node.TEXT_NODE || node.nodeType === Node.ELEMENT_NODE) {
                             if (node.textContent && node.textContent.includes('LUCAS')) {
