@@ -1,3 +1,4 @@
+// @ts-ignore - Deno ESM import, available in Supabase Edge Functions
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 interface RequestData {
@@ -12,7 +13,10 @@ export const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-Deno.serve(async (req) => {
+// Note: TypeScript errors below are expected in client-side IDE
+// This Edge Function runs in Supabase's Deno environment, not Node.js
+// @ts-ignore - Deno is available in Supabase Edge Functions
+Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -47,7 +51,9 @@ Deno.serve(async (req) => {
     }
 
     // Create Supabase client with service role key (server-side only)
+    // @ts-ignore - Deno.env is available in Supabase Edge Functions
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    // @ts-ignore - Deno.env is available in Supabase Edge Functions
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {

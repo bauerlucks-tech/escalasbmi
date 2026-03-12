@@ -130,18 +130,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       if (superAdminMode && (!isHiddenSuperAdmin || !currentUser || currentUser.name !== 'SUPER_ADMIN_HIDDEN')) {
         // 🔄 Detectado modo Super Admin, ativando
-        const superAdminUser = {
-          id: 'super-admin',
-          name: 'SUPER_ADMIN_HIDDEN',
-          role: 'super_admin' as UserRole,
-          status: 'active' as UserStatus,
-          password: 'hidden_super_2026'
-        };
+        const hiddenSuperAdmin = users.find(u => u.name === 'SUPER_ADMIN_HIDDEN');
         
-        setCurrentUser(superAdminUser);
-        setIsHiddenSuperAdmin(true);
-        authStorage.setUser(superAdminUser);
-        // ✅ Super Admin ativado
+        if (hiddenSuperAdmin) {
+          setCurrentUser(hiddenSuperAdmin);
+          setIsHiddenSuperAdmin(true);
+          authStorage.setUser(hiddenSuperAdmin);
+          // ✅ Super Admin ativado
+        } else {
+          console.error('Hidden super admin user not found in database');
+        }
       } else if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
         // 🔄 Detectado usuário externo, atualizando AuthContext
         

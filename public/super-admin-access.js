@@ -100,7 +100,7 @@
                 
                 // Mostrar prompt para senha do Super Admin
                 const password = prompt('🔐 Acesso Super Admin - Digite a senha:');
-                if (password === 'hidden_super_2026') {
+                if (password === '1234') {
                     console.log('✅ Senha correta, fazendo login como Super Admin...');
                     
                     // Login como Super Admin
