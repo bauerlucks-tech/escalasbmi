@@ -100,7 +100,7 @@
                 
                 // Mostrar prompt para senha do Super Admin
                 const password = prompt('🔐 Acesso Super Admin - Digite a senha:');
-                if (password === '1234') {
+                if (password?.trim() === '1234') {
                     console.log('✅ Senha correta, fazendo login como Super Admin...');
                     
                     // Login como Super Admin
@@ -111,6 +111,13 @@
                         role: 'super_admin',
                         status: 'active'
                     }));
+                    
+                    console.log('✅ Login Super Admin realizado, recarregando página...');
+                    window.location.reload();
+                } else {
+                    console.log('❌ Senha incorreta - Esperado: "1234", Recebido:', `"${password}"`);
+                    alert('❌ Senha incorreta! Tente novamente.');
+                }
                     
                     // Disparar evento para o React
                     window.dispatchEvent(new CustomEvent('externalLogin', {
