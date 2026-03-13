@@ -73,30 +73,25 @@ const SwapRequestView: React.FC = () => {
     return schedule ? schedule.entries : [];
   }, [selectedMonth, currentSchedules]);
 
-  // Get schedule data for selected target month - REMOVED, now we select days from all months
-
-  // Get available operators (other active users) - DEFINIR PRIMEIRO
-  const availableOperators = useMemo(() => {
-    return users.filter(u => 
-      u.id !== currentUserId && 
-      u.status === 'ativo' && 
-      u.role === 'operador' &&
-      !u.hideFromSchedule
-    );
-  }, [users, currentUserId]);
-
   // Get days where user is scheduled (from today onwards)
   // For admins, show all available days to allow them to request any shift
   const myScheduledDays = useMemo(() => {
+    if (!selectedMonth) return [];
+    
+    const schedule = currentSchedules.find(s => s.month === selectedMonth.month && s.year === selectedMonth.year);
+    if (!schedule) return [];
+    
+    const entries = schedule.entries.filter(entry => isDateTodayOrFuture(entry.date));
+    
     if (isCurrentUserAdmin) {
       // Admins can see all available days to request any shift
-      return currentScheduleData.filter(entry => isDateTodayOrFuture(entry.date));
+      return entries;
     }
-    return currentScheduleData.filter(entry => 
-      (entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName) &&
-      isDateTodayOrFuture(entry.date)
+    
+    return entries.filter(entry => 
+      (entry.meioPeriodo === currentUserName || entry.fechamento === currentUserName)
     );
-  }, [currentScheduleData, currentUserName, isCurrentUserAdmin, isDateTodayOrFuture]);
+  }, [currentSchedules, selectedMonth, currentUserName, isCurrentUserAdmin, isDateTodayOrFuture]);
 
   // Get all available days (from today onwards) to select target day
   const availableDays = useMemo(() => {
