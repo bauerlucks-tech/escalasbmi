@@ -27,8 +27,6 @@ const SwapRequestView: React.FC = () => {
   // Step 0: Select month for original shift
   const [selectedMonth, setSelectedMonth] = useState<{month: number, year: number} | null>(null);
   
-  // Step 0.5: Select month for target shift - REMOVED, now we select day directly from all months
-  
   // Step 1: Select my day to give away
   const [selectedMyDay, setSelectedMyDay] = useState<string | null>(null);
   const [selectedMyShift, setSelectedMyShift] = useState<ShiftType | null>(null);
