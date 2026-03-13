@@ -428,59 +428,8 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
 
-          {/* Step 2: Select target month */}
+          {/* Step 2: Select target day */}
           {selectedMyDay && selectedMyShift && (
-            <div className="space-y-3 animate-fade-in">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
-                Selecione o mês para a troca
-              </label>
-              
-              <Select 
-                value={selectedTargetMonth ? `${selectedTargetMonth.month}/${selectedTargetMonth.year}` : ''} 
-                onValueChange={(v) => {
-                  const [month, year] = v.split('/').map(Number);
-                  setSelectedTargetMonth({ month, year });
-                  setSelectedTargetDay(null);
-                  setSelectedOperator(null);
-                  setSelectedTargetShift(null);
-                }}
-              >
-                <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
-                  <SelectValue placeholder="Selecione o mês da troca">
-                    {selectedTargetMonth && (
-                      <div className="flex items-center gap-2 text-left">
-                        <Calendar className="w-4 h-4 text-success" />
-                        <span className="font-medium">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year}</span>
-                      </div>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {availableMonths.map(month => (
-                    <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`}>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-success" />
-                        <span>{month.label}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {/* Arrow Divider */}
-          {selectedTargetMonth && (
-            <div className="flex justify-center">
-              <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center animate-fade-in">
-                <ArrowRight className="w-5 h-5 text-muted-foreground" />
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Select target day */}
-          {selectedTargetMonth && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">3</div>
@@ -546,11 +495,11 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
 
-          {/* Step 4: Select operator and shift */}
+          {/* Step 3: Select operator and shift */}
           {selectedTargetDay && selectedTargetEntry && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">4</div>
+                <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">3</div>
                 {selectedTargetMonth && <span className="text-muted-foreground">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year} - </span>}
                 Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}?
               </label>

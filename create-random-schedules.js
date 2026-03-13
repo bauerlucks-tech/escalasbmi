@@ -11,15 +11,15 @@ const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_DXLlBP
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Lista de operadores (baseado nos dados de teste criados)
+// Lista de operadores (baseado nos usuários ativos do banco de dados)
 const operators = [
-  'Carlos Silva',
-  'Ana Costa',
-  'Roberto Lima',
-  'Maria Santos',
-  'João Oliveira',
-  'Patrícia Souza',
-  'Eduardo Ferreira'
+  'CARLOS',
+  'GUILHERME',
+  'HENRIQUE',
+  'KELLY',
+  'LUCAS',
+  'MATHEUS',
+  'ROSANA'
 ];
 
 // Dias por mês em 2026 (não bissexto)
@@ -88,7 +88,7 @@ async function createRandomSchedules() {
       .from('month_schedules')
       .select('id')
       .eq('month', month)
-      .eq('year', 2024)
+      .eq('year', 2026)
       .single();
 
     if (checkError && checkError.code !== 'PGRST116') {
