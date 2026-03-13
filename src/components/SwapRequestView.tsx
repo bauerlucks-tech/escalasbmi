@@ -123,7 +123,7 @@ const SwapRequestView: React.FC = () => {
       u.status === 'ativo' && 
       u.role === 'operador' &&
       !u.hideFromSchedule &&
-      (shifts as unknown[]).includes(getOperatorShiftsForDay(targetEntry, u.name))
+      shifts.some(shift => getOperatorShiftsForDay(targetEntry, u.name).includes(shift))
     );
   }, [users, currentUserId, selectedTargetDay, selectedOperator, currentSchedules]);
 
@@ -432,7 +432,7 @@ const SwapRequestView: React.FC = () => {
           {selectedMyDay && selectedMyShift && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">3</div>
+                <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
                 Qual data você quer trocar?
               </label>
               
