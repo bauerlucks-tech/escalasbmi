@@ -112,13 +112,6 @@
                         status: 'active'
                     }));
                     
-                    console.log('✅ Login Super Admin realizado, recarregando página...');
-                    window.location.reload();
-                } else {
-                    console.log('❌ Senha incorreta - Esperado: "1234", Recebido:', `"${password}"`);
-                    alert('❌ Senha incorreta! Tente novamente.');
-                }
-                    
                     // Disparar evento para o React
                     window.dispatchEvent(new CustomEvent('externalLogin', {
                         detail: {
@@ -133,15 +126,11 @@
                     
                     alert('✅ Acesso Super Admin concedido!');
                     
-                    // Pequeno delay antes de recarregar para garantir processamento
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
-                } else if (password !== null) {
-                    console.log('❌ Senha incorreta');
-                    alert('❌ Senha incorreta!');
+                    console.log('✅ Login Super Admin realizado, recarregando página...');
+                    window.location.reload();
                 } else {
-                    console.log('🚫 Prompt cancelado');
+                    console.log('❌ Senha incorreta - Esperado: "1234", Recebido:', `"${password}"`);
+                    alert('❌ Senha incorreta! Tente novamente.');
                 }
             });
             
