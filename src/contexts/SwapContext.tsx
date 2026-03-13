@@ -137,9 +137,8 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     loadSwapRequests();
     
-    // Configurar intervalo para recarregar dados a cada 30 segundos (otimizado)
-    // 10s era muito agressivo e causava performance issues
-    const interval = setInterval(loadSwapRequests, 30000);
+    // Configurar intervalo para recarregar dados a cada 10 segundos (otimizado)
+    const interval = setInterval(loadSwapRequests, 10000);
     
     return () => clearInterval(interval);
   }, []);
@@ -412,9 +411,32 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       targetEntryFech: targetEntry.fechamento
     });
 
+    // VALIDAÇÃO CRÍTICA: Verificar se ambos os turnos realmente existem
     if (!requesterShift) {
       console.error('❌ Turno do solicitante não encontrado:', request.requesterName);
       throw new Error('Turno do solicitante não encontrado na escala');
+    }
+
+    if (!targetShift) {
+      console.error('❌ Turno do alvo não encontrado:', request.targetName);
+      throw new Error('Turno do alvo não encontrado na escala');
+    }
+
+    // VALIDAÇÃO ADICIONAL: Verificar se os turnos não estão vazios
+    if (!originalEntry[requesterShift]) {
+      console.error('❌ Turno do solicitante está vazio:', requesterShift);
+      throw new Error('Turno do solicitante está vazio na escala');
+    }
+
+    if (!targetEntry[targetShift]) {
+      console.error('❌ Turno do alvo está vazio:', targetShift);
+      throw new Error('Turno do alvo está vazio na escala');
+    }
+
+    // VALIDAÇÃO FINAL: Impedir que um usuário troque com ele mesmo
+    if (request.requesterName === request.targetName) {
+      console.error('❌ Usuário tentando trocar com ele mesmo');
+      throw new Error('Usuário não pode trocar com ele mesmo');
     }
 
     console.log('🔄 Aplicando troca:', {

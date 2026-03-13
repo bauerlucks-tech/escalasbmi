@@ -428,21 +428,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Salvar usuário original para poder voltar depois
         setOriginalUser(currentUser);
         
-        // Forçar atualização do estado
-        setTimeout(() => {
-          // Trocar para Super Admin
-          setCurrentUser(hiddenSuperAdmin);
-          setIsHiddenSuperAdmin(true);
-          
-          // Salvar novo usuário no localStorage
-          localStorage.setItem('currentUser', JSON.stringify(hiddenSuperAdmin));
-          
-          // Log de auditoria with escalation context
-          logUserManagement(currentUser.id, currentUser.name, 'USER_UPDATE', 
-            `User ${currentUser.name} switched to hidden super admin mode`);
-          // Log de auditoria - login do Super Admin
-          logAdminLogin(hiddenSuperAdmin.id, hiddenSuperAdmin.name);
-        }, 100);
+        // Trocar para Super Admin imediatamente (sem setTimeout para evitar race condition)
+        setCurrentUser(hiddenSuperAdmin);
+        setIsHiddenSuperAdmin(true);
+        
+        // Salvar novo usuário no localStorage
+        localStorage.setItem('currentUser', JSON.stringify(hiddenSuperAdmin));
+        
+        // Log de auditoria with escalation context
+        logUserManagement(currentUser.id, currentUser.name, 'USER_UPDATE', 
+          `User ${currentUser.name} switched to hidden super admin mode`);
+        // Log de auditoria - login do Super Admin
+        logAdminLogin(hiddenSuperAdmin.id, hiddenSuperAdmin.name);
       } else {
         // Hidden super admin user not found
         console.error('Hidden super admin user not found');
