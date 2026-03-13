@@ -179,8 +179,8 @@ const SwapRequestView: React.FC = () => {
     return dateStr.split('/')[0];
   };
 
-  const selectedMyEntry = selectedMyDay ? getScheduleByDate(selectedMyDay, false) : null;
-  const selectedTargetEntry = selectedTargetDay ? getScheduleByDate(selectedTargetDay, true) : null;
+  const selectedMyEntry = selectedMyDay ? getScheduleByDate(selectedMyDay) : null;
+  const selectedTargetEntry = selectedTargetDay ? getScheduleByDate(selectedTargetDay) : null;
 
   if (!currentUser) return null;
 
@@ -433,7 +433,6 @@ const SwapRequestView: React.FC = () => {
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">3</div>
-                {selectedTargetMonth && <span className="text-muted-foreground">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year} - </span>}
                 Qual data você quer trocar?
               </label>
               
@@ -500,7 +499,6 @@ const SwapRequestView: React.FC = () => {
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-success text-success-foreground flex items-center justify-center text-xs font-bold">3</div>
-                {selectedTargetMonth && <span className="text-muted-foreground">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year} - </span>}
                 Qual turno/operador você quer assumir no dia {getDayNumber(selectedTargetDay)}?
               </label>
               
@@ -610,7 +608,6 @@ const SwapRequestView: React.FC = () => {
                 <Check className="w-4 h-4 text-success" />
                 Resumo da Troca
                 {selectedMonth && <span className="text-muted-foreground"> - Original: {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
-                {selectedTargetMonth && selectedTargetMonth.month !== selectedMonth?.month && <span className="text-muted-foreground"> | Troca: {getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year}</span>}
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
