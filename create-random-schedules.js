@@ -1,5 +1,5 @@
 // GERAR ESCALAS ALEATÓRIAS PARA SISTEMA DE ESCALAS BMI
-// Cria escalas para janeiro a dezembro de 2024
+// Cria escalas para janeiro a dezembro de 2026
 // Distribuição aleatória mas equilibrada entre operadores
 
 import { createClient } from '@supabase/supabase-js';
@@ -22,7 +22,7 @@ const operators = [
   'Eduardo Ferreira'
 ];
 
-// Dias por mês em 2024 (não bissexto)
+// Dias por mês em 2026 (não bissexto)
 const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const monthNames = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -43,17 +43,36 @@ function getRandomOperator() {
 
 // Função principal
 async function createRandomSchedules() {
-  console.log('🎲 Iniciando criação de escalas aleatórias para 2024...');
+  console.log('🎲 Iniciando criação de escalas aleatórias para 2026...');
+
+  try {
+    // Primeiro, deletar todas as escalas existentes de 2026
+    console.log('🗑️ Removendo escalas existentes de 2026...');
+    const { error: deleteError } = await supabase
+      .from('month_schedules')
+      .delete()
+      .eq('year', 2026);
+
+    if (deleteError) {
+      console.error('❌ Erro ao deletar escalas existentes:', deleteError);
+      return;
+    }
+
+    console.log('✅ Escalas existentes removidas com sucesso');
+  } catch (error) {
+    console.error('❌ Erro ao remover escalas existentes:', error);
+    return;
+  }
 
   for (let month = 1; month <= 12; month++) {
     const daysInMonth = monthDays[month - 1];
     const entries = [];
 
-    console.log(`📅 Gerando escala para ${monthNames[month - 1]} 2024 (${daysInMonth} dias)...`);
+    console.log(`📅 Gerando escala para ${monthNames[month - 1]} 2026 (${daysInMonth} dias)...`);
 
     // Gerar entradas para cada dia
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `2024-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      const dateStr = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/2026`;
       const dayOfWeek = getDayOfWeek(2024, month, day);
 
       entries.push({
@@ -84,7 +103,7 @@ async function createRandomSchedules() {
           .from('month_schedules')
           .update({
             entries: entries,
-            imported_by: 'system',
+            imported_by: null,
             imported_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
@@ -103,9 +122,9 @@ async function createRandomSchedules() {
             month: month,
             year: 2026,
             entries: entries,
-            imported_by: 'system',
+            imported_by: null,
             imported_at: new Date().toISOString(),
-            is_active: true,
+            is_active: month === 10, // Outubro 2026 como ativo
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
