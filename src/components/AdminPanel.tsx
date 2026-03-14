@@ -123,6 +123,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     );
   }
 
+  const allSwaps = swapRequests.filter(r => r.status === 'approved' || r.status === 'rejected');
   const pendingApproval = getPendingAdminApproval();
   const approvedSwaps = getApprovedSwaps();
   const rejectedSwaps = swapRequests.filter(r => r.status === 'rejected');
@@ -765,12 +766,16 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               <ArrowLeftRight className="w-4 h-4" />
               Trocas
               {pendingApproval.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold bg-warning text-primary flex items-center justify-center">
+                <span className="ml-2 px-2 py-1 bg-warning text-warning-foreground text-xs rounded-full">
                   {pendingApproval.length}
                 </span>
               )}
             </TabsTrigger>
           )}
+          <TabsTrigger value="swap-history" className="flex items-center gap-2">
+            <Archive className="w-4 h-4" />
+            Histórico de Solicitações
+          </TabsTrigger>
           <TabsTrigger value="schedule" className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             Escala
@@ -1042,6 +1047,79 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                         </div>
                       </div>
                       <span className="badge-rejected ml-4 mt-1">Recusada</span>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Swap History Tab */}
+        <TabsContent value="swap-history" className="space-y-4">
+          <div className="glass-card overflow-hidden">
+            <div className="p-4 border-b border-border/50">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Archive className="w-4 h-4 text-primary" />
+                Histórico Completo de Solicitações
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Todas as solicitações aprovadas e rejeitadas por Ricardo
+              </p>
+            </div>
+
+            <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto">
+              {allSwaps.length === 0 ? (
+                <div className="p-6 text-center text-muted-foreground text-sm">
+                  Nenhuma solicitação no histórico
+                </div>
+              ) : (
+                <>
+                  {allSwaps.map(request => (
+                    <div key={request.id} className={`p-4 flex items-start justify-between ${request.status === 'rejected' ? 'opacity-60' : ''}`}>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm mb-2">
+                          {request.requesterName} ⇄ {request.targetName}
+                        </div>
+                        
+                        {/* Seção DE (origem) */}
+                        <div className="bg-muted/30 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-primary mb-1">📍 DE (Origem):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.originalDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.originalShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.requesterName}</div>
+                          </div>
+                        </div>
+                        
+                        {/* Seção PARA (destino) */}
+                        <div className="bg-muted/30 rounded p-2 mb-2">
+                          <div className="text-xs font-medium text-secondary mb-1">🎯 PARA (Destino):</div>
+                          <div className="text-xs space-y-0.5">
+                            <div><span className="font-medium">Data:</span> {request.targetDate}</div>
+                            <div><span className="font-medium">Turno:</span> {getShiftName(request.targetShift)}</div>
+                            <div><span className="font-medium">Operador:</span> {request.targetName}</div>
+                          </div>
+                        </div>
+                        
+                        {/* Seção de registro */}
+                        <div className="text-xs text-muted-foreground space-y-0.5 border-t pt-2">
+                          <div><span className="font-medium">Solicitado:</span> {new Date(request.createdAt).toLocaleString('pt-BR')}</div>
+                          {request.respondedAt && (
+                            <div><span className="font-medium">Respondido:</span> {new Date(request.respondedAt).toLocaleString('pt-BR')} por {request.respondedBy}</div>
+                          )}
+                          {request.adminApprovedAt && (
+                            <div><span className="font-medium">Aprovado:</span> {new Date(request.adminApprovedAt).toLocaleString('pt-BR')} por {request.adminApprovedBy}</div>
+                          )}
+                        </div>
+                      </div>
+                      <span className={`ml-4 mt-1 px-3 py-1 rounded-full text-xs font-medium ${
+                        request.status === 'approved' ? 'bg-success text-success-foreground' :
+                        request.status === 'rejected' ? 'bg-destructive text-destructive-foreground' :
+                        'bg-muted text-muted-foreground'
+                      }`}>
+                        {request.status === 'approved' ? 'Aprovada' : request.status === 'rejected' ? 'Recusada' : 'Pendente'}
+                      </span>
                     </div>
                   ))}
                 </>
