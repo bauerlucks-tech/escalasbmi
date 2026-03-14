@@ -71,6 +71,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     getPendingAdminApproval, 
     getApprovedSwaps, 
     adminApproveSwap, 
+    respondToSwap,
     swapRequests, 
     scheduleData, 
     updateSchedule,
@@ -182,8 +183,13 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
   const handleRejectSwap = async (requestId: string) => {
     if (!currentUser) return;
-    // TODO: Implement reject function in SwapContext
-    toast.error('Função de rejeição não implementada ainda');
+    try {
+      await respondToSwap(requestId, false);
+      toast.success('Troca rejeitada com sucesso!');
+    } catch (error) {
+      console.error('Erro ao rejeitar troca:', error);
+      toast.error('Erro ao rejeitar troca');
+    }
   };
 
   const handleEditEntry = (entry: ScheduleEntry) => {
@@ -755,13 +761,6 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </TabsTrigger>
           
           {isAdmin(currentUser) && (
-            <TabsTrigger value="management" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Gestão
-            </TabsTrigger>
-          )}
-          
-          {isSuperAdmin(currentUser) && (
             <TabsTrigger value="swaps" className="flex items-center gap-2">
               <ArrowLeftRight className="w-4 h-4" />
               Trocas
