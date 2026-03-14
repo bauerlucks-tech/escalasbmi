@@ -179,6 +179,12 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     toast.success('Troca aprovada com sucesso!');
   };
 
+  const handleRejectSwap = async (requestId: string) => {
+    if (!currentUser) return;
+    // TODO: Implement reject function in SwapContext
+    toast.error('Função de rejeição não implementada ainda');
+  };
+
   const handleEditEntry = (entry: ScheduleEntry) => {
     setEditingEntry(entry.date);
     setEditForm({ meioPeriodo: entry.meioPeriodo, fechamento: entry.fechamento });
@@ -926,6 +932,15 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                       >
                         <Check className="w-4 h-4 mr-1" />
                         Aprovar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRejectSwap(request.id)}
+                        className="ml-2"
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        Recusar
                       </Button>
                     </div>
                   </div>
