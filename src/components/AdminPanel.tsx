@@ -1083,6 +1083,10 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </div>
         </TabsContent>
 
+        {/* Management Tab - DISABLED */}
+        {/* <TabsContent value="management" className="space-y-4">
+        </TabsContent> */}
+
         {/* Schedule Tab */}
         <TabsContent value="schedule" className="space-y-4">
           {/* Import Section */}
