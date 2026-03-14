@@ -31,7 +31,8 @@ const SwapRequestView: React.FC = () => {
   const [selectedMyDay, setSelectedMyDay] = useState<string | null>(null);
   const [selectedMyShift, setSelectedMyShift] = useState<ShiftType | null>(null);
   
-  // Step 2: Select target day
+  // Step 2: Select target month and day
+  const [selectedTargetMonth, setSelectedTargetMonth] = useState<{month: number, year: number} | null>(null);
   const [selectedTargetDay, setSelectedTargetDay] = useState<string | null>(null);
   
   // Step 3: Select target operator and shift
@@ -432,64 +433,105 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
 
-          {/* Step 2: Select target day */}
+          {/* Step 2: Select target month and day */}
           {selectedMyDay && selectedMyShift && (
             <div className="space-y-3 animate-fade-in">
               <label className="text-sm font-medium flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center text-xs font-bold">2</div>
-                Qual data você quer trocar?
+                Selecione o mês e dia de destino
               </label>
               
+              {/* Month Selection */}
               <Select 
-                value={selectedTargetDay || ''} 
+                value={selectedTargetMonth ? `${selectedTargetMonth.month}/${selectedTargetMonth.year}` : ''} 
                 onValueChange={(v) => {
-                  setSelectedTargetDay(v);
+                  const [month, year] = v.split('/').map(Number);
+                  setSelectedTargetMonth({ month, year });
+                  setSelectedTargetDay(null);
                   setSelectedOperator(null);
                   setSelectedTargetShift(null);
                 }}
               >
                 <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
-                  <SelectValue placeholder="Selecione o dia">
-                    {selectedTargetEntry && (
+                  <SelectValue placeholder="Selecione o mês">
+                    {selectedTargetMonth && (
                       <div className="flex items-center gap-2 text-left">
                         <Calendar className="w-4 h-4 text-success" />
-                        <span className="font-medium">Dia {getDayNumber(selectedTargetDay!)} - {getMonthName(getTargetScheduleForEntry(selectedTargetDay!)?.month || 0)}/{getTargetScheduleForEntry(selectedTargetDay!)?.year || 0}</span>
-                        <span className="text-muted-foreground">- {selectedTargetEntry.dayOfWeek}</span>
+                        <span className="font-medium">{getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year}</span>
                       </div>
                     )}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
-                  {availableDays.map(entry => {
-                    const targetSchedule = getTargetScheduleForEntry(entry.date);
-                    return (
-                      <SelectItem key={entry.date} value={entry.date} className="py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
-                            <span className="text-success font-bold">{getDayNumber(entry.date)}</span>
-                          </div>
-                          <div>
-                            <div className="font-medium">{entry.dayOfWeek}</div>
-                            <div className="text-xs text-muted-foreground">{getMonthName(targetSchedule?.month || 0)}/{targetSchedule?.year || 0}</div>
-                            <div className="text-xs text-muted-foreground flex items-center gap-2">
-                              {entry.meioPeriodo && (
-                                <span className="flex items-center gap-1 text-meioPeriodo">
-                                  <Sun className="w-3 h-3" /> {entry.meioPeriodo}
-                                </span>
-                              )}
-                              {entry.fechamento && (
-                                <span className="flex items-center gap-1 text-fechamento">
-                                  <Sunset className="w-3 h-3" /> {entry.fechamento}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+                  {availableMonths.map(month => (
+                    <SelectItem key={`${month.month}/${month.year}`} value={`${month.month}/${month.year}`} className="py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+                          <span className="text-success font-bold">{month.month}</span>
                         </div>
-                      </SelectItem>
-                    );
-                  })}
+                        <div>
+                          <div className="font-medium">{getMonthName(month.month)}/{month.year}</div>
+                          <div className="text-xs text-muted-foreground">{month.entries.length} dias disponíveis</div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+
+              {/* Day Selection */}
+              {selectedTargetMonth && (
+                <Select 
+                  value={selectedTargetDay || ''} 
+                  onValueChange={(v) => {
+                    setSelectedTargetDay(v);
+                    setSelectedOperator(null);
+                    setSelectedTargetShift(null);
+                  }}
+                >
+                  <SelectTrigger className="w-full h-auto py-3 bg-muted/30">
+                    <SelectValue placeholder="Selecione o dia">
+                      {selectedTargetEntry && (
+                        <div className="flex items-center gap-2 text-left">
+                          <Calendar className="w-4 h-4 text-success" />
+                          <span className="font-medium">Dia {getDayNumber(selectedTargetDay!)} - {selectedTargetEntry.dayOfWeek}</span>
+                        </div>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {availableDays
+                      .filter(entry => {
+                        const entrySchedule = currentSchedules.find(s => s.month === selectedTargetMonth.month && s.year === selectedTargetMonth.year);
+                        return entrySchedule && entrySchedule.entries.some(e => e.date === entry.date);
+                      })
+                      .map(entry => (
+                        <SelectItem key={entry.date} value={entry.date} className="py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+                              <span className="text-success font-bold">{getDayNumber(entry.date)}</span>
+                            </div>
+                            <div>
+                              <div className="font-medium">{entry.dayOfWeek}</div>
+                              <div className="text-xs text-muted-foreground flex items-center gap-2">
+                                {entry.meioPeriodo && (
+                                  <span className="flex items-center gap-1 text-meioPeriodo">
+                                    <Sun className="w-3 h-3" /> {entry.meioPeriodo}
+                                  </span>
+                                )}
+                                {entry.fechamento && (
+                                  <span className="flex items-center gap-1 text-fechamento">
+                                    <Sunset className="w-3 h-3" /> {entry.fechamento}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           )}
 
@@ -610,12 +652,13 @@ const SwapRequestView: React.FC = () => {
           )}
 
           {/* Confirmation Summary */}
-          {selectedMyDay && selectedMyShift && selectedOperator && selectedTargetDay && selectedTargetShift && selectedMyEntry && selectedTargetEntry && (
+          {selectedMyDay && selectedMyShift && selectedOperator && selectedTargetDay && selectedTargetShift && selectedMyEntry && selectedTargetEntry && selectedTargetMonth && (
             <div className="glass-card p-4 bg-muted/20 animate-fade-in">
               <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
                 <Check className="w-4 h-4 text-success" />
                 Resumo da Troca
                 {selectedMonth && <span className="text-muted-foreground"> - Original: {getMonthName(selectedMonth.month)}/{selectedMonth.year}</span>}
+                {selectedTargetMonth && <span className="text-muted-foreground"> - Destino: {getMonthName(selectedTargetMonth.month)}/{selectedTargetMonth.year}</span>}
               </h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
