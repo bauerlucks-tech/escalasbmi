@@ -36,6 +36,8 @@ const Dashboard: React.FC = () => {
         return <ScheduleView />;
       case 'swap':
         return <SwapRequestView />;
+      case 'admin-swaps':
+        return <AdminPanel setActiveTab={setActiveTab} />;
       case 'requests':
         return <RequestsView />;
       case 'help':

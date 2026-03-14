@@ -85,6 +85,11 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     toggleScheduleActivation,
     refreshSchedules
   } = useSwap();
+  
+  // Set default tab to 'swaps' when AdminPanel is opened from header
+  React.useEffect(() => {
+    setActiveTab('swaps');
+  }, [setActiveTab]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
