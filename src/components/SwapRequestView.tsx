@@ -124,6 +124,13 @@ const SwapRequestView: React.FC = () => {
     );
   }, [users, currentUserId, selectedTargetDay, currentSchedules]);
 
+  // Get the target schedule for display purposes
+  const getTargetScheduleForEntry = (dateStr: string) => {
+    return currentSchedules.find(schedule => 
+      schedule.entries.some(e => e.date === dateStr)
+    );
+  };
+
   // Get days where selected operator is scheduled (from today onwards)
   const operatorScheduledDays = useMemo(() => {
     if (!selectedOperator) return [];
@@ -446,37 +453,41 @@ const SwapRequestView: React.FC = () => {
                     {selectedTargetEntry && (
                       <div className="flex items-center gap-2 text-left">
                         <Calendar className="w-4 h-4 text-success" />
-                        <span className="font-medium">Dia {getDayNumber(selectedTargetDay!)}</span>
+                        <span className="font-medium">Dia {getDayNumber(selectedTargetDay!)} - {getMonthName(getTargetScheduleForEntry(selectedTargetDay!)?.month || 0)}/{getTargetScheduleForEntry(selectedTargetDay!)?.year || 0}</span>
                         <span className="text-muted-foreground">- {selectedTargetEntry.dayOfWeek}</span>
                       </div>
                     )}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
-                  {availableDays.map(entry => (
-                    <SelectItem key={entry.date} value={entry.date} className="py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
-                          <span className="text-success font-bold">{getDayNumber(entry.date)}</span>
-                        </div>
-                        <div>
-                          <div className="font-medium">{entry.dayOfWeek}</div>
-                          <div className="text-xs text-muted-foreground flex items-center gap-2">
-                            {entry.meioPeriodo && (
-                              <span className="flex items-center gap-1 text-meioPeriodo">
-                                <Sun className="w-3 h-3" /> {entry.meioPeriodo}
-                              </span>
-                            )}
-                            {entry.fechamento && (
-                              <span className="flex items-center gap-1 text-fechamento">
-                                <Sunset className="w-3 h-3" /> {entry.fechamento}
-                              </span>
-                            )}
+                  {availableDays.map(entry => {
+                    const targetSchedule = getTargetScheduleForEntry(entry.date);
+                    return (
+                      <SelectItem key={entry.date} value={entry.date} className="py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center">
+                            <span className="text-success font-bold">{getDayNumber(entry.date)}</span>
+                          </div>
+                          <div>
+                            <div className="font-medium">{entry.dayOfWeek}</div>
+                            <div className="text-xs text-muted-foreground">{getMonthName(targetSchedule?.month || 0)}/{targetSchedule?.year || 0}</div>
+                            <div className="text-xs text-muted-foreground flex items-center gap-2">
+                              {entry.meioPeriodo && (
+                                <span className="flex items-center gap-1 text-meioPeriodo">
+                                  <Sun className="w-3 h-3" /> {entry.meioPeriodo}
+                                </span>
+                              )}
+                              {entry.fechamento && (
+                                <span className="flex items-center gap-1 text-fechamento">
+                                  <Sunset className="w-3 h-3" /> {entry.fechamento}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </SelectItem>
-                  ))}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
