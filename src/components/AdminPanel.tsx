@@ -768,7 +768,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           {isAdmin(currentUser) && (
             <TabsTrigger value="swaps" className="flex items-center gap-2">
               <ArrowLeftRight className="w-4 h-4" />
-              Trocas
+              Gestão
               {pendingApproval.length > 0 && (
                 <span className="ml-2 px-2 py-1 bg-warning text-warning-foreground text-xs rounded-full">
                   {pendingApproval.length}
@@ -881,7 +881,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </div>
         </TabsContent>
 
-        {/* Swaps Tab */}
+        {/* Gestão Tab */}
         <TabsContent value="swaps" className="space-y-4">
           {/* Pending Admin Approval */}
           <div className="glass-card overflow-hidden">
