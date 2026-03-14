@@ -673,18 +673,17 @@ const SwapRequestView: React.FC = () => {
         </div>
       </div>
 
-      {/* My Requests History - Only show for Admins */}
-      {isCurrentUserAdmin && (
-        <div className="glass-card overflow-hidden">
-          <div className="p-4 border-b border-border/50">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              Minhas Solicitações
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">
-              Fluxo: Solicitação → Aceite do colega → Aprovação do administrador → Calendário atualizado
-            </p>
-          </div>
+      {/* My Requests History - Show for all users */}
+      <div className="glass-card overflow-hidden">
+        <div className="p-4 border-b border-border/50">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Clock className="w-5 h-5 text-primary" />
+            Minhas Solicitações
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            Fluxo: Solicitação → Aceite do colega → Aprovação do administrador → Calendário atualizado
+          </p>
+        </div>
 
           {myRequests.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
@@ -757,7 +756,6 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
         </div>
-      )}
     </div>
   );
 };
