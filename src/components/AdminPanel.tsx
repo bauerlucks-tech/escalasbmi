@@ -755,9 +755,9 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
           </TabsTrigger>
           
           {isAdmin(currentUser) && (
-            <TabsTrigger value="vacations" className="flex items-center gap-2">
-              <Plane className="w-4 h-4" />
-              Férias
+            <TabsTrigger value="management" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Gestão
             </TabsTrigger>
           )}
           
@@ -1053,206 +1053,27 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               )}
             </div>
           </div>
-        </TabsContent>
 
-        {/* Swap History Tab */}
-        <TabsContent value="swap-history" className="space-y-4">
+          {/* Management Stats */}
           <div className="glass-card overflow-hidden">
             <div className="p-4 border-b border-border/50">
               <h3 className="font-semibold flex items-center gap-2">
-                <Archive className="w-4 h-4 text-primary" />
-                Histórico Completo de Solicitações
+                <BarChart3 className="w-4 h-4 text-primary" />
+                Estatísticas de Gestão
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Todas as solicitações aprovadas e rejeitadas por Ricardo
+                Resumo das solicitações e férias aprovadas
               </p>
             </div>
 
-            <div className="divide-y divide-border/30 max-h-[600px] overflow-y-auto">
-              {allSwaps.length === 0 ? (
-                <div className="p-6 text-center text-muted-foreground text-sm">
-                  Nenhuma solicitação no histórico
-                </div>
-              ) : (
-                <>
-                  {allSwaps.map(request => (
-                    <div key={request.id} className={`p-4 flex items-start justify-between ${request.status === 'rejected' ? 'opacity-60' : ''}`}>
-                      <div className="flex-1">
-                        <div className="font-medium text-sm mb-2">
-                          {request.requesterName} ⇄ {request.targetName}
-                        </div>
-                        
-                        {/* Seção DE (origem) */}
-                        <div className="bg-muted/30 rounded p-2 mb-2">
-                          <div className="text-xs font-medium text-primary mb-1">📍 DE (Origem):</div>
-                          <div className="text-xs space-y-0.5">
-                            <div><span className="font-medium">Data:</span> {request.originalDate}</div>
-                            <div><span className="font-medium">Turno:</span> {getShiftName(request.originalShift)}</div>
-                            <div><span className="font-medium">Operador:</span> {request.requesterName}</div>
-                          </div>
-                        </div>
-                        
-                        {/* Seção PARA (destino) */}
-                        <div className="bg-muted/30 rounded p-2 mb-2">
-                          <div className="text-xs font-medium text-secondary mb-1">🎯 PARA (Destino):</div>
-                          <div className="text-xs space-y-0.5">
-                            <div><span className="font-medium">Data:</span> {request.targetDate}</div>
-                            <div><span className="font-medium">Turno:</span> {getShiftName(request.targetShift)}</div>
-                            <div><span className="font-medium">Operador:</span> {request.targetName}</div>
-                          </div>
-                        </div>
-                        
-                        {/* Seção de registro */}
-                        <div className="text-xs text-muted-foreground space-y-0.5 border-t pt-2">
-                          <div><span className="font-medium">Solicitado:</span> {new Date(request.createdAt).toLocaleString('pt-BR')}</div>
-                          {request.respondedAt && (
-                            <div><span className="font-medium">Respondido:</span> {new Date(request.respondedAt).toLocaleString('pt-BR')} por {request.respondedBy}</div>
-                          )}
-                          {request.adminApprovedAt && (
-                            <div><span className="font-medium">Aprovado:</span> {new Date(request.adminApprovedAt).toLocaleString('pt-BR')} por {request.adminApprovedBy}</div>
-                          )}
-                        </div>
-                      </div>
-                      <span className={`ml-4 mt-1 px-3 py-1 rounded-full text-xs font-medium ${
-                        request.status === 'approved' ? 'bg-success text-success-foreground' :
-                        request.status === 'rejected' ? 'bg-destructive text-destructive-foreground' :
-                        'bg-muted text-muted-foreground'
-                      }`}>
-                        {request.status === 'approved' ? 'Aprovada' : request.status === 'rejected' ? 'Recusada' : 'Pendente'}
-                      </span>
-                    </div>
-                  ))}
-                </>
-              )}
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Vacations Tab */}
-        <TabsContent value="vacations" className="space-y-4">
-          <div className="glass-card overflow-hidden">
-            <div className="p-4 border-b border-border/50">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Plane className="w-4 h-4 text-primary" />
-                Gestão de Férias - Todas Aprovadas
-              </h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Visualização completa de todas as férias aprovadas organizadas por operador
-              </p>
-            </div>
-
-            <div className="p-4 space-y-6">
-              {/* Férias Aprovadas por Operador */}
-              <div className="space-y-4">
-                <h4 className="font-medium text-sm flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-success" />
-                  Férias Aprovadas por Operador
-                </h4>
-
-                {operators.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Plane className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                    <p>Nenhum operador encontrado</p>
-                  </div>
-                ) : (
-                  <div className="grid gap-4">
-                    {operators.map(operator => {
-                      // Simular férias aprovadas (em produção, isso viria do banco de dados)
-                      const approvedVacations = [
-                        { id: 1, startDate: '15/01/2026', endDate: '25/01/2026', days: 11, approvedBy: 'RICARDO', approvedAt: '10/01/2026' },
-                        { id: 2, startDate: '10/03/2026', endDate: '20/03/2026', days: 11, approvedBy: 'RICARDO', approvedAt: '25/02/2026' },
-                        // Adicionar mais férias conforme necessário
-                      ].filter(vacation => vacation.approvedBy); // Filtrar apenas férias aprovadas
-
-                      return (
-                        <div key={operator.id} className="glass-card p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                <span className="text-sm font-medium text-primary">
-                                  {operator.name.charAt(0)}
-                                </span>
-                              </div>
-                              <div>
-                                <h5 className="font-medium text-sm">{operator.name}</h5>
-                                <p className="text-xs text-muted-foreground">Operador</p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-sm font-medium text-success">
-                                {approvedVacations.length} férias aprovadas
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                Total: {approvedVacations.reduce((sum, v) => sum + v.days, 0)} dias
-                              </div>
-                            </div>
-                          </div>
-
-                          {approvedVacations.length === 0 ? (
-                            <div className="text-center py-4 text-muted-foreground text-sm">
-                              Nenhuma férias aprovada
-                            </div>
-                          ) : (
-                            <div className="space-y-2">
-                              {approvedVacations.map(vacation => (
-                                <div key={vacation.id} className="flex items-center justify-between p-3 bg-success/10 rounded border border-success/20">
-                                  <div className="flex items-center gap-3">
-                                    <CheckCircle className="w-4 h-4 text-success" />
-                                    <div>
-                                      <div className="text-sm font-medium">
-                                        {vacation.startDate} até {vacation.endDate}
-                                      </div>
-                                      <div className="text-xs text-muted-foreground">
-                                        {vacation.days} dias úteis
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="text-right text-xs">
-                                    <div className="text-muted-foreground">
-                                      Aprovado por: {vacation.approvedBy}
-                                    </div>
-                                    <div className="text-muted-foreground">
-                                      Data: {vacation.approvedAt}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="glass-card p-4 text-center">
+                <div className="text-2xl font-bold text-warning">{pendingApproval.length + approvedVacations.length}</div>
+                <div className="text-xs text-muted-foreground">Aprovações Pendentes</div>
               </div>
-
-              {/* Estatísticas Gerais */}
-              <div className="glass-card p-4">
-                <h4 className="font-medium text-sm mb-3 flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-primary" />
-                  Estatísticas Gerais de Férias
-                </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">{operators.length}</div>
-                    <div className="text-sm text-muted-foreground">Operadores Ativos</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-success">
-                      {operators.reduce((sum, op) => {
-                        // Simular cálculo de férias aprovadas
-                        return sum + Math.floor(Math.random() * 3); // Simulação
-                      }, 0)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Férias Aprovadas</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-warning">
-                      {operators.reduce((sum, op) => {
-                        // Simular cálculo de dias de férias
-                        return sum + Math.floor(Math.random() * 22) + 11; // Simulação
-                      }, 0)}
+              <div className="glass-card p-4 text-center">
+                <div className="text-2xl font-bold text-success">{approvedSwaps.length}</div>
+                <div className="text-xs text-muted-foreground">Trocas Aprovadas</div>
                     </div>
                     <div className="text-sm text-muted-foreground">Dias de Férias</div>
                   </div>
