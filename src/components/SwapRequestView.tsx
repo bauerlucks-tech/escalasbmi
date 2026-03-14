@@ -673,87 +673,85 @@ const SwapRequestView: React.FC = () => {
         </div>
       </div>
 
-      {/* My Requests History */}
-      <div className="glass-card overflow-hidden">
-        <div className="p-4 border-b border-border/50">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Clock className="w-5 h-5 text-primary" />
-            Minhas Solicitações
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            Fluxo: Solicitação → Aceite do colega → Aprovação do administrador → Calendário atualizado
-          </p>
-        </div>
+      {/* My Requests History - Only show for Admins */}
+      {isCurrentUserAdmin && (
+        <div className="glass-card overflow-hidden">
+          <div className="p-4 border-b border-border/50">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary" />
+              Minhas Solicitações
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Fluxo: Solicitação → Aceite do colega → Aprovação do administrador → Calendário atualizado
+            </p>
+          </div>
 
-        {myRequests.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">
-            <AlertCircle className="w-10 h-10 mx-auto mb-3 opacity-50" />
-            <p>Você ainda não fez nenhuma solicitação de troca.</p>
-          </div>
-        ) : (
-          <div className="divide-y divide-border/30">
-            {myRequests.map(request => {
-              const getMonthFromRequest = (dateStr: string) => {
-                const [day, month, year] = dateStr.split('/').map(Number);
-                return `${getMonthName(month)}/${year}`;
-              };
-              
-              return (
-                <div key={request.id} className="flex items-center justify-between p-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-medium">{getMonthFromRequest(request.originalDate)}</span>
-                      {getStatusBadge(request.status)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span>Você cede:</span>
-                        <span className="font-medium">Dia {request.originalDate.split('/')[0]} ({getShiftLabel(request.originalShift)})</span>
+          {myRequests.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              <AlertCircle className="w-10 h-10 mx-auto mb-3 opacity-50" />
+              <p>Você ainda não fez nenhuma solicitação de troca.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border/30">
+              {myRequests.map(request => {
+                const getMonthFromRequest = (dateStr: string) => {
+                  const [day, month, year] = dateStr.split('/').map(Number);
+                  return `${getMonthName(month)}/${year}`;
+                };
+                
+                return (
+                  <div key={request.id} className="flex items-center justify-between p-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-medium">{getMonthFromRequest(request.originalDate)}</span>
+                        {getStatusBadge(request.status)}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span>Assume:</span>
-                        <span className="font-medium">Dia {request.targetDate.split('/')[0]} ({getShiftLabel(request.targetShift)}) de {request.targetName}</span>
+                      <div className="text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span>Você cede:</span>
+                          <span className="font-medium">Dia {request.originalDate.split('/')[0]} ({getShiftLabel(request.originalShift)})</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>Assume:</span>
+                          <span className="font-medium">Dia {request.targetDate.split('/')[0]} ({getShiftLabel(request.targetShift)}) de {request.targetName}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                <div>
-                  <div className="font-medium text-sm flex items-center gap-2 flex-wrap">
-                    <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 text-primary rounded text-xs">
-                      Dia {request.originalDate.split('/')[0]}
-                      {request.originalShift === 'meioPeriodo' ? (
-                        <Sun className="w-3 h-3 text-meioPeriodo" />
-                      ) : (
-                        <Sunset className="w-3 h-3 text-fechamento" />
-                      )}
-                      <span className="font-bold">{request.originalShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
-                    </span>
-                    <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                    <span className="flex items-center gap-1 px-2 py-0.5 bg-success/20 text-success rounded text-xs">
-                      Dia {request.targetDate?.split('/')[0] || '??'}
-                      {request.targetShift === 'meioPeriodo' ? (
-                        <Sun className="w-3 h-3 text-meioPeriodo" />
-                      ) : (
-                        <Sunset className="w-3 h-3 text-fechamento" />
-                      )}
-                      <span className="font-bold">{request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
-                    </span>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Troca com: <span className="text-foreground">{request.targetName}</span>
-                  </div>
-                  {request.adminApprovedBy && (
-                    <div className="text-xs text-success mt-0.5">
-                      ✓ Aprovado por: {request.adminApprovedBy} - Calendário atualizado
+                  <div>
+                    <div className="font-medium text-sm flex items-center gap-2 flex-wrap">
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 text-primary rounded text-xs">
+                        Dia {request.originalDate.split('/')[0]}
+                        {request.originalShift === 'meioPeriodo' ? (
+                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                        ) : (
+                          <Sunset className="w-3 h-3 text-fechamento" />
+                        )}
+                        <span className="font-bold">{request.originalShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
+                      </span>
+                      <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                      <span className="flex items-center gap-1 px-2 py-0.5 bg-success/20 text-success rounded text-xs">
+                        Dia {request.targetDate?.split('/')[0] || '??'}
+                        {request.targetShift === 'meioPeriodo' ? (
+                          <Sun className="w-3 h-3 text-meioPeriodo" />
+                        ) : (
+                          <Sunset className="w-3 h-3 text-fechamento" />
+                        )}
+                        <span className="font-bold">{request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
+                      <div className="text-xs text-muted-foreground mt-1">
+                      Troca com: <span className="text-foreground">{request.targetName}</span>
                     </div>
-                  )}
-                </div>
-                {getStatusBadge(request.status)}
-              </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                    {request.adminApprovedBy && (
+                      <div className="text-xs text-success mt-0.5">
+                        ✓ Aprovado por: {request.adminApprovedBy} - Calendário atualizado
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
