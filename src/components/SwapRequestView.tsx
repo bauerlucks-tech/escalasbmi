@@ -262,7 +262,7 @@ const SwapRequestView: React.FC = () => {
             Solicitar Troca de Turno
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Selecione o dia/turno que você quer ceder, o operador e o dia/turno que você quer assumir
+            Fluxo: Selecione seu turno → Dia alvo → Operador → Confirmar
           </p>
         </div>
 
@@ -737,7 +737,9 @@ const SwapRequestView: React.FC = () => {
                           <Sunset className="w-3 h-3 text-fechamento" />
                         )}
                         <span className="font-bold">{request.targetShift === 'meioPeriodo' ? 'MP' : 'FE'}</span>
-                      <div className="text-xs text-muted-foreground mt-1">
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
                       Troca com: <span className="text-foreground">{request.targetName}</span>
                     </div>
                     {request.adminApprovedBy && (
@@ -746,11 +748,14 @@ const SwapRequestView: React.FC = () => {
                       </div>
                     )}
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  <div>
+                    {getStatusBadge(request.status)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       )}
     </div>
   );

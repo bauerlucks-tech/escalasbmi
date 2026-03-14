@@ -642,6 +642,16 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const respondToSwap = async (requestId: string, accept: boolean) => {
     const request = swapRequests.find(req => req.id === requestId);
     
+    if (!request) {
+      console.error('❌ Solicitação não encontrada:', requestId);
+      throw new Error('Solicitação de troca não encontrada');
+    }
+    
+    if (request.status !== 'pending') {
+      console.error('❌ Status inválido para resposta:', request.status);
+      throw new Error('Apenas solicitações pendentes podem ser respondidas');
+    }
+    
     try {
       // Atualizar no Supabase primeiro
       const updates = {
@@ -702,6 +712,16 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const adminApproveSwap = async (requestId: string, adminName: string) => {
     const request = swapRequests.find(r => r.id === requestId);
+    
+    if (!request) {
+      console.error('❌ Solicitação não encontrada:', requestId);
+      throw new Error('Solicitação de troca não encontrada');
+    }
+    
+    if (request.status !== 'accepted') {
+      console.error('❌ Status inválido para aprovação:', request.status);
+      throw new Error('Apenas solicitações aceitas podem ser aprovadas');
+    }
     
     try {
       // Atualizar no Supabase primeiro
