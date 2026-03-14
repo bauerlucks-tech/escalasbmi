@@ -1068,16 +1068,16 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="glass-card p-4 text-center">
-                <div className="text-2xl font-bold text-warning">{pendingApproval.length + approvedVacations.length}</div>
+                <div className="text-2xl font-bold text-warning">{pendingApproval.length}</div>
                 <div className="text-xs text-muted-foreground">Aprovações Pendentes</div>
               </div>
               <div className="glass-card p-4 text-center">
                 <div className="text-2xl font-bold text-success">{approvedSwaps.length}</div>
                 <div className="text-xs text-muted-foreground">Trocas Aprovadas</div>
-                    </div>
-                    <div className="text-sm text-muted-foreground">Dias de Férias</div>
-                  </div>
-                </div>
+              </div>
+              <div className="glass-card p-4 text-center">
+                <div className="text-2xl font-bold text-primary">{operators.length}</div>
+                <div className="text-xs text-muted-foreground">Operadores Ativos</div>
               </div>
             </div>
           </div>
