@@ -71,7 +71,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     getPendingAdminApproval, 
     getApprovedSwaps, 
     adminApproveSwap, 
-    respondToSwap,
+    adminRejectSwap,
     swapRequests, 
     scheduleData, 
     updateSchedule,
@@ -189,7 +189,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   const handleRejectSwap = async (requestId: string) => {
     if (!currentUser) return;
     try {
-      await respondToSwap(requestId, false);
+      await adminRejectSwap(requestId, currentUser.name);
       toast.success('Troca rejeitada com sucesso!');
     } catch (error) {
       console.error('Erro ao rejeitar troca:', error);

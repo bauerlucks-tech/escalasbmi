@@ -26,6 +26,7 @@ interface SwapContextType {
   createSwapRequest: (request: Omit<SwapRequest, 'id' | 'createdAt'>) => void;
   respondToSwap: (requestId: string, accept: boolean) => void;
   adminApproveSwap: (requestId: string, adminName: string) => void;
+  adminRejectSwap: (requestId: string, adminName: string) => void;
   applySwapToSchedule: (request: SwapRequest) => Promise<void>;
   getMyRequests: (userId: string) => SwapRequest[];
   getRequestsForMe: (userName: string) => SwapRequest[];
@@ -859,6 +860,85 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const adminRejectSwap = async (requestId: string, adminName: string) => {
+    const request = swapRequests.find(r => r.id === requestId);
+
+    if (!request) {
+      console.error('❌ Solicitação não encontrada:', requestId);
+      throw new Error('Solicitação de troca não encontrada');
+    }
+
+    // Admin rejeita apenas depois do colega aceitar (ou seja, quando está aguardando aprovação admin).
+    if (request.status !== 'accepted') {
+      console.error('❌ Status inválido para rejeição admin:', request.status);
+      throw new Error('Apenas solicitações aceitas podem ser rejeitadas pelo administrador');
+    }
+
+    try {
+      const updates = {
+        status: 'rejected' as const,
+        admin_approved: false,
+        admin_approved_at: new Date().toISOString(),
+        admin_approved_by: adminName,
+      };
+
+      await SupabaseAPI.updateSwapRequest(requestId, updates);
+
+      setSwapRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? {
+              ...req,
+              status: 'rejected' as const,
+              adminApproved: false,
+              adminApprovedAt: updates.admin_approved_at,
+              adminApprovedBy: adminName,
+            }
+          : req
+      ));
+
+      // Notificar participantes via audit_logs (mesma categoria usada para aprovações)
+      await SupabaseAPI.addAuditLog(
+        request.requesterId || 'unknown',
+        request.requesterName,
+        'SWAP_APPROVAL',
+        `❌ TROCA REJEITADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Rejeitada por ${adminName}`
+      );
+
+      await SupabaseAPI.addAuditLog(
+        request.targetId || 'unknown',
+        request.targetName,
+        'SWAP_APPROVAL',
+        `❌ TROCA REJEITADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Rejeitada por ${adminName}`
+      );
+
+      await SupabaseAPI.addAuditLog(
+        getAdminUUID(),
+        adminName,
+        'SWAP_APPROVAL',
+        `REJEIÇÃO DE TROCA: ${request.requesterName} ⇄ ${request.targetName} - ${request.originalDate} ⇄ ${request.targetDate}`
+      );
+
+      console.log('✅ Troca rejeitada pelo admin no Supabase:', { requestId, adminName });
+    } catch (error) {
+      console.error('❌ Erro ao rejeitar troca no Supabase:', error);
+
+      // Fallback: marca localmente para não bloquear o fluxo do admin se houver instabilidade
+      setSwapRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? {
+              ...req,
+              status: 'rejected' as const,
+              adminApproved: false,
+              adminApprovedAt: new Date().toISOString(),
+              adminApprovedBy: adminName,
+            }
+          : req
+      ));
+
+      throw error;
+    }
+  };
+
   const getMyRequests = (userId: string) => {
     return swapRequests.filter(req => req.requesterId === userId);
   };
@@ -967,6 +1047,7 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       createSwapRequest,
       respondToSwap,
       adminApproveSwap,
+      adminRejectSwap,
       applySwapToSchedule,
       getMyRequests,
       getRequestsForMe,
