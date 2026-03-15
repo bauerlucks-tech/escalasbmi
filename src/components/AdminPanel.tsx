@@ -182,6 +182,10 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
   const handleApproveSwap = async (requestId: string) => {
     if (!currentUser) return;
+    console.log('🔍 DEBUG - currentUser role:', currentUser.role);
+    console.log('🔍 DEBUG - currentUser name:', currentUser.name);
+    console.log('🔍 DEBUG - isAdmin check:', isAdmin(currentUser));
+    console.log('🔍 DEBUG - isSuperAdmin check:', isSuperAdmin(currentUser));
     await adminApproveSwap(requestId, currentUser.name);
     toast.success('Troca aprovada com sucesso!');
   };
@@ -760,7 +764,13 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             Visão Geral
           </TabsTrigger>
           
-          {isAdmin(currentUser) && (
+          {(() => {
+            console.log('🔍 DEBUG - AdminPanel - currentUser role:', currentUser?.role);
+            console.log('🔍 DEBUG - AdminPanel - currentUser name:', currentUser?.name);
+            console.log('🔍 DEBUG - AdminPanel - isAdmin check:', isAdmin(currentUser));
+            console.log('🔍 DEBUG - AdminPanel - isSuperAdmin check:', isSuperAdmin(currentUser));
+            return isAdmin(currentUser);
+          })() && (
             <TabsTrigger value="swaps" className="flex items-center gap-2">
               <ArrowLeftRight className="w-4 h-4" />
               Gestão

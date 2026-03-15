@@ -38,6 +38,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
   // Adicionar aba de Gestão (aprovações) para ADMINISTRADORES
   if (currentUser && isAdmin(currentUser)) {
+    console.log('🔍 DEBUG - Header - currentUser role:', currentUser.role);
+    console.log('🔍 DEBUG - Header - currentUser name:', currentUser.name);
+    console.log('🔍 DEBUG - Header - isAdmin check:', isAdmin(currentUser));
+    console.log('🔍 DEBUG - Header - isSuperAdmin check:', isSuperAdmin(currentUser));
     tabs.splice(1, 0, { id: 'admin-swaps', label: 'Gestão', icon: ArrowLeftRight, badge: adminPendingCount });
   }
 
