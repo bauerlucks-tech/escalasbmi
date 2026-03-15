@@ -912,14 +912,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             ) : (
               <div className="divide-y divide-border/30">
                 {pendingApproval.map(request => (
-                  <div 
-                    key={request.id} 
-                    className="p-4 hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveTab('swaps');
-                    }}
-                  >
+                  <div key={request.id} className="p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="font-medium text-sm mb-2">
@@ -952,7 +945,10 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                       </div>
                       <Button
                         size="sm"
-                        onClick={() => handleApproveSwap(request.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleApproveSwap(request.id);
+                        }}
                         className="bg-success hover:bg-success/90 ml-4"
                       >
                         <Check className="w-4 h-4 mr-1" />
@@ -961,7 +957,10 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleRejectSwap(request.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRejectSwap(request.id);
+                        }}
                         className="ml-2"
                       >
                         <X className="w-4 h-4 mr-1" />
