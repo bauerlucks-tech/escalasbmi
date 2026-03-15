@@ -27,6 +27,16 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
 
+  // Debug logging for permissions
+  React.useEffect(() => {
+    if (currentUser && isAdmin(currentUser)) {
+      console.log('🔍 DEBUG - Header - currentUser role:', currentUser.role);
+      console.log('🔍 DEBUG - Header - currentUser name:', currentUser.name);
+      console.log('🔍 DEBUG - Header - isAdmin check:', isAdmin(currentUser));
+      console.log('🔍 DEBUG - Header - isSuperAdmin check:', isSuperAdmin(currentUser));
+    }
+  }, [currentUser]);
+
   const tabs = [
     { id: 'schedule', label: 'Escala SBMIBZ', icon: Calendar },
     // Administradores não solicitam trocas - apenas gerenciam
@@ -38,10 +48,6 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
   // Adicionar aba de Gestão (aprovações) para ADMINISTRADORES
   if (currentUser && isAdmin(currentUser)) {
-    console.log('🔍 DEBUG - Header - currentUser role:', currentUser.role);
-    console.log('🔍 DEBUG - Header - currentUser name:', currentUser.name);
-    console.log('🔍 DEBUG - Header - isAdmin check:', isAdmin(currentUser));
-    console.log('🔍 DEBUG - Header - isSuperAdmin check:', isSuperAdmin(currentUser));
     tabs.splice(1, 0, { id: 'admin-swaps', label: 'Gestão', icon: ArrowLeftRight, badge: adminPendingCount });
   }
 

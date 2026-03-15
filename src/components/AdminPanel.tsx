@@ -90,6 +90,16 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
   React.useEffect(() => {
     setActiveTab('swaps');
   }, [setActiveTab]);
+
+  // Debug logging for permissions
+  React.useEffect(() => {
+    if (currentUser) {
+      console.log('🔍 DEBUG - AdminPanel - currentUser role:', currentUser.role);
+      console.log('🔍 DEBUG - AdminPanel - currentUser name:', currentUser.name);
+      console.log('🔍 DEBUG - AdminPanel - isAdmin check:', isAdmin(currentUser));
+      console.log('🔍 DEBUG - AdminPanel - isSuperAdmin check:', isSuperAdmin(currentUser));
+    }
+  }, [currentUser]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
@@ -764,13 +774,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             Visão Geral
           </TabsTrigger>
           
-          {(() => {
-            console.log('🔍 DEBUG - AdminPanel - currentUser role:', currentUser?.role);
-            console.log('🔍 DEBUG - AdminPanel - currentUser name:', currentUser?.name);
-            console.log('🔍 DEBUG - AdminPanel - isAdmin check:', isAdmin(currentUser));
-            console.log('🔍 DEBUG - AdminPanel - isSuperAdmin check:', isSuperAdmin(currentUser));
-            return isAdmin(currentUser);
-          })() && (
+          {isAdmin(currentUser) && (
             <TabsTrigger value="swaps" className="flex items-center gap-2">
               <ArrowLeftRight className="w-4 h-4" />
               Gestão
