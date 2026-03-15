@@ -17,6 +17,13 @@ interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }
+
+interface TabItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  badge?: number;
+}
 ///
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { currentUser, logout, isAdmin, isSuperAdmin, switchToSuperAdmin, switchBackToUser, isHiddenSuperAdmin } = useAuth();
@@ -37,16 +44,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     }
   }, [currentUser]);
 
-  const tabs = [
+  let tabs: TabItem[] = [
     { id: 'schedule', label: 'Escala SBMIBZ', icon: Calendar },
-    // Administradores não solicitam trocas - apenas gerenciam
-    // { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight },
-    { id: 'requests', label: 'Solicitações', icon: Bell, badge: pendingCount },
-    // Administradores não solicitam férias - apenas gerenciam
-    // { id: 'vacations', label: 'Férias', icon: Plane },
   ];
 
-  
   // Adicionar aba de Solicitar Troca apenas para OPERADORES (não administradores)
   if (currentUser && !isAdmin(currentUser)) {
     tabs.splice(1, 0, { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight });
@@ -62,9 +63,10 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });
   }
 
-  // Adicionar aba de administração para administradores (não apenas super admins)
+  // Adicionar abas de ADMINISTRAÇÃO apenas para ADMINISTRADORES
   if (currentUser && isAdmin(currentUser)) {
-    tabs.push({ id: 'admin', label: 'Administração', icon: Settings, badge: adminPendingCount });
+    tabs.splice(1, 0, { id: 'admin-swaps', label: 'Gestão', icon: ArrowLeftRight, badge: adminPendingCount });
+    tabs.splice(4, 0, { id: 'admin', label: 'Administração', icon: Settings });
   }
 
   // Adicionar aba de Backup apenas para Super Admin
