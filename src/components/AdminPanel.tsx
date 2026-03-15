@@ -86,11 +86,7 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     refreshSchedules
   } = useSwap();
   
-  // Set default tab to 'swaps' when AdminPanel is opened from header
-  React.useEffect(() => {
-    setActiveTab('swaps');
-  }, [setActiveTab]);
-
+  
   // Debug logging for permissions
   React.useEffect(() => {
     if (currentUser) {
