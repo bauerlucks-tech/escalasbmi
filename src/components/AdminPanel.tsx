@@ -912,7 +912,14 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             ) : (
               <div className="divide-y divide-border/30">
                 {pendingApproval.map(request => (
-                  <div key={request.id} className="p-4">
+                  <div 
+                    key={request.id} 
+                    className="p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveTab('swaps');
+                    }}
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="font-medium text-sm mb-2">
