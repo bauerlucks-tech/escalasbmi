@@ -787,17 +787,13 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
               )}
             </TabsTrigger>
           )}
-          <TabsTrigger value="swap-history" className="flex items-center gap-2">
-            <Archive className="w-4 h-4" />
-            Histórico de Solicitações
-          </TabsTrigger>
           <TabsTrigger value="schedule" className="flex items-center gap-2">
             <Calendar className="w-4 h-4" />
             Escala
           </TabsTrigger>
-          <TabsTrigger value="months" disabled className="flex items-center gap-2 opacity-50 cursor-not-allowed">
+          <TabsTrigger value="months" className="flex items-center gap-2">
             <Archive className="w-4 h-4" />
-            Meses (Desativado)
+            Meses
           </TabsTrigger>
           {isSuperAdmin(currentUser) && (
             <TabsTrigger value="users" className="flex items-center gap-2">
