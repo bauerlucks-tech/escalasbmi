@@ -536,6 +536,24 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const requesterUUID = getUserUUID(request.requesterName);
       const targetUUID = getUserUUID(request.targetName);
       
+      // Validar se UUIDs foram encontrados
+      if (!requesterUUID) {
+        console.error('❌ UUID não encontrado para requester:', request.requesterName);
+        throw new Error(`UUID não encontrado para o solicitante: ${request.requesterName}`);
+      }
+      
+      if (!targetUUID) {
+        console.error('❌ UUID não encontrado para target:', request.targetName);
+        throw new Error(`UUID não encontrado para o alvo: ${request.targetName}`);
+      }
+      
+      console.log('🔍 DEBUG - UUID mapping:', {
+        requesterName: request.requesterName,
+        requesterUUID,
+        targetName: request.targetName,
+        targetUUID
+      });
+      
       // Converter formato local para formato Supabase
       const supabaseRequest = {
         requester_id: requesterUUID,
@@ -558,6 +576,12 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       // Criar no Supabase
       const newRequest = await SupabaseAPI.createSwapRequest(supabaseRequest);
+      
+      if (!newRequest || !newRequest.id) {
+        console.error('❌ Resposta inválida do Supabase:', newRequest);
+        throw new Error('Resposta inválida do Supabase ao criar solicitação');
+      }
+      
       console.log('✅ Swap request created in Supabase:', newRequest);
       
       // Converter resposta de volta para formato local
@@ -579,6 +603,14 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         adminApprovedBy: newRequest.admin_approved_by,
         createdAt: newRequest.created_at
       };
+      
+      // Validar converted request
+      if (!convertedRequest.id || !convertedRequest.requesterName || !convertedRequest.targetName) {
+        console.error('❌ Converted request inválido:', convertedRequest);
+        throw new Error('Erro na conversão da solicitação');
+      }
+      
+      console.log('🔍 DEBUG - Converted request:', convertedRequest);
       
       // Atualizar estado local
       setSwapRequests(prev => [...prev, convertedRequest]);
