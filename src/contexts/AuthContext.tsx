@@ -143,8 +143,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } else if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
         // 🔄 Detectado usuário externo, atualizando AuthContext
         
-        // Encontrar usuário correspondente na lista
-        const matchedUser = users.find(u => u.name === externalUser.name);
+        // Encontrar usuário correspondente na lista (case-insensitive)
+        const matchedUser = users.find(u => u.name.toLowerCase() === externalUser.name.toLowerCase());
         
         if (matchedUser) {
           const userWithExternalData = {
@@ -181,8 +181,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (externalUser) {
         console.log('🔄 External login event received:', externalUser.name);
 
-        // Encontrar usuário correspondente na lista carregada do Supabase
-        const matchedUser = users.find(u => u.name === externalUser.name && u.status === 'ativo');
+        // Encontrar usuário correspondente na lista carregada do Supabase (case-insensitive)
+        const matchedUser = users.find(u => u.name.toLowerCase() === externalUser.name.toLowerCase() && u.status === 'ativo');
 
         if (matchedUser) {
           // Usar dados do Supabase, mas manter informações adicionais do login externo

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-20T09:00:35.745Z",
+  "timestamp": "2026-03-15T00:35:22.911Z",
   "phases": {
     "syntax": {
       "status": "passed",
@@ -7,12 +7,12 @@
         {
           "file": "src/components/AdminPanel.tsx",
           "type": "warning",
-          "message": "Arquivo muito grande (87KB). Considere dividir em componentes menores."
+          "message": "Arquivo muito grande (90KB). Considere dividir em componentes menores."
         },
         {
           "file": "src/components/AdminPanel.tsx",
           "type": "warning",
-          "message": "Arquivo muito extenso (1972 linhas). Considere refatorar."
+          "message": "Arquivo muito extenso (2032 linhas). Considere refatorar."
         },
         {
           "file": "src/components/AdminPanel.tsx",
@@ -28,19 +28,19 @@
         {
           "file": "src/components/SwapRequestView.tsx",
           "type": "improvement",
-          "line": 798,
-          "message": "Função muito longa (781 linhas) - considerar refatoração"
+          "line": 804,
+          "message": "Função muito longa (787 linhas) - considerar refatoração"
         },
         {
           "file": "src/contexts/AuthContext.tsx",
           "type": "warning",
-          "message": "Encontrados 2 console.log - remover antes de produção"
+          "message": "Encontrados 24 console.log - remover antes de produção"
         },
         {
           "file": "src/contexts/AuthContext.tsx",
           "type": "improvement",
-          "line": 426,
-          "message": "Função muito longa (377 linhas) - considerar refatoração"
+          "line": 527,
+          "message": "Função muito longa (476 linhas) - considerar refatoração"
         },
         {
           "file": "src/contexts/SupabaseContext.tsx",
@@ -55,40 +55,45 @@
         {
           "file": "src/contexts/SupabaseContext.tsx",
           "type": "improvement",
-          "line": 574,
-          "message": "Função muito longa (511 linhas) - considerar refatoração"
+          "line": 577,
+          "message": "Função muito longa (514 linhas) - considerar refatoração"
         },
         {
           "file": "src/contexts/SwapContext.tsx",
           "type": "warning",
-          "message": "Encontrados 69 console.log - remover antes de produção"
+          "message": "Arquivo muito extenso (1081 linhas). Considere refatorar."
+        },
+        {
+          "file": "src/contexts/SwapContext.tsx",
+          "type": "warning",
+          "message": "Encontrados 81 console.log - remover antes de produção"
         },
         {
           "file": "src/contexts/SwapContext.tsx",
           "type": "improvement",
-          "line": 942,
-          "message": "Função muito longa (861 linhas) - considerar refatoração"
+          "line": 1068,
+          "message": "Função muito longa (986 linhas) - considerar refatoração"
         },
         {
           "file": "src/lib/supabase.ts",
           "type": "warning",
-          "message": "Encontrados 10 console.log - remover antes de produção"
+          "message": "Encontrados 12 console.log - remover antes de produção"
         },
         {
           "file": "src/api/schedules.ts",
           "type": "warning",
           "message": "Encontrados 12 console.log - remover antes de produção"
+        },
+        {
+          "file": "src/main.tsx",
+          "type": "warning",
+          "message": "Encontrados 2 console.log - remover antes de produção"
         }
       ]
     },
     "logic": {
       "status": "passed",
       "issues": [
-        {
-          "file": "src/contexts/AuthContext.tsx",
-          "type": "improvement",
-          "message": "Adicionar tratamento de erros (try/catch) em operações assíncronas"
-        },
         {
           "file": "src/contexts/ThemeContext.tsx",
           "type": "improvement",
@@ -119,7 +124,7 @@
   "summary": {
     "totalFiles": 10,
     "errors": 0,
-    "warnings": 11,
-    "passed": 7
+    "warnings": 13,
+    "passed": 6
   }
 }
