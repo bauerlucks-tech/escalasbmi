@@ -921,21 +921,19 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.log('✅ Troca rejeitada pelo admin no Supabase:', { requestId, adminName });
     } catch (error) {
       console.error('❌ Erro ao rejeitar troca no Supabase:', error);
-
-      // Fallback: marca localmente para não bloquear o fluxo do admin se houver instabilidade
+      
+      // Fallback - apenas atualizar local (consistente com adminApproveSwap)
       setSwapRequests(prev => prev.map(req =>
         req.id === requestId
-          ? {
-              ...req,
+          ? { 
+              ...req, 
               status: 'rejected' as const,
               adminApproved: false,
               adminApprovedAt: new Date().toISOString(),
-              adminApprovedBy: adminName,
+              adminApprovedBy: adminName
             }
           : req
       ));
-
-      throw error;
     }
   };
 

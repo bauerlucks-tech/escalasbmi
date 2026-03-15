@@ -188,13 +188,8 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
   const handleRejectSwap = async (requestId: string) => {
     if (!currentUser) return;
-    try {
-      await adminRejectSwap(requestId, currentUser.name);
-      toast.success('Troca rejeitada com sucesso!');
-    } catch (error) {
-      console.error('Erro ao rejeitar troca:', error);
-      toast.error('Erro ao rejeitar troca');
-    }
+    await adminRejectSwap(requestId, currentUser.name);
+    toast.success('Troca rejeitada com sucesso!');
   };
 
   const handleEditEntry = (entry: ScheduleEntry) => {
