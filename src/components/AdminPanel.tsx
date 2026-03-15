@@ -91,15 +91,16 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
     setActiveTab('swaps');
   }, [setActiveTab]);
 
-  // Debug logging for permissions
+  // Debug logging for permissions and tab switching
   React.useEffect(() => {
     if (currentUser) {
       console.log('🔍 DEBUG - AdminPanel - currentUser role:', currentUser.role);
       console.log('🔍 DEBUG - AdminPanel - currentUser name:', currentUser.name);
       console.log('🔍 DEBUG - AdminPanel - isAdmin check:', isAdmin(currentUser));
       console.log('🔍 DEBUG - AdminPanel - isSuperAdmin check:', isSuperAdmin(currentUser));
+      console.log('🔍 DEBUG - AdminPanel - activeTab:', activeTab);
     }
-  }, [currentUser]);
+  }, [currentUser, activeTab]);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [editingEntry, setEditingEntry] = useState<string | null>(null);
@@ -192,16 +193,18 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
 
   const handleApproveSwap = async (requestId: string) => {
     if (!currentUser) return;
-    console.log('🔍 DEBUG - currentUser role:', currentUser.role);
-    console.log('🔍 DEBUG - currentUser name:', currentUser.name);
-    console.log('🔍 DEBUG - isAdmin check:', isAdmin(currentUser));
-    console.log('🔍 DEBUG - isSuperAdmin check:', isSuperAdmin(currentUser));
+    console.log('🔍 DEBUG - handleApproveSwap - currentUser role:', currentUser.role);
+    console.log('🔍 DEBUG - handleApproveSwap - currentUser name:', currentUser.name);
+    console.log('🔍 DEBUG - handleApproveSwap - requestId:', requestId);
     await adminApproveSwap(requestId, currentUser.name);
     toast.success('Troca aprovada com sucesso!');
   };
 
   const handleRejectSwap = async (requestId: string) => {
     if (!currentUser) return;
+    console.log('🔍 DEBUG - handleRejectSwap - currentUser role:', currentUser.role);
+    console.log('🔍 DEBUG - handleRejectSwap - currentUser name:', currentUser.name);
+    console.log('🔍 DEBUG - handleRejectSwap - requestId:', requestId);
     await adminRejectSwap(requestId, currentUser.name);
     toast.success('Troca rejeitada com sucesso!');
   };
