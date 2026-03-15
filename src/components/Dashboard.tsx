@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
+import { Button } from '@/components/ui/button';
 import ScheduleView from '@/components/ScheduleView';
 import SwapRequestView from '@/components/SwapRequestView';
 import RequestsView from '@/components/RequestsView';
@@ -33,10 +34,11 @@ const Dashboard: React.FC = () => {
   }, [activeTab, navigate]);
 
   const renderContent = () => {
-    console.log('🔍 DEBUG - Dashboard - renderContent called with activeTab:', activeTab);
-    console.log('🔍 DEBUG - Dashboard - currentUser:', currentUser?.name, 'isAdmin:', isAdmin(currentUser));
-    
-    switch (activeTab) {
+    try {
+      console.log('🔍 DEBUG - Dashboard - renderContent called with activeTab:', activeTab);
+      console.log('🔍 DEBUG - Dashboard - currentUser:', currentUser?.name, 'isAdmin:', isAdmin(currentUser));
+      
+      switch (activeTab) {
       case 'schedule':
         console.log('🔍 DEBUG - Dashboard - Rendering ScheduleView');
         return <ScheduleView />;
@@ -96,7 +98,30 @@ const Dashboard: React.FC = () => {
           </div>
         );
       default:
+        console.log('🔍 DEBUG - Dashboard - Rendering default ScheduleView');
         return <ScheduleView />;
+    }
+    } catch (error) {
+      console.error('❌ ERROR - Dashboard renderContent failed:', error);
+      console.error('❌ ERROR - activeTab:', activeTab);
+      console.error('❌ ERROR - currentUser:', currentUser);
+      return (
+        <div className="p-8 text-center">
+          <h2 className="text-xl font-bold text-red-600 mb-4">Erro ao Renderizar</h2>
+          <p className="text-muted-foreground mb-2">
+            Ocorreu um erro ao carregar a aba: {activeTab}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Por favor, recarregue a página ou contate o suporte.
+          </p>
+          <Button 
+            onClick={() => setActiveTab('schedule')} 
+            className="mt-4"
+          >
+            Voltar para Escala
+          </Button>
+        </div>
+      );
     }
   };
 
