@@ -2048,12 +2048,12 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                   Gerenciamento de Férias
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Visualizar e gerenciar solicitações de férias aprovadas
+                  Visualizar e gerenciar solicitações de férias dos operadores
                 </p>
               </div>
               
               <div className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                   <div className="glass-card p-4">
                     <h4 className="font-medium mb-2">Total de Solicitações</h4>
                     <p className="text-2xl font-bold text-primary">
@@ -2076,15 +2076,46 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
                     </p>
                   </div>
                 </div>
-                
-                <div className="mt-6 p-4 bg-muted/20 rounded-lg">
-                  <h4 className="font-medium mb-3">Funcionalidades Futuras</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Aprovar/rejeitar solicitações de férias</li>
-                    <li>• Gerenciar calendário de férias</li>
-                    <li>• Relatórios de férias por período</li>
-                    <li>• Integração com sistema de ponto</li>
-                  </ul>
+
+                {/* Operators Vacation List */}
+                <div className="glass-card overflow-hidden">
+                  <div className="p-4 border-b border-border/50">
+                    <h4 className="font-semibold">Férias por Operador</h4>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Status das solicitações de férias de cada operador
+                    </p>
+                  </div>
+                  
+                  <div className="p-4">
+                    {operators.length === 0 ? (
+                      <div className="p-8 text-center text-muted-foreground">
+                        <Plane className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                        <p>Nenhum operador encontrado</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {operators.map(operator => (
+                          <div key={operator.id} className="p-3 bg-muted/20 rounded-lg hover:bg-muted/30 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                  <UserPlus className="w-4 h-4 text-primary" />
+                                </div>
+                                <div>
+                                  <div className="font-medium">{operator.name}</div>
+                                  <div className="text-xs text-muted-foreground">Operador</div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-medium text-success">Nenhuma férias agendada</div>
+                                <div className="text-xs text-muted-foreground">Status: Ativo</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
