@@ -839,19 +839,23 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           console.log('✅ Troca aplicada na escala com sucesso!');
           
           // Notificar sucesso
-          await SupabaseAPI.addAuditLog(
-            request.requesterId || 'unknown',
-            request.requesterName,
-            'SWAP_APPROVAL',
-            `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
-          );
-          
-          await SupabaseAPI.addAuditLog(
-            request.targetId || 'unknown',
-            request.targetName,
-            'SWAP_APPROVAL',
-            `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
-          );
+          try {
+            await SupabaseAPI.addAuditLog(
+              request.requesterId || 'unknown',
+              request.requesterName,
+              'SWAP_APPROVAL',
+              `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.targetName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
+            );
+            
+            await SupabaseAPI.addAuditLog(
+              request.targetId || 'unknown',
+              request.targetName,
+              'SWAP_APPROVAL',
+              `✅ TROCA PUBLICADA: ${request.originalDate} ⇄ ${request.targetDate} com ${request.requesterName} - Aprovada por ${adminName} - ESCALA ATUALIZADA`
+            );
+          } catch (auditError) {
+            console.error('❌ Erro ao salvar log de auditoria (continuando processo):', auditError);
+          }
           
         } catch (error) {
           console.error('❌ Falha ao aplicar troca na escala:', error);

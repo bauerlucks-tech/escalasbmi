@@ -46,11 +46,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     // { id: 'vacations', label: 'Férias', icon: Plane },
   ];
 
-  // Adicionar aba de Gestão (aprovações) para ADMINISTRADORES
-  if (currentUser && isAdmin(currentUser)) {
-    tabs.splice(1, 0, { id: 'admin-swaps', label: 'Gestão', icon: ArrowLeftRight, badge: adminPendingCount });
-  }
-
+  
   // Adicionar aba de Solicitar Troca apenas para OPERADORES (não administradores)
   if (currentUser && !isAdmin(currentUser)) {
     tabs.splice(1, 0, { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight });

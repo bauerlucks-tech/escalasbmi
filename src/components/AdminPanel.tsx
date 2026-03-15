@@ -791,6 +791,12 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
             <Archive className="w-4 h-4" />
             Meses
           </TabsTrigger>
+          {isAdmin(currentUser) && (
+            <TabsTrigger value="vacation-management" className="flex items-center gap-2">
+              <Plane className="w-4 h-4" />
+              Férias
+            </TabsTrigger>
+          )}
           {isSuperAdmin(currentUser) && (
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
@@ -2029,6 +2035,59 @@ const AdminPanel: React.FC<{ setActiveTab: (tab: string) => void }> = ({ setActi
         {isSuperAdmin(currentUser) && (
           <TabsContent value="csv-import" className="space-y-4">
             <CSVImportContent />
+          </TabsContent>
+        )}
+
+        {/* Vacation Management Tab - Only for Admins */}
+        {isAdmin(currentUser) && (
+          <TabsContent value="vacation-management" className="space-y-4">
+            <div className="glass-card overflow-hidden">
+              <div className="p-4 border-b border-border/50">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Plane className="w-4 h-4 text-primary" />
+                  Gerenciamento de Férias
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Visualizar e gerenciar solicitações de férias aprovadas
+                </p>
+              </div>
+              
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="glass-card p-4">
+                    <h4 className="font-medium mb-2">Total de Solicitações</h4>
+                    <p className="text-2xl font-bold text-primary">
+                      {/* TODO: Implementar contagem real de férias */}
+                      0
+                    </p>
+                  </div>
+                  <div className="glass-card p-4">
+                    <h4 className="font-medium mb-2">Aguardando Aprovação</h4>
+                    <p className="text-2xl font-bold text-warning">
+                      {/* TODO: Implementar contagem de férias pendentes */}
+                      0
+                    </p>
+                  </div>
+                  <div className="glass-card p-4">
+                    <h4 className="font-medium mb-2">Aprovadas</h4>
+                    <p className="text-2xl font-bold text-success">
+                      {/* TODO: Implementar contagem de férias aprovadas */}
+                      0
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="mt-6 p-4 bg-muted/20 rounded-lg">
+                  <h4 className="font-medium mb-3">Funcionalidades Futuras</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Aprovar/rejeitar solicitações de férias</li>
+                    <li>• Gerenciar calendário de férias</li>
+                    <li>• Relatórios de férias por período</li>
+                    <li>• Integração com sistema de ponto</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </TabsContent>
         )}
       </Tabs>
