@@ -26,45 +26,32 @@ const Dashboard: React.FC = () => {
 
   // Redireciona para página de backup se aba backup for selecionada
   useEffect(() => {
-    console.log('🔍 DEBUG - Dashboard - useEffect activeTab changed:', activeTab);
     if (activeTab === 'backup') {
-      console.log('🔍 DEBUG - Dashboard - Navigating to /backup');
       navigate('/backup');
     }
   }, [activeTab, navigate]);
 
   const renderContent = () => {
     try {
-      console.log('🔍 DEBUG - Dashboard - renderContent called with activeTab:', activeTab);
-      console.log('🔍 DEBUG - Dashboard - currentUser:', currentUser?.name, 'isAdmin:', isAdmin(currentUser));
-      
+            
       switch (activeTab) {
       case 'schedule':
-        console.log('🔍 DEBUG - Dashboard - Rendering ScheduleView');
         return <ScheduleView />;
       case 'swap':
-        console.log('🔍 DEBUG - Dashboard - Rendering SwapRequestView');
         return <SwapRequestView />;
             case 'requests':
-        console.log('🔍 DEBUG - Dashboard - Rendering RequestsView');
         return <RequestsView />;
       case 'help':
-        console.log('🔍 DEBUG - Dashboard - Rendering OperatorHelp');
         return <OperatorHelp />;
       case 'admin':
-        console.log('🔍 DEBUG - Dashboard - Rendering AdminPanel for admin');
         return <AdminPanel setActiveTab={setActiveTab} />;
       case 'audit':
-        console.log('🔍 DEBUG - Dashboard - Rendering AuditLogsView');
         return <AuditLogsView />;
       case 'vacations':
-        console.log('🔍 DEBUG - Dashboard - Rendering VacationView');
         return isAdmin(currentUser) ? <VacationAdminView /> : <VacationRequestView />;
       case 'reports':
-        console.log('🔍 DEBUG - Dashboard - Rendering ReportsDashboard');
         return <ReportsDashboard />;
       case 'calendar':
-        console.log('🔍 DEBUG - Dashboard - Rendering CalendarIntegration');
         return <CalendarIntegration />;
       case 'analytics':
         return <AdvancedAnalytics />;
