@@ -81,12 +81,12 @@ export class SupabaseAPI {
     if (error) throw error;
     
     // Log de auditoria
-    await this.addAuditLog({
-      user_id: changedBy,
-      action: 'PASSWORD_CHANGE',
-      details: { user_id: id, changed_by: changedByName },
-      created_at: new Date().toISOString()
-    });
+    await this.addAuditLog(
+      changedBy,
+      changedByName,
+      'PASSWORD_CHANGE',
+      `Senha alterada para usuário ID: ${id}`
+    );
     
     return data;
   }
@@ -220,7 +220,14 @@ export class SupabaseAPI {
     return supabase.channel('vacations').on('postgres_changes', { event: '*', schema: 'public', table: 'vacation_requests' }, callback).subscribe();
   }
 
-  static async addAuditLog(entry: any) {
+  static async addAuditLog(userId: string, userName: string, action: string, details: string | object) {
+    const entry = {
+      user_id: userId,
+      user_name: userName,
+      action,
+      details: typeof details === 'string' ? details : details,
+      created_at: new Date().toISOString()
+    };
     return this.createAuditLog(entry);
   }
 }
