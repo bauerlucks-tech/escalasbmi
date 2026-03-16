@@ -7,7 +7,6 @@ import ScheduleView from '@/components/ScheduleView';
 import SwapRequestView from '@/components/SwapRequestView';
 import RequestsView from '@/components/RequestsView';
 import AdminPanel from '@/components/AdminPanel';
-import ManagementPanel from '@/components/ManagementPanel';
 import VacationRequestView from '@/components/VacationRequestView';
 import VacationAdminView from '@/components/VacationAdminView';
 import OperatorHelp from '@/components/OperatorHelp';
@@ -46,10 +45,7 @@ const Dashboard: React.FC = () => {
       case 'swap':
         console.log('🔍 DEBUG - Dashboard - Rendering SwapRequestView');
         return <SwapRequestView />;
-      case 'admin-swaps':
-        console.log('🔍 DEBUG - Dashboard - Rendering ManagementPanel for admin-swaps');
-        return <ManagementPanel />;
-      case 'requests':
+            case 'requests':
         console.log('🔍 DEBUG - Dashboard - Rendering RequestsView');
         return <RequestsView />;
       case 'help':

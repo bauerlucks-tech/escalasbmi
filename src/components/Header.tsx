@@ -65,8 +65,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
   // Adicionar abas de ADMINISTRAÇÃO apenas para ADMINISTRADORES
   if (currentUser && isAdmin(currentUser)) {
-    tabs.splice(1, 0, { id: 'admin-swaps', label: 'Gestão', icon: ArrowLeftRight, badge: adminPendingCount });
-    tabs.splice(2, 0, { id: 'admin', label: 'Administração', icon: Settings });
+    tabs.splice(1, 0, { id: 'admin', label: 'Administração', icon: Settings });
   }
 
   // Adicionar aba de Backup apenas para Super Admin
