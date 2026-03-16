@@ -1,132 +1,71 @@
-/**
- * Validator de CSV - Valida dados antes de importar
- */
-import { ScheduleEntry } from '@/types';
-import { parse } from './parser';
-
 export interface ValidationResult {
-  isValid: boolean;
+  valid: boolean;
   errors: string[];
   warnings: string[];
-  data: ScheduleEntry[];
+  data?: any[];
 }
 
-/**
- * Valida conteúdo CSV sem parsear
- */
-export const validateCSV = (
-  content: string,
-  registeredEmployees: string[],
-  targetMonth: number,
-  targetYear: number
-): ValidationResult => {
-  return validateAndParse(content, registeredEmployees, targetMonth, targetYear);
-};
-
-/**
- * Valida e parseia conteúdo CSV
- */
-export const validateAndParse = (
-  content: string,
-  registeredEmployees: string[],
-  targetMonth: number,
-  targetYear: number
-): ValidationResult => {
+export function validateCSV(data: any[]): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Parse inicial
-  const { data, errors: parseErrors } = parse(content);
-
-  if (parseErrors.length > 0) {
-    errors.push(...parseErrors);
+  if (!Array.isArray(data)) {
+    errors.push('Dados inválidos: esperado array');
+    return { valid: false, errors, warnings };
   }
 
   if (data.length === 0) {
-    errors.push('Nenhum dado válido encontrado no arquivo');
-    return { isValid: false, errors, warnings, data: [] };
+    warnings.push('CSV vazio');
+    return { valid: true, errors, warnings, data: [] };
   }
 
-  // Validações adicionais
-  const normalizedEmployees = registeredEmployees.map((e) => e.toUpperCase().trim());
-  const seenDates = new Set<string>();
-
-  data.forEach((entry, index) => {
-    // Valida data
-    if (!isValidDate(entry.date)) {
-      errors.push(`Linha ${index + 2}: Data inválida "${entry.date}"`);
-    }
-
-    // Verifica datas duplicadas
-    if (seenDates.has(entry.date)) {
-      warnings.push(`Data ${entry.date} aparece múltiplas vezes`);
-    }
-    seenDates.add(entry.date);
-
-    // Valida operadores
-    if (entry.meioPeriodo && !normalizedEmployees.includes(entry.meioPeriodo.toUpperCase())) {
-      errors.push(`Linha ${index + 2}: Operador "${entry.meioPeriodo}" não cadastrado`);
-    }
-
-    if (entry.fechamento && !normalizedEmployees.includes(entry.fechamento.toUpperCase())) {
-      errors.push(`Linha ${index + 2}: Operador "${entry.fechamento}" não cadastrado`);
-    }
-
-    // Valifica mês/ano
-    const entryMonth = getMonthFromDate(entry.date);
-    const entryYear = getYearFromDate(entry.date);
-
-    if (entryMonth !== targetMonth || entryYear !== targetYear) {
-      warnings.push(`Data ${entry.date} não corresponde ao mês/ano alvo (${targetMonth}/${targetYear})`);
+  // Basic validation
+  data.forEach((row, index) => {
+    if (!row || typeof row !== 'object') {
+      errors.push(`Linha ${index + 1}: formato inválido`);
     }
   });
 
-  // Verifica se todas as datas do mês estão presentes
-  const daysInMonth = new Date(targetYear, targetMonth, 0).getDate();
-  if (seenDates.size !== daysInMonth) {
-    warnings.push(`Escala incompleta: ${seenDates.size} de ${daysInMonth} dias`);
-  }
-
   return {
-    isValid: errors.length === 0,
+    valid: errors.length === 0,
     errors,
     warnings,
-    data,
+    data
   };
-};
+}
 
-/**
- * Valida formato de data DD/MM/YYYY
- */
-const isValidDate = (dateStr: string): boolean => {
-  return /^\d{2}\/\d{2}\/\d{4}$/.test(dateStr);
-};
+export function validateAndParse(csvContent: string): ValidationResult {
+  try {
+    const lines = csvContent.split('\n').filter(line => line.trim());
+    if (lines.length === 0) {
+      return { valid: true, errors: [], warnings: ['CSV vazio'], data: [] };
+    }
 
-/**
- * Extrai mês da data DD/MM/YYYY
- */
-const getMonthFromDate = (dateStr: string): number => {
-  const parts = dateStr.split('/');
-  if (parts.length < 3) return 0;
-  return parseInt(parts[1], 10) || 0;
-};
+    const headers = lines[0].split(',').map(h => h.trim());
+    const data = [];
 
-/**
- * Extrai ano da data DD/MM/YYYY
- */
-const getYearFromDate = (dateStr: string): number => {
-  const parts = dateStr.split('/');
-  return parseInt(parts[2], 10);
-};
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',').map(v => v.trim());
+      const row: any = {};
+      
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      
+      data.push(row);
+    }
 
-/**
- * Função de compatibilidade para validateAndParseCSV
- */
-export function validateAndParseCSV(
-  content: string, 
-  registeredEmployees: string[],
-  targetMonth: number,
-  targetYear: number
-) {
-  return validateAndParse(content, registeredEmployees, targetMonth, targetYear);
+    return validateCSV(data);
+  } catch (error) {
+    return {
+      valid: false,
+      errors: ['Erro ao processar CSV: ' + (error as Error).message],
+      warnings: [],
+      data: []
+    };
+  }
+}
+
+export function validateAndParseCSV(csvContent: string): ValidationResult {
+  return validateAndParse(csvContent);
 }
