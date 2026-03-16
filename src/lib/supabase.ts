@@ -73,6 +73,33 @@ export class SupabaseAPI {
     return data;
   }
 
+  static async updateUserPassword(id: string, newPasswordHash: string, changedBy: string, changedByName: string) {
+    const { data, error } = await supabase.from('users').update({ 
+      password: newPasswordHash,
+      updated_at: new Date().toISOString()
+    }).eq('id', id).select().single();
+    if (error) throw error;
+    
+    // Log de auditoria
+    await this.addAuditLog({
+      user_id: changedBy,
+      action: 'PASSWORD_CHANGE',
+      details: { user_id: id, changed_by: changedByName },
+      created_at: new Date().toISOString()
+    });
+    
+    return data;
+  }
+
+  static async updateUserProfile(id: string, profileImage: string) {
+    const { data, error } = await supabase.from('users').update({ 
+      profile_image: profileImage,
+      updated_at: new Date().toISOString()
+    }).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  }
+
   static async deleteUser(id: string) {
     const { error } = await supabase.from('users').delete().eq('id', id);
     if (error) throw error;
@@ -94,6 +121,50 @@ export class SupabaseAPI {
     const { data, error } = await supabase.from('month_schedules').update(updates).eq('id', id).select().single();
     if (error) throw error;
     return data;
+  }
+
+  static async updateMonthSchedule(month: number, year: number, entries: any[]) {
+    // Primeiro, buscar a escala existente
+    const { data: existing, error: fetchError } = await supabase
+      .from('month_schedules')
+      .select('id')
+      .eq('month', month)
+      .eq('year', year)
+      .single();
+    
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      throw fetchError;
+    }
+    
+    if (existing) {
+      // Atualizar escala existente
+      const { data, error } = await supabase
+        .from('month_schedules')
+        .update({ 
+          entries,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existing.id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    } else {
+      // Criar nova escala se não existir
+      const { data, error } = await supabase
+        .from('month_schedules')
+        .insert({
+          month,
+          year,
+          entries,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    }
   }
 
   static async replaceSchedule(month: number, year: number, entries: any[], importedBy: string) {
