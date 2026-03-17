@@ -230,6 +230,8 @@ async function debugMatheusFrontend() {
     
   } catch (error) {
     console.error('❌ Erro geral:', error.message);
+  } finally {
+    console.log('🏁 Debug finalizado');
   }
 }
 

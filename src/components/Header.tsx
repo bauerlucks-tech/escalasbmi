@@ -36,40 +36,53 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
 
   
-  let tabs: TabItem[] = [
+  const tabs: TabItem[] = [
     { id: 'schedule', label: 'Escala SBMIBZ', icon: Calendar },
   ];
 
   // Adicionar aba de Solicitar Troca apenas para OPERADORES (não administradores)
-  if (currentUser && !isAdmin(currentUser)) {
-    tabs.splice(1, 0, { id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight });
-  }
+  const operatorTabs = currentUser && !isAdmin(currentUser) 
+    ? [{ id: 'swap', label: 'Solicitar Troca', icon: ArrowLeftRight }]
+    : [];
 
   // Adicionar aba de Férias apenas para OPERADORES (não administradores)
-  if (currentUser && !isAdmin(currentUser)) {
-    tabs.splice(3, 0, { id: 'vacations', label: 'Férias', icon: Plane });
-  }
+  const vacationTabs = currentUser && !isAdmin(currentUser)
+    ? [{ id: 'vacations', label: 'Férias', icon: Plane }]
+    : [];
 
   // Adicionar aba de ajuda para operadores (não administradores)
-  if (currentUser && !isAdmin(currentUser)) {
-    tabs.push({ id: 'help', label: 'Ajuda', icon: HelpCircle });
-  }
+  const helpTabs = currentUser && !isAdmin(currentUser)
+    ? [{ id: 'help', label: 'Ajuda', icon: HelpCircle }]
+    : [];
 
   // Adicionar abas de ADMINISTRAÇÃO apenas para ADMINISTRADORES
-  if (currentUser && isAdmin(currentUser)) {
-    tabs.splice(1, 0, { id: 'admin', label: 'Administração', icon: Settings });
-  }
+  const adminTabs = currentUser && isAdmin(currentUser)
+    ? [{ id: 'admin', label: 'Administração', icon: Settings }]
+    : [];
 
-  // Adicionar aba de Backup apenas para Super Admin
-  if (currentUser && isSuperAdmin(currentUser)) {
-    tabs.push({ id: 'backup', label: 'Backup', icon: Database });
-    tabs.push({ id: 'audit', label: 'Auditoria', icon: FileText });
-  }
+  // Adicionar aba de Backup e Auditoria apenas para Super Admin
+  const superAdminTabs = currentUser && isSuperAdmin(currentUser)
+    ? [
+        { id: 'backup', label: 'Backup', icon: Database },
+        { id: 'audit', label: 'Auditoria', icon: FileText }
+      ]
+    : [];
 
   // Adicionar aba de Relatórios para Admins e Super Admins
-  if (currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))) {
-    tabs.push({ id: 'reports', label: 'Relatórios', icon: BarChart3 });
-  }
+  const reportTabs = currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))
+    ? [{ id: 'reports', label: 'Relatórios', icon: BarChart3 }]
+    : [];
+
+  // Combinar todas as abas
+  const allTabs = [
+    ...tabs,
+    ...operatorTabs,
+    ...vacationTabs,
+    ...helpTabs,
+    ...adminTabs,
+    ...superAdminTabs,
+    ...reportTabs
+  ];
 
   // Adicionar aba de Calendário para todos os usuários (DESATIVADO TEMPORARIAMENTE)
   // if (currentUser) {
@@ -77,25 +90,43 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   // }
 
   // Adicionar abas avançadas para Admins e Super Admins
-  if (currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))) {
-    tabs.push({ id: 'analytics', label: 'Analytics', icon: BarChart3 });
-  }
+  const analyticsTabs = currentUser && (isAdmin(currentUser) || isSuperAdmin(currentUser))
+    ? [{ id: 'analytics', label: 'Analytics', icon: BarChart3 }]
+    : [];
+
+  // Combinar todas as abas finais
+  const baseTabs = [...allTabs, ...analyticsTabs];
 
   // Adicionar abas especiais apenas para Super Admin
-  if (currentUser && isSuperAdmin(currentUser)) {
-    tabs.push({ id: 'widgets', label: 'Widgets', icon: Settings });
-    tabs.push({ id: 'performance', label: 'Performance', icon: Activity });
-  }
+  const superAdminSpecialTabs = currentUser && isSuperAdmin(currentUser)
+    ? [
+        { id: 'widgets', label: 'Widgets', icon: Settings },
+        { id: 'performance', label: 'Performance', icon: Activity }
+      ]
+    : [];
 
   // Adicionar aba de Animações apenas para Super Admin em desenvolvimento
-  if (currentUser && isSuperAdmin(currentUser) && (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development')) {
-    tabs.push({ id: 'animations', label: 'Animações', icon: Settings });
-  }
+  const developmentTabs = currentUser && isSuperAdmin(currentUser) && (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development')
+    ? [{ id: 'animations', label: 'Animações', icon: Settings }]
+    : [];
+
+  // Combinar todas as abas finais
+  const finalTabs = [
+    ...baseTabs,
+    ...superAdminSpecialTabs,
+    ...developmentTabs
+  ];
 
   // Adicionar aba de Testes apenas para Super Admin em desenvolvimento
-  if (currentUser && isSuperAdmin(currentUser) && (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development' || window.location.pathname.includes('test'))) {
-    tabs.push({ id: 'test', label: 'Testes', icon: TestTube });
-  }
+  const testTabs = currentUser && isSuperAdmin(currentUser) && (window.location.hostname === 'localhost' || process.env.NODE_ENV === 'development' || window.location.pathname.includes('test'))
+    ? [{ id: 'test', label: 'Testes', icon: TestTube }]
+    : [];
+
+  // Combinar todas as abas finais
+  const allFinalTabs: TabItem[] = [
+    ...finalTabs,
+    ...testTabs
+  ];
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2);
@@ -221,7 +252,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
         {/* Navigation tabs */}
         <nav className="flex gap-1 pb-2 overflow-x-auto">
-          {tabs.map(tab => {
+          {(allFinalTabs as TabItem[]).map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             

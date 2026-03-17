@@ -1,5 +1,34 @@
-// @ts-ignore - Deno ESM import, available in Supabase Edge Functions
+// @ts-expect-error - Deno ESM import, available in Supabase Edge Functions
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+// Global type declarations for Deno environment
+declare global {
+  interface Request {
+    method: string;
+    json(): Promise<any>;
+  }
+  
+  interface Response {
+    json(data: any): Response;
+  }
+  
+  interface JSON {
+    stringify(data: any): string;
+  }
+  
+  interface Date {
+    toISOString(): string;
+  }
+  
+  interface RegExp {
+    test(value: string): boolean;
+  }
+  
+  interface Console {
+    error(message?: any, ...args: any[]): void;
+    log(message?: any, ...args: any[]): void;
+  }
+}
 
 interface RequestData {
   userId: string
