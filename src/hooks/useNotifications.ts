@@ -42,8 +42,8 @@ export const useNotifications = (): UseNotificationsReturn => {
   };
 
   const showNotification = (title: string, options?: NotificationOptions) => {
-    // Check directly instead of relying on stale closure
-    if (!('Notification' in window) || Notification.permission !== 'granted') {
+    // Check directly instead of relying on stale closure; SSR-safe
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') {
       console.warn('Notifications not permitted');
       return;
     }
