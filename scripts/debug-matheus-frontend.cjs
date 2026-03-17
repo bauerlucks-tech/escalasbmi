@@ -107,8 +107,8 @@ async function debugMatheusFrontend() {
         console.log(`❌ Matheus NÃO encontrado em: ${filePath}`);
       }
     } catch (fileError) {
-        console.log(`❌ Erro ao ler ${filePath}: ${fileError.message}`);
-      }
+      console.log(`❌ Erro ao ler ${filePath}: ${fileError.message}`);
+    }
     }
     }
     

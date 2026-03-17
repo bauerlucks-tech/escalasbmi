@@ -44,7 +44,7 @@ export const corsHeaders = {
 
 // Note: TypeScript errors below are expected in client-side IDE
 // This Edge Function runs in Supabase's Deno environment, not Node.js
-// @ts-ignore - Deno is available in Supabase Edge Functions
+// @ts-expect-error - Deno is available in Supabase Edge Functions
 Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -80,9 +80,9 @@ Deno.serve(async (req: Request) => {
     }
 
     // Create Supabase client with service role key (server-side only)
-    // @ts-ignore - Deno.env is available in Supabase Edge Functions
+    // @ts-expect-error - Deno.env is available in Supabase Edge Functions
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    // @ts-ignore - Deno.env is available in Supabase Edge Functions
+    // @ts-expect-error - Deno.env is available in Supabase Edge Functions
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {

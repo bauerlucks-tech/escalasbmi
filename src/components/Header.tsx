@@ -13,6 +13,14 @@ import TestPanel from '@/components/TestPanel';
 import NotificationCenter from '@/components/NotificationCenter';
 import ReportsDashboard from '@/components/ReportsDashboard';
 
+// Global declarations for compatibility
+declare global {
+  var Array: any;
+  var window: any;
+  var String: any;
+}
+
+
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -129,7 +137,8 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   ];
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2);
+    const parts = name ? String.prototype.split.call(name, ' ') : [];
+    return Array.prototype.map.call(parts, (n: any) => n[0]).join('').substring(0, 2);
   };
 
   const handleLogoClick = () => {
@@ -252,43 +261,35 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
         {/* Navigation tabs */}
         <nav className="flex gap-1 pb-2 overflow-x-auto">
-          {(allFinalTabs as TabItem[]).map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            
-            return (
-              <button
-                key={tab.id}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log('Header button clicked:', tab.id, 'Current activeTab:', activeTab);
-                  setActiveTab(tab.id);
-                }}
-                className={`
-                  flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium
-                  transition-all whitespace-nowrap relative
-                  z-50 pointer-events-auto cursor-pointer
-                  ${isActive 
-                    ? 'bg-primary text-primary-foreground glow-primary' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                  }
-                `}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-                {tab.badge && tab.badge > 0 && (
-                  <span className={`
-                    absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold
-                    flex items-center justify-center
-                    ${isActive ? 'bg-white text-primary' : 'bg-primary text-primary-foreground'}
-                  `}>
-                    {tab.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+          {Array.prototype.map.call(allFinalTabs, (tab: any) => (
+            <button
+              key={tab.id}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Header button clicked:', tab.id, 'Current activeTab:', activeTab);
+                setActiveTab(tab.id);
+              }}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium
+                transition-all whitespace-nowrap relative
+                z-50 pointer-events-auto cursor-pointer
+                ${activeTab === tab.id
+                  ? 'bg-primary text-primary-foreground glow-primary' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
+            >
+              {React.createElement(tab.icon, { className: "w-4 h-4" })}
+              <span className="hidden sm:inline">{tab.label}</span>
+              {tab.badge && tab.badge > 0 && (
+                <span className={`absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold
+                  flex items-center justify-center
+                  ${activeTab === tab.id ? 'bg-white text-primary' : 'bg-primary text-primary-foreground'}`}
+                >
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          ))}
         </nav>
       </div>
 

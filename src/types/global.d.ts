@@ -4,7 +4,7 @@ declare global {
     Notification: {
       new (title: string, options?: NotificationOptions): Notification;
       readonly permission: NotificationPermission;
-      static requestPermission(): Promise<NotificationPermission>;
+      requestPermission(): Promise<NotificationPermission>;
     };
   }
   

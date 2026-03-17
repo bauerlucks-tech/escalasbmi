@@ -1,6 +1,52 @@
 import { useState, useEffect } from 'react';
 
-export type NotificationPermission = 'default' | 'granted' | 'denied';
+// Global declarations for browser APIs
+declare global {
+  interface Window {
+    Notification: {
+      new (title: string, options?: NotificationOptions): any;
+      readonly permission: NotificationPermission;
+      requestPermission(): Promise<NotificationPermission>;
+    };
+  }
+  
+  var window: Window;
+  
+  interface Notification {
+    new (title: string, options?: NotificationOptions): any;
+    readonly permission: NotificationPermission;
+    requestPermission(): Promise<NotificationPermission>;
+  }
+  
+  var Notification: {
+    new (title: string, options?: NotificationOptions): any;
+    readonly permission: NotificationPermission;
+    requestPermission(): Promise<NotificationPermission>;
+  };
+  
+  interface Promise<T> {
+    then<TResult1 = T, TResult2 = never>(
+      onfulfilled?: ((value: T) => TResult1 | any) | null,
+      onrejected?: ((reason: any) => TResult2 | any) | null
+    ): Promise<TResult1 | TResult2>;
+    catch<TResult = never>(
+      onrejected?: ((reason: any) => TResult | any) | null
+    ): Promise<T | TResult>;
+  }
+}
+
+// Simplified types for better compatibility
+type NotificationPermission = 'default' | 'granted' | 'denied';
+
+interface NotificationOptions {
+  body?: string;
+  icon?: string;
+  badge?: string;
+  tag?: string;
+  data?: any;
+  requireInteraction?: boolean;
+  silent?: boolean;
+}
 
 interface UseNotificationsReturn {
   permission: NotificationPermission;

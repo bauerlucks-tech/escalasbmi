@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { format, eachDayOfInterval, isSameDay, startOfMonth, endOfMonth, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { VacationRequest } from '@/data/scheduleData';
+import { Plane, Calendar as CalendarIcon, Users, TrendingUp } from 'lucide-react';
 
 interface VacationCalendarProps {
   approvedVacations: VacationRequest[];
@@ -120,9 +121,22 @@ const VacationCalendar: React.FC<VacationCalendarProps> = ({ approvedVacations }
 
   if (approvedVacations.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
-        <div className="text-4xl mb-2">📅</div>
-        <p>Nenhuma férias aprovada para visualizar</p>
+      <div className="min-h-[400px] flex items-center justify-center">
+        <Card className="w-full max-w-md mx-4 glass-card border-border/50">
+          <CardContent className="text-center p-8">
+            <div className="mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                <CalendarIcon className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold text-muted-foreground mb-2">
+                Nenhuma Férias Agendada
+              </h3>
+              <p className="text-muted-foreground">
+                Não há períodos de férias aprovados no momento.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -181,39 +195,67 @@ const VacationCalendar: React.FC<VacationCalendarProps> = ({ approvedVacations }
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border-destructive bg-destructive/10 rounded"></div>
-          <span>Período Ocupado</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="destructive" className="text-xs">Operador</Badge>
-          <span>Férias Aprovadas</span>
+      <div className="bg-muted/30 rounded-lg p-6 mb-6">
+        <h4 className="text-lg font-semibold text-center mb-4 text-foreground">Legenda do Calendário</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex items-center gap-3 p-4 bg-background rounded-lg border">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 border-2 border-destructive bg-destructive/10 rounded"></div>
+              <span className="text-sm font-medium">Período Ocupado</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Dias marcados como ocupados por férias aprovadas
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 bg-background rounded-lg border">
+            <div className="flex items-center gap-3">
+              <Badge variant="destructive" className="text-xs px-3 py-1">OP</Badge>
+              <span className="text-sm font-medium">Operador</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Período de férias aprovadas
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-destructive">{approvedVacations.length}</div>
-            <div className="text-sm text-muted-foreground">Férias Aprovadas</div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="glass-card border-border/50 hover:shadow-lg transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-3">
+                <CalendarIcon className="w-6 h-6 text-destructive" />
+              </div>
+              <div className="text-3xl font-bold text-destructive">{approvedVacations.length}</div>
+              <div className="text-sm text-muted-foreground">Férias Aprovadas</div>
+            </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-primary">
-              {approvedVacations.reduce((sum, v) => sum + v.totalDays, 0)}
+        <Card className="glass-card border-border/50 hover:shadow-lg transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <TrendingUp className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-3xl font-bold text-primary">
+                {approvedVacations.reduce((sum, v) => sum + v.totalDays, 0)}
+              </div>
+              <div className="text-sm text-muted-foreground">Total de Dias</div>
             </div>
-            <div className="text-sm text-muted-foreground">Total de Dias</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-success">
-              {new Set(approvedVacations.map(v => v.operatorName)).size}
+        <Card className="glass-card border-border/50 hover:shadow-lg transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center mb-3">
+                <Users className="w-6 h-6 text-success" />
+              </div>
+              <div className="text-3xl font-bold text-success">
+                {new Set(approvedVacations.map(v => v.operatorName)).size}
+              </div>
+              <div className="text-sm text-muted-foreground">Operadores em Férias</div>
             </div>
-            <div className="text-sm text-muted-foreground">Operadores em Férias</div>
           </CardContent>
         </Card>
       </div>
