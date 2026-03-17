@@ -6,13 +6,14 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarIcon, Plane, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { format, addDays, differenceInDays, isAfter, isBefore, startOfDay, isSameDay } from 'date-fns';
+import { CalendarIcon, Plane, Clock, CheckCircle, XCircle, AlertCircle, Users } from 'lucide-react';
+import { format, addDays, differenceInDays, isAfter, isBefore, startOfDay, isSameDay, eachDayOfInterval, getMonth, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { VacationStatus } from '@/data/scheduleData';
 import { useAuth } from '@/contexts/AuthContext';
 import { useVacation } from '@/contexts/VacationContext';
 import { toast } from 'sonner';
+import VacationCalendar from '@/components/VacationCalendar';
 
 const VacationRequestView: React.FC = () => {
   const { currentUser } = useAuth();
@@ -254,19 +255,35 @@ const VacationRequestView: React.FC = () => {
         </div>
       </div>
 
+      {/* Vacation Calendar - Visual Overview */}
+      <div className="glass-card-elevated">
+        <div className="p-6 border-b border-border/50">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <CalendarIcon className="w-5 h-5 text-primary" />
+            Calendário de Férias
+          </h2>
+          <p className="text-muted-foreground mt-1">
+            Visualização dos períodos de férias já aprovados
+          </p>
+        </div>
+        <div className="p-6">
+          <VacationCalendar approvedVacations={approvedVacations} />
+        </div>
+      </div>
+
       {/* My Vacation Requests */}
       <div className="glass-card-elevated">
         <div className="p-6 border-b border-border/50">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary" />
-            Minhas Solicitações
-          </h3>
+            Minhas Solicitações de Férias
+          </h2>
         </div>
 
         <div className="p-6">
           {myVacations.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <Plane className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>Você ainda não solicitou férias</p>
             </div>
           ) : (

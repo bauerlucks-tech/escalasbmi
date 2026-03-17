@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-03-15T00:35:22.911Z",
+  "timestamp": "2026-03-16T21:03:10.015Z",
   "phases": {
     "syntax": {
-      "status": "passed",
+      "status": "failed",
       "issues": [
         {
           "file": "src/components/AdminPanel.tsx",
           "type": "warning",
-          "message": "Arquivo muito grande (90KB). Considere dividir em componentes menores."
+          "message": "Arquivo muito grande (95KB). Considere dividir em componentes menores."
         },
         {
           "file": "src/components/AdminPanel.tsx",
           "type": "warning",
-          "message": "Arquivo muito extenso (2032 linhas). Considere refatorar."
+          "message": "Arquivo muito extenso (2136 linhas). Considere refatorar."
         },
         {
           "file": "src/components/AdminPanel.tsx",
           "type": "warning",
-          "message": "Encontrados 11 console.log - remover antes de produção"
+          "message": "Encontrados 21 console.log - remover antes de produção"
         },
         {
           "file": "src/components/ScheduleView.tsx",
@@ -28,8 +28,8 @@
         {
           "file": "src/components/SwapRequestView.tsx",
           "type": "improvement",
-          "line": 804,
-          "message": "Função muito longa (787 linhas) - considerar refatoração"
+          "line": 938,
+          "message": "Função muito longa (900 linhas) - considerar refatoração"
         },
         {
           "file": "src/contexts/AuthContext.tsx",
@@ -61,28 +61,33 @@
         {
           "file": "src/contexts/SwapContext.tsx",
           "type": "warning",
-          "message": "Arquivo muito extenso (1081 linhas). Considere refatorar."
+          "message": "Arquivo muito extenso (1085 linhas). Considere refatorar."
         },
         {
           "file": "src/contexts/SwapContext.tsx",
           "type": "warning",
-          "message": "Encontrados 81 console.log - remover antes de produção"
+          "message": "Encontrados 79 console.log - remover antes de produção"
         },
         {
           "file": "src/contexts/SwapContext.tsx",
           "type": "improvement",
-          "line": 1068,
-          "message": "Função muito longa (986 linhas) - considerar refatoração"
+          "line": 1072,
+          "message": "Função muito longa (1023 linhas) - considerar refatoração"
         },
         {
           "file": "src/lib/supabase.ts",
           "type": "warning",
-          "message": "Encontrados 12 console.log - remover antes de produção"
+          "message": "Encontrados 1 console.log - remover antes de produção"
+        },
+        {
+          "file": "src/lib/supabase.ts",
+          "type": "warning",
+          "message": "Uso excessivo de 'any' (17 ocorrências) - tipar corretamente"
         },
         {
           "file": "src/api/schedules.ts",
-          "type": "warning",
-          "message": "Encontrados 12 console.log - remover antes de produção"
+          "type": "error",
+          "message": "Arquivo crítico não encontrado"
         },
         {
           "file": "src/main.tsx",
@@ -107,8 +112,14 @@
       ]
     },
     "integration": {
-      "status": "passed",
-      "issues": []
+      "status": "failed",
+      "issues": [
+        {
+          "file": "vite.config.ts",
+          "type": "error",
+          "message": "Arquivo de configuração obrigatório ausente"
+        }
+      ]
     },
     "performance": {
       "status": "passed",
@@ -122,8 +133,8 @@
     }
   },
   "summary": {
-    "totalFiles": 10,
-    "errors": 0,
+    "totalFiles": 9,
+    "errors": 2,
     "warnings": 13,
     "passed": 6
   }

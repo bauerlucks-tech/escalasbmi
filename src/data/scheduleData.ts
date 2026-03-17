@@ -165,8 +165,7 @@ export const initialUsers: User[] = [
   { id: "6", name: "GUILHERME", password: hashPassword("1234"), role: "operador", status: "ativo" },
   { id: "7", name: "RICARDO", password: hashPassword("1234"), role: "administrador", status: "ativo", hideFromSchedule: true },
   { id: "8", name: "ADMIN", password: hashPassword("1234"), role: "super_admin", status: "ativo", hideFromSchedule: true },
-  { id: "13", name: "SUPER_ADMIN_HIDDEN", password: hashPassword("hidden_super_2026"), role: "super_admin", status: "ativo", hideFromSchedule: true },
-  // Usuários de teste para testes completos
+    // Usuários de teste para testes completos
   { id: "9", name: "TESTE_OPERADOR1", password: hashPassword("1234"), role: "operador", status: "ativo" },
   { id: "10", name: "TESTE_OPERADOR2", password: hashPassword("1234"), role: "operador", status: "ativo" },
   { id: "11", name: "TESTE_ADMIN", password: hashPassword("1234"), role: "administrador", status: "ativo", hideFromSchedule: true },

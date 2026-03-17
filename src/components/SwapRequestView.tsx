@@ -6,6 +6,15 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeftRight, Calendar, User, AlertCircle, Check, Clock, ArrowRight, Sun, Sunset, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -14,6 +23,18 @@ import {
 } from "@/components/ui/select";
 
 type ShiftType = 'meioPeriodo' | 'fechamento';
+
+interface SwapPreview {
+  myDay: string;
+  myShift: ShiftType;
+  myEntry: ScheduleEntry;
+  targetDay: string;
+  targetOperator: string;
+  targetShift: ShiftType | 'ambos';
+  targetEntry: ScheduleEntry;
+  originalMonth: { month: number; year: number };
+  targetMonth: { month: number; year: number };
+}
 
 const SwapRequestView: React.FC = () => {
   const { currentUser, users, isAdmin } = useAuth();
@@ -39,7 +60,35 @@ const SwapRequestView: React.FC = () => {
   const [selectedOperator, setSelectedOperator] = useState<string | null>(null);
   const [selectedTargetShift, setSelectedTargetShift] = useState<ShiftType | 'ambos' | null>(null);
 
+  // Preview modal state
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewData, setPreviewData] = useState<SwapPreview | null>(null);
+
   const myRequests = currentUser ? getMyRequests(currentUserId) : [];
+
+  // Preview function
+  const handlePreviewSwap = () => {
+    if (selectedMyDay && selectedMyShift && selectedOperator && selectedTargetDay && selectedTargetShift && selectedMyEntry && selectedTargetEntry && selectedMonth && selectedTargetMonth) {
+      const preview: SwapPreview = {
+        myDay: selectedMyDay,
+        myShift: selectedMyShift,
+        myEntry: selectedMyEntry,
+        targetDay: selectedTargetDay,
+        targetOperator: selectedOperator,
+        targetShift: selectedTargetShift,
+        targetEntry: selectedTargetEntry,
+        originalMonth: selectedMonth,
+        targetMonth: selectedTargetMonth
+      };
+      setPreviewData(preview);
+      setShowPreview(true);
+    }
+  };
+
+  const handleConfirmSwap = () => {
+    setShowPreview(false);
+    handleSubmit();
+  };
 
   // Helper function to convert date string (DD/MM/YYYY) to timestamp
   const convertDateToTime = (dateStr: string): number => {
@@ -698,11 +747,11 @@ const SwapRequestView: React.FC = () => {
 
               <div className="flex gap-2 mt-4">
                 <Button 
-                  onClick={handleSubmit}
+                  onClick={handlePreviewSwap}
                   className="flex-1 bg-primary hover:bg-primary/90 glow-primary"
                 >
                   <ArrowLeftRight className="w-4 h-4 mr-2" />
-                  Confirmar Solicitação
+                  Pré-visualizar Troca
                 </Button>
                 <Button 
                   variant="outline" 
@@ -799,6 +848,91 @@ const SwapRequestView: React.FC = () => {
             </div>
           )}
         </div>
+
+      {/* Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ArrowLeftRight className="w-5 h-5 text-primary" />
+              Pré-visualização da Troca
+            </DialogTitle>
+            <DialogDescription>
+              Revise os detalhes da troca antes de confirmar a solicitação.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {previewData && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
+                  <div className="text-xs text-muted-foreground mb-2">Você vai ceder</div>
+                  <div className="font-bold text-primary text-lg">Dia {getDayNumber(previewData.myDay)}</div>
+                  <div className="text-sm text-muted-foreground">{previewData.myEntry.dayOfWeek}</div>
+                  <div className="text-xs mt-2 flex items-center gap-1">
+                    {previewData.myShift === 'meioPeriodo' 
+                      ? <Sun className="w-3 h-3 text-secondary" />
+                      : <Sunset className="w-3 h-3 text-warning" />
+                    }
+                    Turno: {getShiftLabel(previewData.myShift)}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {getMonthName(previewData.originalMonth.month)}/{previewData.originalMonth.year}
+                  </div>
+                </div>
+                
+                <div className="p-4 rounded-lg bg-success/10 border border-success/30">
+                  <div className="text-xs text-muted-foreground mb-2">Você vai assumir</div>
+                  <div className="font-bold text-success text-lg">Dia {getDayNumber(previewData.targetDay)}</div>
+                  <div className="text-sm text-muted-foreground">{previewData.targetEntry.dayOfWeek}</div>
+                  <div className="text-xs mt-2 flex items-center gap-1">
+                    {previewData.targetShift === 'meioPeriodo' 
+                      ? <Sun className="w-3 h-3 text-meioPeriodo" />
+                      : previewData.targetShift === 'fechamento'
+                      ? <Sunset className="w-3 h-3 text-fechamento" />
+                      : <><Sun className="w-3 h-3 text-meioPeriodo" /><Sunset className="w-3 h-3 text-fechamento" /></>
+                    }
+                    Turno de: {previewData.targetOperator} {previewData.targetShift === 'ambos' ? '(Ambos)' : `(${getShiftLabel(previewData.targetShift)})`}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {getMonthName(previewData.targetMonth.month)}/{previewData.targetMonth.year}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-muted/50">
+                <div className="text-sm font-medium mb-2">Fluxo da Solicitação:</div>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <div>1. 📤 Você envia a solicitação</div>
+                  <div>2. ⏳ <strong>{previewData.targetOperator}</strong> recebe e precisa aceitar</div>
+                  <div>3. 👤 Administrador analisa e aprova</div>
+                  <div>4. ✅ Calendário atualizado automaticamente</div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <div className="flex items-center gap-2 text-amber-800">
+                  <AlertCircle className="w-4 h-4" />
+                  <span className="text-sm font-medium">Importante</span>
+                </div>
+                <div className="text-xs text-amber-700 mt-1">
+                  Esta ação não pode ser desfeita. A solicitação será registrada e notificada ao operador envolvido.
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPreview(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmSwap} className="bg-primary hover:bg-primary/90">
+              <Check className="w-4 h-4 mr-2" />
+              Confirmar Solicitação
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

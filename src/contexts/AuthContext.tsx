@@ -4,6 +4,7 @@ import { User, UserRole, UserStatus } from '@/data/scheduleData';
 import { logLogin, logLogout, logPasswordChange, logUserManagement, logAdminLogin } from '@/data/auditLogs';
 import { authStorage, preferenceStorage } from '@/utils/secureStorage';
 import { SupabaseAPI } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -11,7 +12,7 @@ interface AuthContextType {
   activeUsers: User[];
   operators: User[];
   loading: boolean;
-  login: (name: string, password: string) => boolean;
+  login: (name: string, password: string) => Promise<boolean>;
   logout: () => void;
   resetPassword: (userId: string, newPassword: string) => void;
   updateUserRole: (userId: string, role: UserRole) => void;
@@ -116,31 +117,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     loadUsers();
   }, []);
 
-  // Verificar usuário externo periodicamente
+  // Verificar usuário externo e modo Super Admin em um único useEffect
   useEffect(() => {
     const checkExternalUser = () => {
       // Tentar obter usuário do localStorage (sistema externo)
       const externalUserStr = localStorage.getItem('directAuth_currentUser');
       const externalUser = externalUserStr ? JSON.parse(externalUserStr) : null;
       
-      // Verificar modo Super Admin escondido
-      const superAdminMode = localStorage.getItem('directAuth_superAdminMode') === 'true';
+      // 🔍 Verificando usuário externo (única fonte de verdade)
       
-      // 🔍 Verificando usuário externo
-      
-      if (superAdminMode && (!isHiddenSuperAdmin || !currentUser || currentUser.name !== 'SUPER_ADMIN_HIDDEN')) {
-        // 🔄 Detectado modo Super Admin, ativando
-        const hiddenSuperAdmin = users.find(u => u.name === 'SUPER_ADMIN_HIDDEN');
-        
-        if (hiddenSuperAdmin) {
-          setCurrentUser(hiddenSuperAdmin);
-          setIsHiddenSuperAdmin(true);
-          authStorage.setUser(hiddenSuperAdmin);
-          // ✅ Super Admin ativado
-        } else {
-          console.error('Hidden super admin user not found in database');
-        }
-      } else if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
+      if (externalUser && (!currentUser || currentUser.name !== externalUser.name)) {
         // 🔄 Detectado usuário externo, atualizando AuthContext
         
         // Encontrar usuário correspondente na lista (case-insensitive)
@@ -162,13 +148,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Verificar imediatamente
     checkExternalUser();
     
-    // Verificar a cada 500ms por 5 segundos
-    const interval = setInterval(checkExternalUser, 500);
-    const timeout = setTimeout(() => clearInterval(interval), 5000);
+    // Verificar a cada 2 segundos (reduzido de 500ms para performance)
+    const interval = setInterval(checkExternalUser, 2000);
     
     return () => {
       clearInterval(interval);
-      clearTimeout(timeout);
     };
   }, [currentUser, users]);
 
@@ -237,37 +221,59 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return user?.role === 'super_admin';
   };
 
-  const login = (name: string, password: string): boolean => {
-    const user = users.find(
-      u => u.name.toUpperCase() === name.toUpperCase() && 
-           verifyPassword(password, u.password) && 
-           u.status === 'ativo'
-    );
-    
-    if (user) {
-      setCurrentUser(user);
+  const login = async (name: string, password: string): Promise<boolean> => {
+    try {
+      // 1. Tentar login com dados atuais
+      let user = users.find(
+        u => u.name.toUpperCase() === name.toUpperCase() && 
+             verifyPassword(password, u.password) && 
+             u.status === 'ativo'
+      );
       
-      // Log de auditoria - Login bem-sucedido
-      if (user.role === 'administrador' || user.role === 'super_admin') {
-        logAdminLogin(user.id, user.name);
-      } else {
-        logLogin(user.id, user.name, true);
-      }
-      
-      return true;
-    } else {
-      // Log de auditoria - Login falhou
-      const attemptedUser = users.find(u => u.name.toUpperCase() === name.toUpperCase());
-      if (attemptedUser) {
-        if (attemptedUser.status !== 'ativo') {
-          logLogin(attemptedUser.id, attemptedUser.name, false, 'Usuário inativo');
-        } else {
-          logLogin(attemptedUser.id, attemptedUser.name, false, 'Senha incorreta');
+      // 2. Se não encontrar, recarregar do Supabase e tentar novamente
+      if (!user) {
+        console.log('🔄 User not found in local state, reloading from Supabase...');
+        await loadUsers();
+        
+        user = users.find(
+          u => u.name.toUpperCase() === name.toUpperCase() && 
+               verifyPassword(password, u.password) && 
+               u.status === 'ativo'
+        );
+        
+        if (user) {
+          console.log('✅ User found after Supabase reload:', user.name);
         }
-      } else {
-        logLogin('unknown', name, false, 'Usuário não encontrado');
       }
       
+      if (user) {
+        setCurrentUser(user);
+        
+        // Log de auditoria - Login bem-sucedido
+        if (user.role === 'administrador' || user.role === 'super_admin') {
+          logAdminLogin(user.id, user.name);
+        } else {
+          logLogin(user.id, user.name, true);
+        }
+        
+        return true;
+      } else {
+        // Log de auditoria - Login falhou
+        const attemptedUser = users.find(u => u.name.toUpperCase() === name.toUpperCase());
+        if (attemptedUser) {
+          if (attemptedUser.status !== 'ativo') {
+            logLogin(attemptedUser.id, attemptedUser.name, false, 'Usuário inativo');
+          } else {
+            logLogin(attemptedUser.id, attemptedUser.name, false, 'Senha incorreta');
+          }
+        } else {
+          logLogin('unknown', name, false, 'Usuário não encontrado');
+        }
+        
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Erro no login:', error);
       return false;
     }
   };
@@ -339,6 +345,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateUserStatus(userId, 'arquivado');
   };
 
+  // Extract loadUsers logic to be reusable
+  const loadUsers = useCallback(async () => {
+    try {
+      console.log('🔄 Carregando usuários do Supabase...');
+      const supabaseUsers = await SupabaseAPI.getUsers();
+      
+      // Converter usuários do Supabase para o formato do AuthContext
+      const convertedUsers = supabaseUsers.map(user => ({
+        id: user.id,
+        name: user.name,
+        password: (user as any).password || hashPassword(crypto.randomUUID()), // Hash seguro em vez de vazio
+        role: user.role,
+        status: user.status,
+        profileImage: (user as any).profile_image, // Campo do Supabase é profile_image
+        hideFromSchedule: (user as any).hide_from_schedule
+      }));
+      
+      console.log(`✅ Carregados ${convertedUsers.length} usuários do Supabase`);
+      setUsers(convertedUsers);
+    } catch (error) {
+      console.error('❌ Erro ao carregar usuários do Supabase:', error);
+      // Fallback para usuários locais se Supabase falhar
+      const saved = preferenceStorage.get('escala_users');
+      if (saved) {
+        const userList = saved.map((u: any) => ({
+          ...u,
+          role: u.role || (u.isAdmin ? 'administrador' : 'operador'),
+          status: u.status || 'ativo',
+          password: migratePasswordToHash(u.password)
+        }));
+        setUsers(userList);
+      }
+    }
+  }, []);
+
   const updateUserPassword = useCallback(async (userId: string, currentPassword: string, newPassword: string): Promise<boolean> => {
     console.log('🔍 updateUserPassword called with:', { userId, currentPassword: '***', newPassword: '***' });
     console.log('🔍 CryptoJS available:', typeof CryptoJS, !!CryptoJS?.SHA256);
@@ -370,7 +411,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await SupabaseAPI.updateUserPassword(userId, newPasswordHash, currentUser?.id || 'system', currentUser?.name || 'system');
       console.log('🔍 Supabase update successful');
 
-      // Update local state
+      // FORÇAR RELOAD COMPLETO DO SUPABASE
+      console.log('🔄 Forcing reload from Supabase...');
+      await loadUsers();
+      console.log('🔍 Supabase reload completed');
+
+      // Update local state (redundante mas seguro)
       setUsers(prev => prev.map(u => 
         u.id === userId 
           ? { ...u, password: newPasswordHash }
@@ -384,7 +430,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('❌ Erro ao alterar senha:', error);
       throw error;
     }
-  }, [users]);
+  }, [users, loadUsers]);
 
   const updateUserProfile = async (userId: string, profileImage: string) => {
     try {
@@ -406,48 +452,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Funções para acesso secreto ao Super Admin
-  const switchToSuperAdmin = () => {
-    // Consider using a more secure mechanism (e.g., role-based check, 
-    // environment variable, or database flag) rather than hardcoded username
-    const ALLOWED_USERS = (import.meta.env.VITE_SUPER_ADMIN_ALLOWED_USERS || 'LUCAS').split(',').map(s => s.trim().toUpperCase());
+  // Função segura para acesso ao Super Admin Escondido
+  const switchToSuperAdmin = useCallback(() => {
+    // Verificar se usuário atual tem permissão
+    const ALLOWED_USERS = (process.env.VITE_SUPER_ADMIN_ALLOWED_USERS || 'LUCAS,ADMIN,RICARDO').split(',').map(s => s.trim().toUpperCase());
     
     if (currentUser && ALLOWED_USERS.includes(currentUser.name.toUpperCase())) {
-      // Encontrar o usuário Super Admin escondido
-      const hiddenSuperAdmin = users.find(u => u.name === 'SUPER_ADMIN_HIDDEN');
+      // Encontrar SUPER_ADMIN_HIDDEN no estado atual
+      const hiddenSuperAdmin = users.find(u => u.name === 'SUPER_ADMIN_HIDDEN' && u.status === 'ativo');
+      
       if (hiddenSuperAdmin) {
-        // Fazer logout do usuário original primeiro
+        // Fazer logout do usuário original
         logLogout(currentUser.id, currentUser.name);
         
-        // Limpar notificações do usuário original
-        localStorage.removeItem(`notifications_read_${currentUser.id}`);
-        
-        // Limpar completamente o localStorage atual
-        localStorage.removeItem('currentUser');
-        
-        // Salvar usuário original para poder voltar depois
+        // Salvar usuário original para poder voltar
         setOriginalUser(currentUser);
         
-        // Trocar para Super Admin imediatamente (sem setTimeout para evitar race condition)
+        // Trocar para Super Admin
         setCurrentUser(hiddenSuperAdmin);
         setIsHiddenSuperAdmin(true);
         
-        // Salvar novo usuário no localStorage
-        localStorage.setItem('currentUser', JSON.stringify(hiddenSuperAdmin));
-        
-        // Log de auditoria with escalation context
+        // Log de auditoria
         logUserManagement(currentUser.id, currentUser.name, 'USER_UPDATE', 
-          `User ${currentUser.name} switched to hidden super admin mode`);
-        // Log de auditoria - login do Super Admin
+          `User ${currentUser.name} switched to SUPER_ADMIN_HIDDEN`);
+        
+        // Log de login do Super Admin
         logAdminLogin(hiddenSuperAdmin.id, hiddenSuperAdmin.name);
+        
+        // Mostrar notificação
+        toast.success('Modo Super Admin ativado');
       } else {
-        // Hidden super admin user not found
-        console.error('Hidden super admin user not found');
+        toast.error('SUPER_ADMIN_HIDDEN não encontrado ou inativo');
       }
     } else {
-      console.error('User not allowed to switch to super admin');
+      toast.error('Usuário não tem permissão para acessar Super Admin');
     }
-  };
+  }, [currentUser, users]);
 
   const switchBackToUser = () => {
     if (isHiddenSuperAdmin && originalUser) {

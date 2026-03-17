@@ -5,6 +5,7 @@
     "lib": ["ES2015", "ES2017", "ES2020", "ES2021", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": ["node"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -21,6 +22,9 @@
     "noImplicitAny": false,
     "noFallthroughCasesInSwitch": false,
 
+    /* Global types */
+    "typeRoots": ["./node_modules/@types", "./node_modules"],
+    
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

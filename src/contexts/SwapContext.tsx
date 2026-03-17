@@ -977,7 +977,8 @@ export const SwapProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const getMyNotifications = (userId: string, userName: string) => {
     return swapRequests.filter(req => 
       (req.requesterId === userId && req.status === 'approved') || // Minhas solicitações aprovadas
-      (req.targetName === userName && (req.status === 'pending' || req.status === 'accepted')) // Solicitações para mim
+      (req.targetName === userName && (req.status === 'pending' || req.status === 'accepted')) || // Solicitações para mim (pendentes e aceitas)
+      (req.requesterId !== userId && req.targetName !== userId && req.status === 'accepted' && req.targetId === userId) // Solicitações que eu aceitei do colega
     );
   };
 

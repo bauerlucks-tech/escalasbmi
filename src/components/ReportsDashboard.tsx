@@ -26,64 +26,22 @@ const ReportsDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Calculate stats from localStorage data
-    const calculateStats = () => {
+    const fetchStats = async () => {
       try {
-        // Get users
-        const usersData = localStorage.getItem('escala_users');
-        const users = usersData ? JSON.parse(usersData) : [];
-        const activeUsers = users.filter((u: any) => u.status === 'ativo' && !u.hideFromSchedule);
-
-        // Get swap requests
-        const swapsData = localStorage.getItem('escala_swapRequests');
-        const swaps = swapsData ? JSON.parse(swapsData) : [];
-        const pendingSwaps = swaps.filter((s: any) => s.status === 'pending');
-
-        // Get vacation requests
-        const vacationsData = localStorage.getItem('escala_vacationRequests');
-        const vacations = vacationsData ? JSON.parse(vacationsData) : [];
-        const pendingVacations = vacations.filter((v: any) => v.status === 'pending');
-
-        // Get current schedules
-        const schedulesData = localStorage.getItem('escala_scheduleStorage');
-        const schedules = schedulesData ? JSON.parse(schedulesData) : { current: [] };
+        setLoading(true);
         
-        // Calculate monthly work days
-        const currentMonth = new Date().getMonth() + 1;
-        const currentYear = new Date().getFullYear();
-        const currentSchedule = schedules.current?.find((s: any) => s.month === currentMonth && s.year === currentYear);
+        // Get data from Supabase
+        const dashboardStats = await SupabaseAPI.getDashboardStats();
         
-        let monthlyWorkDays = 0;
-        let totalAssignments = 0;
-        
-        if (currentSchedule) {
-          monthlyWorkDays = currentSchedule.entries.length;
-          currentSchedule.entries.forEach((entry: any) => {
-            if (entry.meioPeriodo) totalAssignments++;
-            if (entry.fechamento) totalAssignments++;
-          });
-        }
-
-        const averageWorkload = activeUsers.length > 0 ? Math.round(totalAssignments / activeUsers.length) : 0;
-
-        setStats({
-          totalUsers: users.length,
-          activeUsers: activeUsers.length,
-          totalSwaps: swaps.length,
-          pendingSwaps: pendingSwaps.length,
-          totalVacations: vacations.length,
-          pendingVacations: pendingVacations.length,
-          monthlyWorkDays,
-          averageWorkload
-        });
+        setStats(dashboardStats);
       } catch (error) {
-        console.error('Error calculating stats:', error);
+        console.error('Error fetching dashboard stats:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    calculateStats();
+    fetchStats();
   }, []);
 
   if (loading) {

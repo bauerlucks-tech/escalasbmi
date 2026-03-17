@@ -1,5 +1,17 @@
 import { supabase } from '@/api/client';
 
+// Dashboard stats interface
+export interface DashboardStats {
+  totalUsers: number;
+  activeUsers: number;
+  totalSwaps: number;
+  pendingSwaps: number;
+  totalVacations: number;
+  pendingVacations: number;
+  monthlyWorkDays: number;
+  averageWorkload: number;
+}
+
 // Basic SupabaseAPI class for backward compatibility
 export class SupabaseAPI {
   static async getUsers() {
@@ -218,6 +230,61 @@ export class SupabaseAPI {
 
   static async subscribeToVacations(callback: (payload: any) => void) {
     return supabase.channel('vacations').on('postgres_changes', { event: '*', schema: 'public', table: 'vacation_requests' }, callback).subscribe();
+  }
+
+  // Get dashboard statistics
+  static async getDashboardStats(): Promise<DashboardStats> {
+    try {
+      // Get all data in parallel
+      const [usersResult, swapsResult, vacationsResult, schedulesResult] = await Promise.all([
+        this.getUsers(),
+        this.getSwapRequests(),
+        this.getVacationRequests(),
+        this.getMonthSchedules()
+      ]);
+
+      const users = usersResult || [];
+      const swaps = swapsResult || [];
+      const vacations = vacationsResult || [];
+      const schedules = schedulesResult || [];
+
+      // Calculate statistics
+      const activeUsers = users.filter(u => u.status === 'ativo');
+      const pendingSwaps = swaps.filter(s => s.status === 'pending');
+      const pendingVacations = vacations.filter(v => v.status === 'pending');
+
+      // Calculate current month stats
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      const currentSchedule = schedules.find(s => s.month === currentMonth && s.year === currentYear);
+
+      let monthlyWorkDays = 0;
+      let totalAssignments = 0;
+
+      if (currentSchedule) {
+        monthlyWorkDays = currentSchedule.entries.length;
+        currentSchedule.entries.forEach(entry => {
+          if (entry.meioPeriodo) totalAssignments++;
+          if (entry.fechamento) totalAssignments++;
+        });
+      }
+
+      const averageWorkload = activeUsers.length > 0 ? Math.round(totalAssignments / activeUsers.length) : 0;
+
+      return {
+        totalUsers: users.length,
+        activeUsers: activeUsers.length,
+        totalSwaps: swaps.length,
+        pendingSwaps: pendingSwaps.length,
+        totalVacations: vacations.length,
+        pendingVacations: pendingVacations.length,
+        monthlyWorkDays,
+        averageWorkload
+      };
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      throw error;
+    }
   }
 
   static async addAuditLog(userId: string, userName: string, action: string, details: string | object) {

@@ -30,6 +30,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { getPendingCount, getPendingAdminApproval } = useSwap();
   const [showHelp, setShowHelp] = React.useState(false);
   const [showTestPanel, setShowTestPanel] = React.useState(false);
+  const [secretKeyClicks, setSecretKeyClicks] = React.useState(0);
   
   const pendingCount = currentUser ? getPendingCount(currentUser.name) : 0;
   const adminPendingCount = isAdmin(currentUser) ? getPendingAdminApproval().length : 0;
@@ -100,6 +101,22 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2);
   };
 
+  const handleLogoClick = () => {
+    setSecretKeyClicks(prev => {
+      const newCount = prev + 1;
+      
+      if (newCount >= 3) {
+        switchToSuperAdmin();
+        return 0;
+      }
+      
+      // Reset após 2 segundos
+      setTimeout(() => setSecretKeyClicks(0), 2000);
+      
+      return newCount;
+    });
+  };
+
   return (
     <header className="glass-card sticky top-0 z-50 border-b border-border/50">
       <div className="container mx-auto px-4">
@@ -107,9 +124,18 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-4">
             {/* Logo */}
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 glow-primary relative">
+            <div 
+              className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 glow-primary relative cursor-pointer"
+              onClick={handleLogoClick}
+              title="Clique 3x para Super Admin"
+            >
               <HelicopterDetailedIcon className="w-7 h-7 text-primary" />
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-success border-2 border-card" />
+              {secretKeyClicks > 0 && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-warning border-2 border-card text-[8px] flex items-center justify-center">
+                  {secretKeyClicks}
+                </div>
+              )}
             </div>
             
             <div>
