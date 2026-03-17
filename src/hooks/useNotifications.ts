@@ -25,7 +25,8 @@ export const useNotifications = (): UseNotificationsReturn => {
   }, []);
 
   const requestPermission = async (): Promise<boolean> => {
-    if (!isSupported) {
+    // Check directly instead of relying on stale closure
+    if (!('Notification' in window)) {
       console.warn('Notifications not supported');
       return false;
     }
@@ -41,7 +42,8 @@ export const useNotifications = (): UseNotificationsReturn => {
   };
 
   const showNotification = (title: string, options?: NotificationOptions) => {
-    if (!isSupported || permission !== 'granted') {
+    // Check directly instead of relying on stale closure
+    if (!('Notification' in window) || Notification.permission !== 'granted') {
       console.warn('Notifications not permitted');
       return;
     }

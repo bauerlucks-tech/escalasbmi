@@ -6,6 +6,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "lib": ["ES2015", "ES2017", "ES2020", "ES2021", "DOM", "DOM.Iterable"],
+    "types": ["node", "@types/react", "@types/react-dom"],
     "noImplicitAny": false,
     "noUnusedParameters": false,
     "skipLibCheck": true,
