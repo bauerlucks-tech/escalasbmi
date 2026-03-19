@@ -2,6 +2,8 @@ import React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import GlassCard from '@/components/ui/glass-card';
+import StatCard from '@/components/ui/stat-card';
 import { format, eachDayOfInterval, isSameDay, startOfMonth, endOfMonth, getDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { VacationRequest } from '@/data/scheduleData';
@@ -221,43 +223,27 @@ const VacationCalendar: React.FC<VacationCalendarProps> = ({ approvedVacations }
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="glass-card border-border/50 hover:shadow-lg transition-all duration-300">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center mb-3">
-                <CalendarIcon className="w-6 h-6 text-destructive" />
-              </div>
-              <div className="text-3xl font-bold text-destructive">{approvedVacations.length}</div>
-              <div className="text-sm text-muted-foreground">Férias Aprovadas</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="glass-card border-border/50 hover:shadow-lg transition-all duration-300">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                <TrendingUp className="w-6 h-6 text-primary" />
-              </div>
-              <div className="text-3xl font-bold text-primary">
-                {approvedVacations.reduce((sum, v) => sum + v.totalDays, 0)}
-              </div>
-              <div className="text-sm text-muted-foreground">Total de Dias</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="glass-card border-border/50 hover:shadow-lg transition-all duration-300">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center mb-3">
-                <Users className="w-6 h-6 text-success" />
-              </div>
-              <div className="text-3xl font-bold text-success">
-                {new Set(approvedVacations.map(v => v.operatorName)).size}
-              </div>
-              <div className="text-sm text-muted-foreground">Operadores em Férias</div>
-            </div>
-          </CardContent>
-        </Card>
+        <StatCard
+          title="Férias Aprovadas"
+          value={approvedVacations.length}
+          icon={CalendarIcon}
+          variant="destructive"
+          description="Períodos aprovados"
+        />
+        <StatCard
+          title="Total de Dias"
+          value={approvedVacations.reduce((sum, v) => sum + v.totalDays, 0)}
+          icon={TrendingUp}
+          variant="default"
+          description="Dias de folga total"
+        />
+        <StatCard
+          title="Operadores em Férias"
+          value={new Set(approvedVacations.map(v => v.operatorName)).size}
+          icon={Users}
+          variant="success"
+          description="Colaboradores ativos"
+        />
       </div>
     </div>
   );
